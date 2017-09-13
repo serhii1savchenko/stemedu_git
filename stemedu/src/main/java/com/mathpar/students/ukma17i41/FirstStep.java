@@ -6,7 +6,11 @@ import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
 
-// openmpi/bin/mpirun -np 2 java -cp /home/gennadi/stemedu/target/classes  com/mathpar/students/ukma17i41/Genn 2
+// to run project execute the command bellow
+// openmpi/bin/mpirun -np 2 java -cp /home/YOUR-PATH-TO/stemedu/target/classes  com/mathpar/students/ukma17i41/FirstStep 2
+// example 
+// openmpi/bin/mpirun -np 2 java -cp /home/myname/projects/stemedu/target/classes  com/mathpar/students/ukma17i41/FirstStep 2
+
 public class FirstStep {
 
     public static void HelloWorldParallel(String[] args) throws MPIException {
