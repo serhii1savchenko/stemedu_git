@@ -150,11 +150,24 @@ public class PracticeTasks {
         MPI.Finalize();
     }
     
+    //run:
+    //  openmpi/bin/mpirun -np 2 java -cp /home/acer/Documents/parralel_programming/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sukharskyi/PracticeTasks 2
+    //output:
+    //  Proc num 0 Hello World
+    //  Proc num 1 Hello World
+    private static void HelloWorld(String[] args) throws MPIException {
+        MPI.Init(args);
+        int myrank = MPI.COMM_WORLD.getRank();
+        System.out.println("Proc num " + myrank + " Hello World");
+        MPI.Finalize();
+    }
+    
     public static void main(String[] args) throws MPIException {
-        //Uncomment number of task you want to test and comment other
-        //FirstTask(args);
-        //SecondTask(args);
-        //ThirdTask(args);
-        FourthTask(args);
+        // Uncomment number of task you want to test and comment other
+        HelloWorld(args);
+        // FirstTask(args);
+        // SecondTask(args);
+        // ThirdTask(args);
+        // FourthTask(args);
     }
 }
