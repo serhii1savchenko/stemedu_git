@@ -13,7 +13,7 @@ import mpi.MPIException;
 // Output: Proc num 0 Hello WorldProc num 1 Hello World
 
 
-public class MyClass {
+public class HelloWorld {
     public static void main(String[] args) throws MPIException {
 
 MPI.Init(args);
