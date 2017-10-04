@@ -18,6 +18,34 @@ import mpi.MPIException;
  */
 
 
+//Example HelloWorld
+
+// COMMAND
+/*
+openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/HelloWorldParallel
+*/
+
+class HelloWorldParallel {
+    public static void main(String[] args)
+            throws MPIException {
+        MPI.Init(args);
+        int myrank = MPI.COMM_WORLD.getRank();
+        System.out.println("Proc num " + myrank + " Hello World");
+        MPI.Finalize();
+    }
+}
+
+//Result
+
+/*
+Proc num 1 Hello World
+Proc num 0 Hello World
+
+*/
+
+
+
+
 //Example 1.1
 
 // COMMAND
@@ -88,12 +116,8 @@ RANK = 1
 
 //Example 1.2
 //COMMAND
-
 /*
-
 openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/Task2 10
-
-
 */
 class Task2 {
     private static void Task2(String[] args) throws MPIException {
@@ -155,11 +179,9 @@ First runk OK
 
 //Example 1.3
 //COMMAND
-
 /*
 openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/Task3 4 5
 */
-
 
 class Task3 {
     private static void Task3(String[] args) throws MPIException {
