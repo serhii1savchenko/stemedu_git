@@ -131,10 +131,79 @@ public class Tasks {
         MPI.Finalize();
     }
     
+    /*
+    Task 4
+    
+    Output:
+    a[0]= 0.692250711285385
+    a[1]= 0.7252504261405832
+    a[0]= 0.692250711285385
+    a[1]= 0.7252504261405832
+    */
+    
+    public static void Task4(String[] args) throws MPIException {
+        //MPI initialization
+        MPI.Init(args);
+        //CPU number detection
+        int myrank = MPI.COMM_WORLD.getRank();
+        int n = Integer.parseInt(args[0]);
+        double[] a = new double[n];
+        if (myrank == 0) {
+            for (int i = 0; i < n; i++) {
+                a[i] = new Random().nextDouble();
+                System.out.println("a[" + i + "]= " + a[i]);
+            }
+        }
+        MPI.COMM_WORLD.barrier();
+        //send data from 0-th processor to others
+        MPI.COMM_WORLD.bcast(a, a.length, MPI.DOUBLE, 0);
+        if (myrank != 0) {
+            for (int i = 0; i < n; i++) {
+                System.out.println("a[" + i + "]= " + a[i]);
+            }
+        }
+        //end of the parallel part
+        MPI.Finalize();
+    }
+    
+    /*
+    Task 5
+    
+    Output:
+    0
+    0
+    1
+    1
+    */
+    
+    public static void Task5(String[] args) throws MPIException {
+        //MPI initialization
+        MPI.Init(args);
+        //CPU number detection
+        int myrank = MPI.COMM_WORLD.getRank();
+        //determining the number of processors in a group
+        int np = MPI.COMM_WORLD.getSize();
+        int n = Integer.parseInt(args[0]);
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = myrank;
+        }
+        int[] q = new int[n * np];
+        MPI.COMM_WORLD.gather(a, n, MPI.INT, q, n, MPI.INT, np - 1);
+        if (myrank == np - 1) {
+            for (int i = 0; i < q.length; i++) {
+                System.out.println(" " + q[i]);
+            }
+        }
+        //end of the parallel part
+        MPI.Finalize();
+    }
     
     public static void main(String[] args) throws MPIException {
-        //Task1(args);
+        Task1(args);
         //Task2(args);
-        Task3(args);
+        //Task3(args);
+        //Task4(args);
+        //Task5(args);
     }
 }
