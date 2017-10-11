@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mathpar.students.ukma17i41.beyrak;
+package com.mathpar.students.ukma17i41.makukha;
 
 import java.nio.IntBuffer;
 import java.util.Random;
@@ -12,18 +12,14 @@ import mpi.MPIException;
 
 /**
  *
- * @author maria
+ * @author jura
  */
-
-/*
-To run:
-openmpi/bin/mpirun -np 2 java -cp /home/maria/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/beyrak/Tasks 2
-*/
-
 public class Tasks {
-    
     /*
     Task 1
+    
+    Run command: 
+    /usr/bin/mpirun -np 2 java -cp /home/jura/Downloads/projects/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/makukha/Tasks
     
     Output:
     Proc num 0 Hello World
@@ -35,7 +31,7 @@ public class Tasks {
         MPI.Init(args);
         //CPU number detection
         int myrank = MPI.COMM_WORLD.getRank();
-        System.out.println("Proc num " + myrank + " Hello World");
+        System.out.println("Proc num " + myrank + " Hello World" + "\n");
         //end of the parallel part
         MPI.Finalize();
     }
@@ -43,13 +39,18 @@ public class Tasks {
     /*
     Task 2
     
-    Output:
-    a[0]= 0.5288058984918489
-    a[1]= 0.30107803618513407
-    Proc num 0: Array was sent
+    Run command: 
+    /usr/bin/mpirun -np 2 java -cp /home/jura/Downloads/projects/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/makukha/Tasks 3
     
-    a[0]= 0.5288058984918489
-    a[1]= 0.30107803618513407
+    Output:
+    a[0]= 0.5525130506706801
+    a[1]= 0.7432743661269503
+    a[2]= 0.23024548264858802
+    Proc num 0: Array was sent
+
+    a[0]= 0.5525130506706801
+    a[1]= 0.7432743661269503
+    a[2]= 0.23024548264858802
     Proc num 1: Array was accepted
     */
     
@@ -91,15 +92,14 @@ public class Tasks {
     }
     
     /*
-    To run:
-    openmpi/bin/mpirun -np 2 java -cp /home/maria/stemedu/stemedu/target/classes: com/mathpar/students/ukma17i41/beyrak/Tasks 1000
-    1000 - number of elements in the transferred array
-    
     Task 3
     
+    Run command:
+    /usr/bin/mpirun -np 2 java -cp /home/jura/Downloads/projects/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/makukha/Tasks 3
+    
     Output:
-    proc num = 1: Array was accepted
     proc num = 0: Array was sent
+    proc num = 1: Array was accepted
     */
     
     public static void Task3(String[] args) throws MPIException {
@@ -134,11 +134,18 @@ public class Tasks {
     /*
     Task 4
     
+    Run command:
+    /usr/bin/mpirun -np 2 java -cp /home/jura/Downloads/projects/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/makukha/Tasks 3
+    
+    
     Output:
-    a[0]= 0.692250711285385
-    a[1]= 0.7252504261405832
-    a[0]= 0.692250711285385
-    a[1]= 0.7252504261405832
+    a[0]= 0.4122129642351485
+    a[1]= 0.24343394819129693
+    a[2]= 0.4069974436199991
+    a[0]= 0.4122129642351485
+    a[1]= 0.24343394819129693
+    a[2]= 0.4069974436199991
+
     */
     
     public static void Task4(String[] args) throws MPIException {
@@ -169,9 +176,15 @@ public class Tasks {
     /*
     Task 5
     
+    Run command:
+    /usr/bin/mpirun -np 2 java -cp /home/jura/Downloads/projects/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/makukha/Tasks 3
+    
+    
     Output:
     0
     0
+    0
+    1
     1
     1
     */
@@ -200,10 +213,11 @@ public class Tasks {
     }
     
     public static void main(String[] args) throws MPIException {
-        Task1(args);
-        //Task2(args);
-        //Task3(args);
-        //Task4(args);
-        //Task5(args);
+//        Task1(args);
+//        Task2(args);
+//        Task3(args);
+//        Task4(args);
+        Task5(args);
     }
+    
 }
