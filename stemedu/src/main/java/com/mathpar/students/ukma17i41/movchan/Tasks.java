@@ -163,11 +163,11 @@ public class Tasks {
     }
     
     public static void main(String[] args) throws MPIException {
-        // Task1(args);
-        // Task2(args);
-        // Task3(args);
-        // Task4(args);
-        // Task5(args);
+         Task1(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
+        // Task2(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
+        // Task3(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
+        // Task4(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
+        // Task5(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
     }
     
 }
