@@ -4,8 +4,8 @@ import mpi.MPI;
 import mpi.MPIException;
 
 /**
- *
- * @author anja
+ * /users/anja/openmpi/bin/mpirun -np 2 java -cp /Users/anja/Downloads/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/marynenko/Task1
+ * @author anja marynenko
  */
 
 /*
