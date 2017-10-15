@@ -26,7 +26,7 @@ import mpi.MPIException;
         MPI.Finalize();
         }
         
-    public static void main(String[] args) throws MPIException {
+        public static void main(String[] args) throws MPIException {
         Task1(args);
-    }
+        }
     }
