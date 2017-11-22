@@ -328,9 +328,9 @@ public class Tasks24 {
     public static void main(String[] args) 
             throws MPIException, IOException, ClassNotFoundException {
         Task1(args);
-        Task2(args);
-        Task3(args);
-        Task4(args);
+        //Task2(args);
+        //Task3(args);
+        //Task4(args);
         //Task5(args);
     }
 }
