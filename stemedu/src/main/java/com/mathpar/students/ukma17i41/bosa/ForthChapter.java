@@ -96,6 +96,17 @@ Not 2d proc neither 8th
 
 */
     
+     private static MyObject[] convertToArray(Object[] objs) {
+        
+        MyObject[] myobjs = new MyObject[objs.length];
+        for(int i=0; i<objs.length; ++i){
+            myobjs[i]=(MyObject)objs[i];
+        }
+        
+        return myobjs;
+            
+        }
+    
     public static void sendArrayOfObjects(Object[] a, int proc, int tag) throws MPIException,IOException {
 
         for (int i = 0; i < a.length; i++)
@@ -105,7 +116,8 @@ Not 2d proc neither 8th
     public static Object[] recvArrayOfObjects(int proc, int tag) throws MPIException, IOException, ClassNotFoundException {
         Object[] o = new Object[4];
         for (int i = 0; i < 4; i++)
-        o[i] = recvObject(proc, tag + i);
+            o[i] = recvObject(proc, tag + i);
+        
         return o;
     }
     
@@ -113,21 +125,20 @@ Not 2d proc neither 8th
         
         MPI.Init(args);
         int myrank = MPI.COMM_WORLD.getRank();
-        
-        MyObject[] Arrobj = new MyObject[4];
-            for(int i=0; i<4; i++)
-                Arrobj[i] = new MyObject(0);
-        
+
         if(myrank == 4)
         { 
+            MyObject[] Arrobj = {new MyObject(3),new MyObject(5),new MyObject(7),new MyObject(8)};
             sendArrayOfObjects(Arrobj,6,0);
-            System.out.println("PROC 4 SENDING TO PROC 6: "+ Arrobj);
+            for(int i =0; i<Arrobj.length; ++i)
+                System.out.println("PROC 4 SENDING TO PROC 6: "+ Arrobj[i].getId());
             
         }
         if(myrank == 6)
         {
-            recvArrayOfObjects(4,0);
-             System.out.println("PROC 6 RECIEVED FROM PROC 4: "+ Arrobj);  
+            MyObject[] Arrobj = convertToArray(recvArrayOfObjects(4,0));
+             for(int i=0; i<Arrobj.length; i++)
+                System.out.println("PROC 6 RECIEVED FROM PROC 4: "+ Arrobj[i].getId());  
         }
            
         System.out.println("Nor 4th proc neither 6th");  
@@ -136,18 +147,26 @@ Not 2d proc neither 8th
     }
     
     /*******result for sendrecvArrayOfObjects
-    Nor 4th proc neither 6thNor 4th proc neither 6th
+     Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+PROC 4 SENDING TO PROC 6: 3
+PROC 4 SENDING TO PROC 6: 5
+PROC 4 SENDING TO PROC 6: 7
+PROC 4 SENDING TO PROC 6: 8
+Nor 4th proc neither 6th
+PROC 6 RECIEVED FROM PROC 4: 3
+PROC 6 RECIEVED FROM PROC 4: 5
+PROC 6 RECIEVED FROM PROC 4: 7
+PROC 6 RECIEVED FROM PROC 4: 8
+Nor 4th proc neither 6th
 
-Nor 4th proc neither 6th
-Nor 4th proc neither 6th
-Nor 4th proc neither 6th
-Nor 4th proc neither 6th
-Nor 4th proc neither 6th
-Nor 4th proc neither 6th
-PROC 4 SENDING TO PROC 6: [Lcom.mathpar.students.ukma17i41.bosa.MyObject;@1f32e575
-Nor 4th proc neither 6th
-PROC 6 RECIEVED FROM PROC 4: [Lcom.mathpar.students.ukma17i41.bosa.MyObject;@1e80bfe8
-Nor 4th proc neither 6th
+
 
     */
     
@@ -201,35 +220,53 @@ Nor 4th proc neither 6th
         }
         return res;
     }
+    
+  
 
     public static void sendRecvObjects(String[] args)throws MPIException, IOException, ClassNotFoundException{
         
         MPI.Init(args);
         int myrank = MPI.COMM_WORLD.getRank();
-        
-        MyObject[] Arrobj = new MyObject[4];
-            for(int i=0; i<4; i++)
-                Arrobj[i] = new MyObject(0);
-       
-        
-        if(myrank == 1)
+       if(myrank == 4)
         { 
-            sendObjects(Arrobj,10,0);
-            //System.out.println("PROC 0 SENDING TO PROC 10: "+ Arrobj);
+            MyObject[] Arrobj = {new MyObject(3),new MyObject(5),new MyObject(7),new MyObject(8)};
+            sendArrayOfObjects(Arrobj,6,0);
+            for(int i =0; i<Arrobj.length; ++i)
+                System.out.println("PROC 4 SENDING TO PROC 6: "+ Arrobj[i].getId());
             
         }
-        if(myrank == 10)
+        if(myrank == 6)
         {
-             recvObjects(Arrobj.length,1,0);
-            // System.out.println("PROC 0 RECIEVED FROM PROC 10: "+ Arrobj);  
+            MyObject[] Arrobj = convertToArray(recvArrayOfObjects(4,0));
+             for(int i=0; i<Arrobj.length; i++)
+                System.out.println("PROC 6 RECIEVED FROM PROC 4: "+ Arrobj[i].getId());  
         }
            
-        //System.out.println("Nor 0 proc neither 10th");  
+           
+        System.out.println("Nor 4th proc neither 6th");  
         MPI.Finalize();
     }
     
     /**************result for sendrecvObjects
-    
+    Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+Nor 4th proc neither 6th
+PROC 4 SENDING TO PROC 6: 3
+PROC 4 SENDING TO PROC 6: 5
+PROC 4 SENDING TO PROC 6: 7
+PROC 4 SENDING TO PROC 6: 8
+Nor 4th proc neither 6th
+PROC 6 RECIEVED FROM PROC 4: 3
+PROC 6 RECIEVED FROM PROC 4: 5
+PROC 6 RECIEVED FROM PROC 4: 7
+PROC 6 RECIEVED FROM PROC 4: 8
+Nor 4th proc neither 6th
+
     */
     
     
@@ -279,7 +316,8 @@ Nor 4th proc neither 6th
             //System.out.println("Starting broadcast");  
      
             bcastObjectArray(Arrobj,1,0);
-            System.out.println("Proc = " + myrank+" Broadcasted successfully");  
+            for(int i=0; i<Arrobj.length; i++)
+                System.out.println("Proc = " + myrank+" Broadcasted successfully ");  
             
        
         MPI.Finalize();
@@ -302,13 +340,15 @@ Proc = 1 Broadcasted successfully
      public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException{
          
         //sendRecv(args); 
-        //sendRecvArray(args);
-        sendRecvObjects(args);
-         //bcastCall(args);
+       // sendRecvArray(args);
+       // sendRecvObjects(args);
+         bcastCall(args);
      }
      
      
 };
+
+
 
  class MyObject implements Serializable{
     int id;
