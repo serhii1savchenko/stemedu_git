@@ -6,7 +6,7 @@ import mpi.MPI;
 import mpi.MPIException;
 
 //to run project execute the command bellow
-//openmpi/bin/mpirun -np 2 java -cp /home/oliko/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/todua/HelloWorldParallel 2
+//openmpi/bin/mpirun -np 2 java -cp /home/oliko/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/todua/Tasks 2
 
 public class Tasks {
     
