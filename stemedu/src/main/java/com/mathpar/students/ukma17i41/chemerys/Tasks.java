@@ -3,38 +3,54 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package com.mathpar.students.ukma17i41.chemerys;
 
-package com.mathpar.students.ukma17i41.movchan;
+/**
+ *
+ * @author finstereule
+ */
 
 import java.nio.IntBuffer;
 import java.util.Random;
 import mpi.MPI;
 import mpi.MPIException;
 
-/* 
- @author amo
- */
-//      Run command: 
-//      /usr/bin/mpirun -np 2 java -cp /home/amo/projects/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/movchan/Tasks 3
-    
 public class Tasks {
-    /*
-    task 1
-    */
+    
+    /*  Task 1
+    
+    Output:
+    Proc num 0 Hello World
+    Proc num 1 Hello World    */
     
     public static void Task1(String[] args) throws MPIException {
         //MPI initialization
         MPI.Init(args);
         //CPU number detection
         int myrank = MPI.COMM_WORLD.getRank();
-        System.out.println("Proc num " + myrank + " Hello World" + "\n");
+        System.out.println("Proc num " + myrank + " Hello World");
         //end of the parallel part
         MPI.Finalize();
     }
     
-    /*
-    task 2
-    */
+    
+/*  Task 2
+    
+    Output:
+a[0]= 0.055841016084078654
+a[1]= 0.5407213183445565
+a[2]= 0.7250683639278961
+a[3]= 0.43359120667351925
+a[4]= 0.4095566572267306
+Proc num 0: Array was sent
+
+a[0]= 0.055841016084078654
+a[1]= 0.5407213183445565
+a[2]= 0.7250683639278961
+a[3]= 0.43359120667351925
+a[4]= 0.4095566572267306
+Proc num 1: Array was accepted */
+
     
     public static void Task2(String[] args) throws MPIException {
         //MPI initialization
@@ -73,9 +89,12 @@ public class Tasks {
         MPI.Finalize();
     }
     
-    /*
-    task 3
-    */
+/*  Task 3
+    
+    Output:
+proc num = 0: Array was sent
+proc num = 1: Array was accepted   */
+   
     
     public static void Task3(String[] args) throws MPIException {
         //MPI initialization
@@ -105,10 +124,15 @@ public class Tasks {
         //end of the parallel part
         MPI.Finalize();
     }
+   
+  /*   Task 4
     
-    /*
-    task 4
-    */
+    Output:
+a[0]= 0.09964911457564785
+a[1]= 0.13877808905851086
+a[0]= 0.09964911457564785
+a[1]= 0.13877808905851086 */
+    
     
     public static void Task4(String[] args) throws MPIException {
         //MPI initialization
@@ -135,9 +159,15 @@ public class Tasks {
         MPI.Finalize();
     }
     
-    /*
-    task 5
-    */
+/*   Task 5
+    
+    Output:
+ 0
+ 0
+ 0
+ 1
+ 1
+ 1    */
     
     public static void Task5(String[] args) throws MPIException {
         //MPI initialization
@@ -163,11 +193,10 @@ public class Tasks {
     }
     
     public static void main(String[] args) throws MPIException {
-         Task1(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task2(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task3(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task4(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task5(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
+        //Task1(args);
+        //Task2(args);
+        //Task3(args);
+        //Task4(args);
+        //Task5(args);
     }
-    
 }
