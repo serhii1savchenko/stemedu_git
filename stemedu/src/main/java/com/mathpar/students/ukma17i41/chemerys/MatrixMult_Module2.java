@@ -28,11 +28,14 @@ public static void main(String[] args)
         
         MatrixMul4.multiplyMatrixes(args);
         
-        //MatrixMul8.multiplyMatrixes(args);
+        //MatrixMul8.multiplyMatrixes(args);   
+        
+        //MatrixMul16.multiplyMatrixes(args);
              
         //MultiplyMatrixToVector.multiplyMatrixToVector(args);
         
         //MultiplyVectorToScalar.multiplyVectorToScalar(args);
+
 
     }
 }
@@ -153,28 +156,30 @@ halynachemerys/openmpi/bin/mpirun --hostfile hostfile  -np 8 java -cp /home/fins
 
 output:
 
-Processor №4
-Processor №3
 Processor №1
-Processor №5
+Processor №3
 Processor №7
-Processor №6
+Processor №5
 Processor №2
+Processor №4
+Processor №6
+
 Matrix A = 
-[[0.37, 0.25, 0.26, 0.24]
- [0.45, 0.53, 0.73, 0.75]
- [0.66, 0.48, 0.43, 0.22]
- [0.5,  0.96, 0.44, 0.96]]
+[[0.85, 0.94, 0.45, 0.87]
+ [0.88, 0.37, 0.17, 0.43]
+ [0.71, 0.04, 0.06, 0.57]
+ [0.12, 0.69, 0.3,  0.31]]
 Matrix B = 
-[[0.78, 0.4,  0.92, 0.48]
- [0.44, 0.11, 0.14, 0.27]
- [0.22, 0.48, 0.83, 0.58]
- [0.27, 0.93, 0.41, 0.13]]
+[[0.13, 0.83, 0.88, 0.45]
+ [0.48, 0.82, 0.13, 0.51]
+ [0.19, 0.39, 0.12, 0.68]
+ [0.17, 0.13, 0.48, 0.16]]
 RESULT = 
-[[0.52, 0.52, 0.69, 0.43]
- [0.95, 1.29, 1.4,  0.88]
- [0.89, 0.73, 1.13, 0.73]
- [1.18, 1.42, 1.36, 0.88]]
+[[0.8,  1.76, 1.33, 1.31]
+ [0.4,  1.15, 1.04, 0.77]
+ [0.22, 0.72, 0.91, 0.47]
+ [0.46, 0.82, 0.37, 0.66]]
+
 */
 
 class MatrixMul8 {
@@ -218,7 +223,8 @@ class MatrixMul8 {
                     (new Object[]{AA[3], BB[3]}, 0, 2, 7, tag);
             MatrixS[] DD = new MatrixS[4];
 
-            DD[0] = (AA[0].multiply(BB[0], ring)).add((MatrixS) MPITransport.recvObject(1, 3),ring);
+            DD[0] = (AA[0].multiply(BB[0], ring)).add((MatrixS) 
+                    MPITransport.recvObject(1, 3),ring);
             DD[1] = (MatrixS) MPITransport.recvObject(2, 3);
             DD[2] = (MatrixS) MPITransport.recvObject(4, 3);
             DD[3] = (MatrixS) MPITransport.recvObject(6, 3);
@@ -229,7 +235,7 @@ class MatrixMul8 {
         } else {
             System.out.println("Processor №" + rank);
 
-            Object[] b = new Object[2];
+            Object[] b = new Object[4];  
 
             MPITransport.recvObjectArray(b, 0, 2, 0, 0);
             MatrixS[] a = new MatrixS[b.length];
@@ -250,6 +256,139 @@ class MatrixMul8 {
         MPI.Finalize();
     }
 }
+
+
+/*   
+command:
+halynachemerys/openmpi/bin/mpirun --hostfile hostfile -np 16 java -cp /home/finstereule/halynachemerys/stemedu/stemedu/target/classes com/mathpar/students/ukma17i41/chemerys/MatrixMult_Module2
+
+output: 
+
+Processor №4
+Processor №5
+Processor №2
+Processor №6
+Processor №1
+Processor №10
+Processor №13
+Processor №7
+Processor №11
+Processor №8
+Processor №15
+Processor №14
+Processor №12
+Processor №9
+Processor №3
+
+Matrix A = 
+[[0.77, 0.76, 0.28, 0.59]
+ [0.69, 0.35, 0.21, 0.83]
+ [0.86, 0.26, 0.78, 0.48]
+ [0.61, 0.21, 0.05, 0.1 ]]
+Matrix B = 
+[[0.29, 0.93, 0.7,  0.01]
+ [0.76, 0.66, 0.07, 0.03]
+ [0.47, 0.54, 0.38, 0.62]
+ [0.93, 0.17, 0.7,  0.69]]
+RESULT = 
+[[1.48, 1.47, 1.11, 0.62]
+ [1.33, 1.13, 1.16, 0.73]
+ [1.26, 1.48, 1.26, 0.84]
+ [0.45, 0.75, 0.53, 0.11]]
+
+*/
+class MatrixMul16 {
+    static void multiplyMatrixes(String[] args)
+            throws MPIException, IOException, ClassNotFoundException {
+        Ring ring = new Ring("R64[x]");
+        MPI.Init(new String[0]);
+        int rank = MPI.COMM_WORLD.getRank();
+
+        if (rank == 0) {
+            int ord = 4;
+            int den = 10000;
+            Random rnd = new Random();
+
+            MatrixS A = new MatrixS(ord, ord, den,
+                    new int[]{5, 3}, rnd, NumberZp32.ONE, ring);
+            System.out.println("Matrix A = " + A);
+            MatrixS B = new MatrixS(ord, ord, den,
+                    new int[]{5, 3}, rnd, NumberZp32.ONE, ring);
+            System.out.println("Matrix B = " + B);
+
+            MatrixS D = null;
+            MatrixS[] AA = A.split();
+            MatrixS[] BB = B.split();
+
+            int tag = 0;
+
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[1], BB[2]}, 0, 2, 1, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[0], BB[1]}, 0, 2, 2, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[1], BB[3]}, 0, 2, 3, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[2], BB[0]}, 0, 2, 4, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[2]}, 0, 2, 5, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[2], BB[1]}, 0, 2, 6, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[3]}, 0, 2, 7, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[0]}, 0, 2, 8, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[2]}, 0, 2, 9, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[1]}, 0, 2, 10, tag);     
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[3]}, 0, 2, 11, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[0]}, 0, 2, 12, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[2]}, 0, 2, 13, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[1]}, 0, 2, 14, tag);
+            MPITransport.sendObjectArray
+                    (new Object[]{AA[3], BB[3]}, 0, 2, 15, tag);
+                      
+            MatrixS[] DD = new MatrixS[4];
+
+            DD[0] = (AA[0].multiply(BB[0], ring)).add((MatrixS) MPITransport.recvObject(1, 3),ring);
+            DD[1] = (MatrixS) MPITransport.recvObject(2, 3);
+            DD[2] = (MatrixS) MPITransport.recvObject(4, 3);
+            DD[3] = (MatrixS) MPITransport.recvObject(6, 3);
+
+            D = MatrixS.join(DD);
+
+            System.out.println("RESULT = " + D.toString());
+        } 
+        else {
+            System.out.println("Processor №" + rank);
+
+            Object[] b = new Object[4];
+
+            MPITransport.recvObjectArray(b, 0, 2, 0, 0);
+            MatrixS[] a = new MatrixS[b.length];
+
+            for (int i = 0; i < b.length; i++)
+                a[i] = (MatrixS) b[i];
+
+            MatrixS res = a[0].multiply(a[1], ring);
+
+            if (rank % 2 == 0) {
+                MatrixS p = res.add((MatrixS) MPITransport.
+                        recvObject(rank + 1, 3), ring);
+                MPITransport.sendObject(p, 0, 3);
+            } else {
+                MPITransport.sendObject(res, rank - 1, 3);
+            }
+        }
+        MPI.Finalize();
+    }
+}
+
 
 /*
 command:
