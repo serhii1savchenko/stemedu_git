@@ -19,7 +19,11 @@ import mpi.MPIException;
     
 public class Tasks {
     /*
-    task 1
+    task 1 openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 5
+    */
+    /*
+    Proc num 1 Hello World
+    Proc num 0 Hello World
     */
     
     public static void Task1(String[] args) throws MPIException {
@@ -33,7 +37,21 @@ public class Tasks {
     }
     
     /*
-    task 2
+    task 2 openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 5
+    */
+    /*
+    a[0]= 0.8116478783553964
+    a[1]= 0.1405152683103933
+    a[2]= 0.2556516562307126
+    a[3]= 0.0990558044747053
+    a[4]= 0.960096904623143
+    Proc num 0: Array was sent
+    a[0]= 0.8116478783553964
+    a[1]= 0.1405152683103933
+    a[2]= 0.2556516562307126
+    a[3]= 0.0990558044747053
+    a[4]= 0.960096904623143
+    Proc num 1: Array was accepted
     */
     
     public static void Task2(String[] args) throws MPIException {
@@ -74,7 +92,11 @@ public class Tasks {
     }
     
     /*
-    task 3
+    task 3 openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 5
+    */
+    /*
+    proc num = 1: Array was accepted
+    proc num = 0: Array was sent
     */
     
     public static void Task3(String[] args) throws MPIException {
@@ -107,7 +129,19 @@ public class Tasks {
     }
     
     /*
-    task 4
+    task 4 openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 5
+    */
+    /*
+    a[0]= 0.13837821696423247
+    a[1]= 0.6693324681794728
+    a[2]= 0.12287262094033158
+    a[3]= 0.03577005627102792
+    a[4]= 0.0698539097109886
+    a[0]= 0.13837821696423247
+    a[1]= 0.6693324681794728
+    a[2]= 0.12287262094033158
+    a[3]= 0.03577005627102792
+    a[4]= 0.0698539097109886
     */
     
     public static void Task4(String[] args) throws MPIException {
@@ -136,7 +170,19 @@ public class Tasks {
     }
     
     /*
-    task 5
+    task 5 openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 5
+    */
+    /*
+    0
+    0
+    0
+    0
+    0
+    1
+    1
+    1
+    1
+    1
     */
     
     public static void Task5(String[] args) throws MPIException {
@@ -163,11 +209,11 @@ public class Tasks {
     }
     
     public static void main(String[] args) throws MPIException {
-         Task1(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task2(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task3(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task4(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
-        // Task5(args); //openmpi/bin/mpirun -np 2 java -cp /home/vlad/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/movchan/Tasks 3
+        // Task1(args);
+        // Task2(args);
+        // Task3(args);
+        // Task4(args);
+        // Task5(args);
     }
     
 }
