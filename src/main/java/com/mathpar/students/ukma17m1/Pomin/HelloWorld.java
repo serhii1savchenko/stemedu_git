@@ -1,11 +1,13 @@
-package com.mathpar.students.ukma17m1.kuryliak;
+package com.mathpar.students.ukma17m1.Pomin;
+
 
 import mpi.MPI;
 
 import java.util.Random;
 
+//mpirun -np 2 java -cp /home/roman/stemedu/target/classes com/mathpar/students/ukma17m1/Pomin/HelloWorld 8
 public class HelloWorld {
-
+    
     public static void main(String[] args) throws Exception {
         MPI.Init(args);
         int myRank=MPI.COMM_WORLD.getRank();
@@ -15,6 +17,7 @@ public class HelloWorld {
             Random rnd=new Random();
             for (int i=0; i<n; i++){
                 a[i]=rnd.nextInt()%n;
+                System.out.println("a[i] = "+a[i]);
             }
             MPI.COMM_WORLD.send(a, n, MPI.INT, 1, 0);
         }
@@ -24,4 +27,5 @@ public class HelloWorld {
         MPI.Finalize();
 
     }
+     
 }
