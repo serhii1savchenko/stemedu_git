@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma17i41;
+package com.mathpar.students.ukma17m1;
 
 import java.util.Arrays;
 import java.util.Random;

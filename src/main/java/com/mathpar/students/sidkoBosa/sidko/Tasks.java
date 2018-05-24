@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mathpar.students.ukma17i41.sidko;
+package com.mathpar.students.sidkoBosa.sidko;
 
 import java.util.Arrays;
 import java.util.Random;

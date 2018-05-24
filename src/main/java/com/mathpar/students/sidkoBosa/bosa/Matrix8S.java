@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.mathpar.students.ukma17i41.bosa;
+package com.mathpar.students.sidkoBosa.bosa;
 
 import java.io.IOException;
 import java.util.Random;
