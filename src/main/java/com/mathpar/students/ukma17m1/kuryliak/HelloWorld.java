@@ -7,6 +7,7 @@ import java.util.Random;
 public class HelloWorld {
 
     public static void main(String[] args) throws Exception {
+        MPI.Init(args);
         int myRank=MPI.COMM_WORLD.getRank();
         int n=Integer.parseInt(args[0]);
         int []a=new int[n];
@@ -20,6 +21,7 @@ public class HelloWorld {
         if (myRank==1){
             MPI.COMM_WORLD.recv(a, n, MPI.INT, 0, 0);
         }
+        MPI.Finalize();
 
     }
 }
