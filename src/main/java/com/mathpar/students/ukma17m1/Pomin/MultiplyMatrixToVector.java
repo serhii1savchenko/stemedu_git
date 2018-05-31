@@ -48,7 +48,7 @@ public class MultiplyMatrixToVector {
             System.out.println("Vector B = " + B);
             Element[] res0 = new Element[n];
             for (int i = 0; i < n; i++) {
-                res0[i] = new VectorS(A.M[i]).transpose(ring).multiply(B, ring);
+                res0[i] = new VectorS(A.M[i]).multiply(B, ring);
                 System.out.println("rank = " + rank + " row = "
                         + Array.toString(A.M[i]));
             }
