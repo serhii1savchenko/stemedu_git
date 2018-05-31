@@ -48,7 +48,7 @@ public class MultiplyMatrixToVector {
             System.out.println("Vector B = " + B);
             Element[] res0 = new Element[n];
             for (int i = 0; i < n; i++) {
-                res0[i] = new VectorS(A.M[i]).multiply(B, ring);
+                res0[i] = new VectorS(A.M[i]).transpose(ring).multiply(B, ring);
                 System.out.println("rank = " + rank + " row = "
                         + Array.toString(A.M[i]));
             }
@@ -88,7 +88,7 @@ public class MultiplyMatrixToVector {
 
             Element[] result = new Element[k];
             for (int j = 0; j < A.length; j++) {
-                result[j] = new VectorS(A[j]).multiply(
+                result[j] = new VectorS(A[j]).transpose(ring).multiply(
                         new VectorS(B), ring);
             }
 
@@ -100,35 +100,28 @@ public class MultiplyMatrixToVector {
     }
     
     /**
-     * I'm processor 2
+     * I'm processor 1
         I'm processor 4
-        I'm processor 1
+        I'm processor 2
         I'm processor 3
         Matrix A = 
-        [[16, 24, 17, 21, 3,  27, 8 ]
-         [5,  7,  12, 21, 1,  7,  7 ]
-         [31, 4,  24, 21, 1,  25, 31]
-         [4,  21, 25, 31, 6,  2,  7 ]
-         [6,  12, 9,  10, 24, 3,  12]
-         [10, 27, 14, 0,  13, 4,  4 ]
-         [21, 19, 2,  12, 2,  15, 10]]
-        Vector B = [23, 22, 8, 2, 30, 28, 16]
-        rank = 0 row = [16, 24, 17, 21, 3, 27, 8]
-        rank = 0 row = [5, 7, 12, 21, 1, 7, 7]
-        rank = 0 row = [31, 4, 24, 21, 1, 25, 31]
-        rank = 3row = [10, 27, 14, 13, 4, 4]rank = 4row = [21, 19, 2, 12, 2, 15, 10]
-        rank = 4 B = [23, 22, 8, 2, 30, 28, 16]
+        [[2, 17]
+         [2, 21]]
+        Vector B = [12, 28]
+        rank = 0 row = [2, 17]
+        rank = 0 row = [2, 21]
+        rank = 2 B = [12, 28]
+        send result
+        rank = 1 B = [12, 28]
+        rank = 4 B = [12, 28]
+        send result
+        send result
+        rank = 3 B = [12, 28]
+        send result
+        A * B = [[[24, 56],
+        [204, 476]], [[24, 56],
+        [252, 588]]]
 
-        rank = 3 B = [23, 22, 8, 2, 30, 28, 16]
-        rank = 2row = [6, 12, 9, 10, 24, 3, 12]
-        rank = 2 B = [23, 22, 8, 2, 30, 28, 16]
-        rank = 1row = [4, 21, 25, 31, 6, 2, 7]
-        rank = 1 B = [23, 22, 8, 2, 30, 28, 16]
-        send result
-        send result
-        send result
-        send result
-        A * B = [null, null, null, null, null, null, null] ??????
 
      */
 
