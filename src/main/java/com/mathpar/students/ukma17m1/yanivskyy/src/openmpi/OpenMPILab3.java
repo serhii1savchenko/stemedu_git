@@ -5,6 +5,7 @@
  */
 package com.mathpar.students.ukma17m1.yanivskyy.src.openmpi;
 
+import com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.lib.ObjectsOperations;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
