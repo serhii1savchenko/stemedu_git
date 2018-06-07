@@ -5,26 +5,13 @@
  */
 package com.mathpar.students.ukma17m1.yanivskyy.src.openmpi;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.Student;
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
-import mpi.Status;
-import openmpi.lib.ObjectOperations;
-import openmpi.lib.ObjectsOperations;
-import sun.rmi.transport.Transport;
 
 /**
  *
