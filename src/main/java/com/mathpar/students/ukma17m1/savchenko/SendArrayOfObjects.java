@@ -16,8 +16,16 @@ import mpi.Status;
 
 public class SendArrayOfObjects {
 
-	//mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/SendArrayOfObjects
-
+	// mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/SendArrayOfObjects
+	
+	/* Out:
+	 * Received array of objects: 
+			One
+			Two
+			Three
+			
+	 */
+	
 	public static void sendObjects(Object[] a, int proc, int tag) throws MPIException {
 		ByteArrayOutputStream bos = null;
 		try {

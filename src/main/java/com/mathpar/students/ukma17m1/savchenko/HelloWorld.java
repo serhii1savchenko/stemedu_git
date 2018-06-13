@@ -6,8 +6,20 @@ import java.util.Random;
 
 public class HelloWorld {
 
-	//mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/HelloWorld
-
+	// mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/HelloWorld
+	
+	/* 
+	 * Out:
+	 * 	a[i] = -6
+		a[i] = 6
+		a[i] = 1
+		a[i] = 2
+		a[i] = 6
+		a[i] = -6
+		a[i] = 0
+		a[i] = 0
+	 */
+	
 	public static void main(String[] args) throws Exception {
 
 		MPI.Init(args);
