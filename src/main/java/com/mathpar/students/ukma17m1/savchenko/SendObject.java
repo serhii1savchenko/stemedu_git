@@ -12,8 +12,12 @@ import mpi.Status;
 
 public class SendObject {
 
-	//mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/SendObject
-
+	// mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/SendObject
+	
+	/* Out:
+	 * Recieved Object: Hello Send and Recieve Obects!
+	 */
+	
 	public static void sendObject(Object a,int proc, int tag) throws MPIException, IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(bos);

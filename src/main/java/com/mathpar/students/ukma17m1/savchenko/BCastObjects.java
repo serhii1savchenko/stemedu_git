@@ -11,8 +11,16 @@ import mpi.MPIException;
 
 public class BCastObjects {
 
-	//mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/BCastObjects
-
+	// mpirun -np 2 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/BCastObjects
+	
+	/* Out:
+	 * 	Recieved by bcastObject(): Hello
+     	=======     
+		Recieved by bcastObjectArray(): 
+		Hello
+		World
+	 */
+	
 	public static Object bcastObject(Object o, int root) throws IOException,MPIException, ClassNotFoundException{
 		byte []tmp=null;
 		int []size=new int[1];
