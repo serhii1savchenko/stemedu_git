@@ -1,11 +1,14 @@
 package com.mathpar.students.ukma17m1.savchenko.chapter_5;
 
+import com.mathpar.matrix.MatrixS;
+import com.mathpar.number.NumberZp32;
+import com.mathpar.number.Ring;
+import com.mathpar.parallel.utils.MPITransport;
+import mpi.MPI;
+import mpi.MPIException;
+
 import java.io.IOException;
 import java.util.Random;
-import com.mathpar.matrix.*;
-import mpi.*;
-import com.mathpar.number.*;
-import com.mathpar.parallel.utils.MPITransport;
 
 /*
  * INPUT: mpirun -np 4 java -cp /home/serhii/Desktop/parall-progr-2017/stemedu/target/classes com/mathpar/students/ukma17m1/savchenko/chapter_5/MatrixMult4 
