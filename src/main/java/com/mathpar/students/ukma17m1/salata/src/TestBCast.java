@@ -14,7 +14,14 @@ import java.io.*;
  */
 public class TestBCast {
     //mpirun -np 2 java -cp /home/leximiro/Desktop/stemedu/target/classes com/mathpar/students/ukma17m1/salata/src/TestBCast param1 param2
-	
+    /*post
+     We have param1 param2, we send param1 as object and then we also send array{param1,param2} 
+     and receive twice param1 and one time param2
+     output:
+	    param1
+	    param1
+	    param2
+    */
     public static void main(String[] args) throws MPIException, IOException,ClassNotFoundException{
         MPI.Init(args);
         int myrank = MPI.COMM_WORLD.getRank();

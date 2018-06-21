@@ -14,7 +14,22 @@ import com.mathpar.parallel.utils.MPITransport;
 public class MultiplyVectorToScalar {
 	
 	//mpirun -np 4 java -cp /home/leximiro/Desktop/stemedu/target/classes com/mathpar/students/ukma17m1/salata/src/MultiplyVectorToScalar 4 8 
-	public static void main(String[] args)throws MPIException, IOException,ClassNotFoundException {
+    /*
+    post:
+        I'm processor 1
+        I'm processor 2
+        I'm processor 3
+        Vector B = [26, 25, 28, 17]
+        rank = 2 B = [28]
+        rank = 1 B = [25]
+        rank = 3 B = [17]
+        send result
+        send result
+        send result
+        B * S = [208, 200, 224, 136]
+
+    */
+    public static void main(String[] args)throws MPIException, IOException,ClassNotFoundException {
 		Ring ring = new Ring("Z[x]");
 		MPI.Init(args);
 		int rank = MPI.COMM_WORLD.getRank();

@@ -16,7 +16,12 @@ import java.io.*;
  * @author leximiro
  */
 public class testSendObject {
-	//mpirun -np 2 java -cp /home/leximiro/Desktop/stemedu/target/classes com/mathpar/students/ukma17m1/salata/src/testSendObject param1 param2    
+	//mpirun -np 2 java -cp /home/leximiro/Desktop/stemedu/target/classes com/mathpar/students/ukma17m1/salata/src/testSendObject
+    /*post:
+      We send string object "some string" and received it
+      output:
+    	some string
+    */
     
     public static void main(String[] args)throws MPIException, IOException, ClassNotFoundException {
         MPI.Init(args);
