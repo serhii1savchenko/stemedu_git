@@ -1,8 +1,11 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
+
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package com.mathpar.students.ukma17m1.salata.src;
 import mpi.*;
 import java.io.*;
 /**
@@ -10,8 +13,8 @@ import java.io.*;
  * @author leximiro
  */
 public class TestBCast {
-    //mpirun -np 2 java -cp /home/leximiro/Downloads/stemedu/stemedu/src/main/java/com/mathpar/students/ukma17m1/salata/src/testBCast param1 param2
-    
+    //mpirun -np 2 java -cp /home/leximiro/Desktop/stemedu/target/classes com/mathpar/students/ukma17m1/salata/src/TestBCast param1 param2
+	
     public static void main(String[] args) throws MPIException, IOException,ClassNotFoundException{
         MPI.Init(args);
         int myrank = MPI.COMM_WORLD.getRank();
@@ -29,7 +32,7 @@ public class TestBCast {
         
         
         
-        MPI.Finilize();
+        MPI.Finalize();
     }
     
     public static void bcastObjectArray(Object []o,int count, int root)throws IOException, MPIException,ClassNotFoundException{
