@@ -6,10 +6,10 @@
 package com.mathpar.students.ukma17m1.yanivskyy.src.openmpi;
 
 import java.io.IOException;
-import model.Student;
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
+import com.mathpar.students.ukma17m1.yanivskyy.src.model.Student;
 import com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.lib.*;
 
 /**
@@ -17,12 +17,12 @@ import com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.lib.*;
  * @author z1kses
  */
 public class OpenMPILab2 {
-
-    /**
-     * @param args the command line arguments
-     */
     
-    // mpirun -n 2 java -cp "/home/z1kses/NetBeansProjects/mpi_naukma/build/classes" "openmpi/OpenMPILab2"
+    // Input:
+    // mpirun -n 4 java -cp target/classes/ "com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.OpenMPILab2"
+    
+    // Output:
+    // myrank=1, received=Student{name=Oleh, surName=Yanivskyy}
     public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
         MPI.Init(args);
         final int size = MPI.COMM_WORLD.getSize();
@@ -41,7 +41,7 @@ public class OpenMPILab2 {
             ObjectOperations.sendObject(student, 1, 0);
         } else if (myrank == 1) {
             student = (Student) ObjectOperations.recvObject(0, 0);
-            System.out.println(student);
+            System.out.println("myrank=" + myrank + ", received=" + student);
         }
 
         MPI.Finalize();

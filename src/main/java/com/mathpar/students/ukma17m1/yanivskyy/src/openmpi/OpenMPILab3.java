@@ -5,14 +5,14 @@
  */
 package com.mathpar.students.ukma17m1.yanivskyy.src.openmpi;
 
-import com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.lib.ObjectsOperations;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import model.Student;
+import com.mathpar.students.ukma17m1.yanivskyy.src.model.Student;
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
+import com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.lib.*;
 
 /**
  *
@@ -20,11 +20,11 @@ import mpi.MPIException;
  */
 public class OpenMPILab3 {
 
-    /**
-     * @param args the command line arguments
-     */
+    // Input:
+    // mpirun -n 4 java -cp target/classes/ "com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.OpenMPILab3"
     
-    // mpirun -n 2 java -cp "/home/z1kses/NetBeansProjects/mpi_naukma/build/classes" "openmpi/OpenMPILab3"
+    // Output:
+    // myrank=1, received=[[Student{name=Oleh, surName=Yanivskyy}]]
     public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
         ObjectsOperations<Student> objectsOperations = new ObjectsOperations<Student>();
         
@@ -47,7 +47,7 @@ public class OpenMPILab3 {
             objectsOperations.sendObjects(students, 1, 0);
         } else if (myrank == 1) {
             students = objectsOperations.recvObjects(1, 0, 0);
-            System.out.println(Arrays.asList(students));
+            System.out.println("myrank=" + myrank + ", received=" + Arrays.asList(students));
         }
 
         MPI.Finalize();
