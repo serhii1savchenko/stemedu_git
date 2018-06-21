@@ -21,7 +21,11 @@ import com.mathpar.students.llp2.student.helloworldmpi.Transport;
 public class TestSendArrayOfObjects {
     
 	//mpirun -np 2 java -cp /home/leximiro/Desktop/stemedu/target/classes com/mathpar/students/ukma17m1/salata/src/TestSendArrayOfObjects param1 param2    
-   
+   /*post:
+    Input was param1 param2 after receiving this array we have output:
+    param1
+    param2
+    */
     public static void main(String[] args) throws MPIException{
         MPI.Init(args);
         sendObjects(args,1,1);
