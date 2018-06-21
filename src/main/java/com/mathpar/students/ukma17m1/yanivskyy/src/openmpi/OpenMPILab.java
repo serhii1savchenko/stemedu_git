@@ -16,12 +16,14 @@ import mpi.MPIException;
  * @author z1kses
  */
 public class OpenMPILab {
-
-    /**
-     * @param args the command line arguments
-     */
+    // Input:
+    // mpirun -n 4 java -cp target/classes/ "com.mathpar.students.ukma17m1.yanivskyy.src.openmpi.OpenMPILab" 4
     
-    // mpirun -n 2 java -cp "/home/z1kses/NetBeansProjects/mpi_naukma/build/classes" "openmpi/OpenMPILab"
+    // Output:
+    // myrank = 0: a = [0.6919671554231676, 0.7754807583899589, 0.2324064677501887, 0.1917103434944285]
+    // myrank = 2: a = [0.6919671554231676, 0.7754807583899589, 0.2324064677501887, 0.1917103434944285]
+    // myrank = 1: a = [0.6919671554231676, 0.7754807583899589, 0.2324064677501887, 0.1917103434944285]
+    // myrank = 3: a = [0.6919671554231676, 0.7754807583899589, 0.2324064677501887, 0.1917103434944285]
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
         final int size = MPI.COMM_WORLD.getSize();
