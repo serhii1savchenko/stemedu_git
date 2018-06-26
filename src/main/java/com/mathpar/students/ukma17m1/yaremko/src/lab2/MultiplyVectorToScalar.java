@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mathpar.students.ukma17m1.yanivskyy.src.matrix;
+package com.mathpar.students.ukma17m1.yaremko.src.lab2;
 
 /**
  *
- * @author z1kses
+ * @author Solomka
  */
 import java.io.IOException;
 import java.util.Random;
@@ -22,31 +22,31 @@ import com.mathpar.parallel.utils.MPITransport;
 
 /*
 
-mpirun -n 8 java -cp target/classes/ "com.mathpar.students.ukma17m1.yanivskyy.src.matrix.MultiplyVectorToScalar" 25 25
+mpirun -n 8 java -cp target/classes/ "com.mathpar.students.ukma17m1.yaremko.src.lab2.MultiplyVectorToScalar" 20 20
 
 I'm processor 2
-I'm processor 7
 I'm processor 6
-I'm processor 3
+I'm processor 5I'm processor 4I'm processor 3
 I'm processor 1
-I'm processor 4
-I'm processor 5
-Vector B = [18, 26, 11, 5, 8, 9, 8, 27, 18, 15, 12, 3, 11, 31, 25, 3, 10, 14, 18, 4, 28, 2, 21, 28, 2]
-rank = 2 B = [27, 18, 15]
-rank = 1 B = [8, 9, 8]
+
+
+I'm processor 7
+Vector B = [1, 19, 22, 18, 12, 21, 7, 0, 4, 31, 19, 11, 31, 2, 25, 4, 3, 22, 14, 30]
+rank = 2 B = [4, 31]
 send result
-rank = 5 B = [10, 14, 18]
+rank = 7 B = [14, 30]
+send result
+rank = 1 B = [7, 0]
+rank = 5 B = [25, 4]
+rank = 4 B = [31, 2]
+rank = 3 B = [19, 11]send result
+rank = 6 B = [3, 22]
+
 send result
 send result
-rank = 4 B = [31, 25, 3]
-rank = 7 B = [21, 28, 2]
-rank = 3 B = [12, 3, 11]
-rank = 6 B = [4, 28, 2]
 send result
 send result
-send result
-send result
-B * S = [450, 650, 275, 125, 200, 225, 200, 675, 450, 375, 300, 75, 275, 775, 625, 75, 250, 350, 450, 100, 700, 50, 525, 700, 50]
+B * S = [20, 380, 440, 360, 240, 420, 140, 0, 80, 620, 380, 220, 620, 40, 500, 80, 60, 440, 280, 600]
 
 */
 public class MultiplyVectorToScalar {
