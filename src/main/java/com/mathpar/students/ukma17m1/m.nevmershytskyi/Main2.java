@@ -291,7 +291,7 @@ Recieved by bcastObjectArray():
 1528359886149
 1528359886149*/
 
-    public static Object bcastObject(Object o, int root) throws IOException, MPIException, ClassNotFoundException {
+   /* public static Object bcastObject(Object o, int root) throws IOException, MPIException, ClassNotFoundException {
         byte[] tmp = null;
         int[] size = new int[1];
         int rank = MPI.COMM_WORLD.Rank();
@@ -373,6 +373,6 @@ Recieved by bcastObjectArray():
         }
 
         MPI.Finalize();
-    }
+    }*/
 
 }

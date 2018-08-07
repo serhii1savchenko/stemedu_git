@@ -11,7 +11,7 @@ import ua.edu.ukma.karpyshyn.service.SenderService;
 
 public class Task1Runner {
 
-    public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
+  /*  public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
         MPI.Init(args);
         int myrank = MPI.COMM_WORLD.getRank();
         int np = MPI.COMM_WORLD.getSize();
@@ -35,5 +35,5 @@ public class Task1Runner {
             }
         }
         MPI.Finalize();
-    }
+    }*/
 }

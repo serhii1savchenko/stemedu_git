@@ -15,10 +15,13 @@ import mpi.MPIException;
 import java.io.IOException;
 import java.util.Random;
 
+import static com.mathpar.number.NFunctionZ32.mod;
+import static com.mathpar.students.llp2.student.helloworldmpi.Transport.mmultiply;
+
 
 public class MatrixMult4 {
 
-	static /**
+	 /**
      * docker@estimate:/tmp/module-2/out/production/module-2$ mpirun -np 4 java MatrixMult4
      * processor 2
      * processor 1
@@ -43,7 +46,7 @@ public class MatrixMult4 {
      * [0.51, 1.27, 0.92, 0.56]
      * [0.49, 0.97, 0.77, 0.65]
      * [0.71, 1.38, 1.03, 0.86]]
-     */sult
+     
 	 *  recv 1 to 0
 	 *  recv 2 to 0
 	 *  recv 3 to 0
@@ -52,7 +55,7 @@ public class MatrixMult4 {
 	 *   [0.51, 1.27, 0.92, 0.56]
 	 *   [0.49, 0.97, 0.77, 0.65]
 	 *   [0.71, 1.38, 1.03, 0.86]]
-	 */
+	 **/
 	public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
 		Ring ring = new Ring("R64[x]");
 		MPI.Init(new String[0]);
@@ -60,7 +63,7 @@ public class MatrixMult4 {
 		int rank = MPI.COMM_WORLD.getRank();
 
 		if (rank == 0) {
-			ring.setMOD32(mod);
+			//ring.setMOD32(mod);
 
 			int ord = 4;
 			int den = 10000;
@@ -78,7 +81,7 @@ public class MatrixMult4 {
 			MPITransport.sendObjectArray(new Object[] { AA[2], BB[0], AA[3], BB[2] }, 0, 4, 2, 2);
 			MPITransport.sendObjectArray(new Object[] { AA[2], BB[1], AA[3], BB[3] }, 0, 4, 3, 3);
 
-			MatrixS[] DD = new MatrixS[4];
+			DD = new MatrixS[4];
 			DD[0] = AA[0].multiply(BB[0], ring).add(AA[1].multiply(BB[2], ring), ring);
 			for(int i = 1; i <= 3; i++) {
 				DD[i] = (MatrixS) MPITransport.recvObject(i, i);
@@ -89,7 +92,7 @@ public class MatrixMult4 {
 			System.out.println("RES = " + CC.toString());
 		} else {
 			System.out.println("processor " + rank);
-			ring.setMOD32(mod);
+			//ring.setMOD32(mod);
 
 			Object[] n = new Object[4];
 			MPITransport.recvObjectArray(n,0,4, 0, rank);
