@@ -68,29 +68,6 @@ public class CalcThread implements Runnable {
         isCalc = true;
     }
 
-    public DropTask tryLittle(int type) {
-        DropTask drop = null;
-        switch (type) {
-            case 0:
-                drop = new Multiply();
-                break;
-            case 1:
-                drop = new MultiplyAdd();
-                break;
-            case 2:
-                drop = new MultiplyMinus();
-                break;
-            //case 3: branch = new Inversion();
-            //case 4: branch = new InversionAdd();
-            case 5:
-                drop = new Cholesky();
-                break;
-            case 6:
-                drop = new MultiplyExtended();
-                break;
-        }
-        return drop;
-    }
 
     /**
      *
@@ -109,6 +86,7 @@ public class CalcThread implements Runnable {
                 DropTask dependantDrop = firtree.body.get(aminId).branch.get(number - 1);
                 int from = drop.arcs[dropId + 1][i + 1];
                 int to = drop.arcs[dropId + 1][i + 2];
+               
 
                 dependantDrop.inData[to] = drop.outData[from];
 
@@ -169,7 +147,7 @@ public class CalcThread implements Runnable {
     private void ProcFunc() throws MPIException {
         //System.out.println("started proc func");
 
-        DropTask drop = tryLittle((int) currentDrop[0]);
+        DropTask drop = Tools.getDropObject((int) currentDrop[0]);
 
         Element[] mas = (Element[]) currentDrop[4];
         System.arraycopy(mas, 0, drop.inData, 0, mas.length);
@@ -294,7 +272,7 @@ public class CalcThread implements Runnable {
 
             while (isReadyOutputData) {
 
-                amin.outputData = tryLittle(amin.type).outputFunction(amin.resultForOutFunction, ring);
+                amin.outputData = Tools.getDropObject(amin.type).outputFunction(amin.resultForOutFunction, ring);
                 firtree.body.get(amin.parentAmin).branch.get(amin.dropId).outData = amin.outputData;
                 amin.aminState = 2;
                 if (amin.parentProc == myRank) {

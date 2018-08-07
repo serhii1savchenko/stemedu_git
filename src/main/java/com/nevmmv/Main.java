@@ -1,6 +1,6 @@
 package com.nevmmv;
 
-import mpi.BasicType;
+//import mpi.BasicType;
 import mpi.MPI;
 import mpi.MPIException;
 import mpi.Status;
@@ -107,7 +107,7 @@ Received [1528357955495, 1528357955495, 1528357955495, 1528357955495, 1528357955
         return is.readObject();
     }
 
-    public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
+   /* public static void main(String[] args) throws MPIException, IOException, ClassNotFoundException {
         MPI.Init(args);
 
         final int me = MPI.COMM_WORLD.Rank();
@@ -229,9 +229,10 @@ Received [1528357955495, 1528357955495, 1528357955495, 1528357955495, 1528357955
 
 
         return res;*/
+      
     }
 
-    public static Object[] recvObjects(int m, int proc, int tag)
+   /* public static Object[] recvObjects(int m, int proc, int tag)
             throws MPIException {
         Status s = MPI.COMM_WORLD.Probe(proc, tag);
         int n = s.Get_count(MPI.BYTE);
@@ -253,3 +254,4 @@ Received [1528357955495, 1528357955495, 1528357955495, 1528357955495, 1528357955
     }
 
 }
+*/

@@ -29,27 +29,7 @@ public class Amin {
 
     public Amin(int type, int pProc, int pAmin, int dropNum, int index) {
 
-        DropTask drop = null;
-        switch (type) {
-
-            case 0:
-                drop = new Multiply();
-                break;
-            case 1:
-                drop = new MultiplyAdd();
-                break;
-            case 2:
-                drop = new MultiplyMinus();
-                break;
-            //case 3: branch = new Inversion();
-            //case 4: branch = new InversionAdd();
-            case 5:
-                drop = new Cholesky();
-                break;
-            case 6:
-                drop = new MultiplyExtended();
-                break;
-        }
+        DropTask drop = Tools.getDropObject(type);
 
         this.type = type;
         branch = drop.doAmin();

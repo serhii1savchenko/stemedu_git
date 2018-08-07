@@ -30,6 +30,35 @@ import mpi.Status;
  */
 public class Tools {
     
+    
+    public static DropTask getDropObject(int type)
+    {
+    DropTask drop = null;
+        switch (type) {
+            case 0:
+                drop = new Multiply();
+                break;
+            case 1:
+                drop = new MultiplyAdd();
+                break;
+            case 2:
+                drop = new MultiplyMinus();
+                break;
+            //case 3: branch = new Inversion(); break;
+            //case 4: branch = new InversionAdd(); break;
+            case 5:
+                drop = new Cholesky();
+                break;
+            case 6:
+                drop = new MultiplyExtended();
+                break;
+        }
+        return drop;
+    
+    }
+    
+    
+    
      public static  MatrixS init(int n) {
         int[][] mat = new int[n][n];
         Random r = new Random();
