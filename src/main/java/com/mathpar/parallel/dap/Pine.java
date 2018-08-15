@@ -41,16 +41,12 @@ public class Pine {
     }
     
     public int CheckState(){
-        int st;
         for(int i=0; i<body.size(); i++){
-            body.get(i).SetState();
-            if(body.get(i).aminState!=1){
-                st=0;
-              return st;
+            if(body.get(i).SetState()!=1){
+              return 0;
             }
         }
-        st=1;
-        return st;
+        return 1;
     }  
     
     public int GetState(){

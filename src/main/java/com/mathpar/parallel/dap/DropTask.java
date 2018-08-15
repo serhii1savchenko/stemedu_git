@@ -21,7 +21,7 @@ public abstract class DropTask {
     /**
      * 0-идет счет,
      * 1-идет листовой счет,
-     * 2-закончено,
+     * 2-закончен счет,
      */
     int state;
     int[][] arcs;
@@ -31,8 +31,9 @@ public abstract class DropTask {
     int inputDataLength;
     int numberOfDaughterProc = -2;
     int [] connectionsOfNotMain;
-    int aminFirtree = -1;
-    int level = -1;
+    int aminId = -1;
+    int dropId = -1;
+    int procId = -1;
     
     public abstract ArrayList<DropTask> doAmin();
     public abstract void sequentialCalc(Ring ring);

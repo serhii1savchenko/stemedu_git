@@ -23,33 +23,23 @@ public class CalcThread implements Runnable {
     private Pine firtree;
     Thread thread;
     volatile boolean flToExit;
-    volatile boolean isCalc;
-    volatile boolean isNotEmptyAvailibleList;
-    Object[] currentDrop;
-    boolean isReadyOutputData;
-    Object[] inputDrop;
+    volatile boolean isEmptyVokzal;
+    DropTask currentDrop;
+    DropTask inputDrop;
     int flagOfMyState;
     int myRank;
-    ArrayList<DropTask>[] taskLevels;
-    int sizeOfTaskLevel;
+    ArrayList<DropTask>[] vokzal;
     Ring ring;
-
-    public boolean GetFlag_IsItCalcState() {
-        return isCalc;
-    }
 
     public CalcThread(Pine f, Ring ring) throws MPIException {
         thread = new Thread(this, "CalcThread");
         thread.setPriority(2);
         flToExit = false;
-        isCalc = false;
-        isNotEmptyAvailibleList = false;
+        isEmptyVokzal = true;
         firtree = f;
-        isReadyOutputData = false;
         this.ring = ring;
         flagOfMyState = 0;
-        sizeOfTaskLevel = 0;
-        taskLevels = new ArrayList[20];
+        vokzal = new ArrayList[30];
         myRank = MPI.COMM_WORLD.getRank();
         thread.start();
     }
@@ -64,11 +54,23 @@ public class CalcThread implements Runnable {
      * @param dropInfo = {int type, int proc, int amin, int drop, Element[]
      * data}
      */
-    void setAmin(Object[] dropInfo) {
-        // System.out.println("I'm in setAmin, recieved task, myrank is " + myRank);
-        currentDrop = dropInfo;
-        inputDrop = dropInfo;
-        isCalc = true;
+    void putDropInVokzal(Object[] dropInfo) {
+         System.out.println("I'm in putDropInVokzal, recieved task, myrank is " + myRank);
+        DropTask newDrop = Tools.getDropObject((int) dropInfo[0]);
+        newDrop.aminId = (int) dropInfo[2];
+        newDrop.dropId = (int) dropInfo[3];
+        newDrop.procId = (int) dropInfo[1];
+        Element[] mas = (Element[]) dropInfo[4];
+        System.arraycopy(mas, 0, newDrop.inData, 0, mas.length);
+        inputDrop = newDrop;
+        
+        if (vokzal[newDrop.aminId] == null) {
+            vokzal[newDrop.aminId] = new ArrayList<DropTask>();
+        }
+
+        vokzal[newDrop.aminId].add(newDrop);
+        newDrop.numberOfDaughterProc = -1;
+        isEmptyVokzal = false;
     }
 
     /**
@@ -77,8 +79,10 @@ public class CalcThread implements Runnable {
      *
      * @return true if ready outputFunctionData
      */
-    public boolean writeResultsToAmin(DropTask drop, int aminId, int dropId) {
+    public boolean writeResultsToAmin(DropTask drop) {
 
+        int aminId = drop.aminId;
+        int dropId = drop.dropId;
         boolean isReadyOutputFunction = true;
         for (int i = 0; i < drop.arcs[dropId + 1].length; i += 3) {
 
@@ -103,8 +107,11 @@ public class CalcThread implements Runnable {
                     }
 
                     if (ready) {
-                        taskLevels[sizeOfTaskLevel - 1].add(dependantDrop);
-                        dependantDrop.numberOfDaughterProc = myRank;
+                        if (vokzal[dependantDrop.aminId] == null) {
+                            vokzal[dependantDrop.aminId] = new ArrayList<DropTask>();
+                        }
+                        vokzal[dependantDrop.aminId].add(dependantDrop);
+                        dependantDrop.numberOfDaughterProc = -1;
                     }
                 }
             } else {
@@ -132,11 +139,12 @@ public class CalcThread implements Runnable {
     public void run() {
 
         while (!flToExit) {
-            if (!isCalc && !isNotEmptyAvailibleList) {
+            if (isEmptyVokzal) {
                 continue;
             }
             try {
 
+                getTask();
                 ProcFunc();
                 // System.out.println("isCalc " + isCalc + "isNotEmptyAvailibleList " + isNotEmptyAvailibleList);
             } catch (MPIException ex) {
@@ -145,172 +153,71 @@ public class CalcThread implements Runnable {
         }
     }
 
-    private void ProcFunc() throws MPIException {
-        //System.out.println("started proc func");
+    private void writeResultsAfterInpFunc(DropTask drop, Amin curAmin, Element[] resInputFunc) {
+         System.out.println("drop.arcs[0].length" + drop.arcs[0].length);
+        for (int i = 0; i < drop.arcs[0].length; i += 3) {
+            int numOfDependantDrop = drop.arcs[0][i];
+            int from = drop.arcs[0][i + 1];
+            int to = drop.arcs[0][i + 2];
 
-        DropTask drop = Tools.getDropObject((int) currentDrop[0]);
+            DropTask dependantDrop = curAmin.branch.get(numOfDependantDrop - 1);
 
-        Element[] mas = (Element[]) currentDrop[4];
-        System.arraycopy(mas, 0, drop.inData, 0, mas.length);
+            dependantDrop.inData[to] = resInputFunc[from];
 
-        boolean flagLittle = drop.isItLeaf();
-        Amin curAmin = null;
-        if (!flagLittle) {
-            int firtreeSize = firtree.body.size();
+            boolean ready = true;
 
-            curAmin = new Amin((int) currentDrop[0], (int) currentDrop[1], (int) currentDrop[2], (int) currentDrop[3], firtreeSize);
-
-            // System.out.println("Task isn't little, amin created, myrank is " + myRank);
-            Element[] masInput = (Element[]) currentDrop[4];
-            System.arraycopy(masInput, 0, curAmin.inputData, 0, curAmin.inputData.length);
-
-            //если пришла задача со всеми входними даними, записиваем неглавние компоненти в список для виходной функции
-            if (drop.numberOfMainComponents != curAmin.inputData.length) {
-                Element[] notMainComponents = new Element[curAmin.inputData.length - drop.numberOfMainComponents];
-                System.arraycopy(curAmin.inputData, drop.numberOfMainComponents, notMainComponents, 0, notMainComponents.length);
-                for (int k = 0; k < notMainComponents.length; k++) {
-                    curAmin.resultForOutFunction[drop.connectionsOfNotMain[k]] = (curAmin.inputData)[drop.numberOfMainComponents + k];
+            for (int j = 0; j < dependantDrop.numberOfMainComponents; j++) {
+                if (dependantDrop.inData[j] == null) {
+                    ready = false;
+                    break;
                 }
             }
 
-            firtree.body.add(curAmin);
-
-            Element[] resInputFunc = curAmin.branch.get(0).inputFunction(curAmin.inputData);
-
-            //передача даних из resInputFunc в дропи амина 
-            //создание масива доступних дропов
-            if (taskLevels[sizeOfTaskLevel] == null) {
-                taskLevels[sizeOfTaskLevel] = new ArrayList<DropTask>();
-                sizeOfTaskLevel++;
-
-            }
-            for (int i = 0; i < drop.arcs[0].length; i += 3) {
-                int numOfDependantDrop = drop.arcs[0][i];
-                int from = drop.arcs[0][i + 1];
-                int to = drop.arcs[0][i + 2];
-
-                DropTask dependantDrop = curAmin.branch.get(numOfDependantDrop - 1);
-
-                dependantDrop.inData[to] = resInputFunc[from];
-
-                boolean ready = true;
-
-                for (int j = 0; j < dependantDrop.numberOfMainComponents; j++) {
-                    if (dependantDrop.inData[j] == null) {
-                        ready = false;
-                        break;
-                    }
+            if (ready) {
+                System.out.println("dependantDrop.aminId" + dependantDrop.aminId);
+                System.out.println("dependantDrop.dropId" + dependantDrop.dropId);
+                if (vokzal[dependantDrop.aminId] == null) {
+                    vokzal[dependantDrop.aminId] = new ArrayList<DropTask>();
                 }
-
-                if (ready) {
-                    taskLevels[sizeOfTaskLevel - 1].add(dependantDrop);
-                    dependantDrop.level = sizeOfTaskLevel;
-
-                    dependantDrop.numberOfDaughterProc = myRank;//??
-                }
+                vokzal[dependantDrop.aminId].add(dependantDrop);
+                dependantDrop.numberOfDaughterProc = -1;
             }
-
         }
-        int indexOfTaskLevel = sizeOfTaskLevel == 0 ? 0 : sizeOfTaskLevel - 1;
 
-        Amin amin = null;
-        if (flagLittle) {// --------------------- start Little -----------------------
+    }
 
-            int curState = 0;
-            if (taskLevels[indexOfTaskLevel] == null) {
-                if (firtree.CheckState() == 1) {
-                    curState = 1;
-                }
+    private void sendState() throws MPIException {
+        int curState = firtree.CheckState() == 1 && Tools.isEmptyArray(vokzal) ? 1 : 0;
+
+        firtree.SetState(curState);
+        if (curState != flagOfMyState && inputDrop.procId != myRank) {
+            flagOfMyState = curState;
+            int[] state = {flagOfMyState, inputDrop.aminId, inputDrop.dropId};
+            MPI.COMM_WORLD.send(state, state.length, MPI.INT, inputDrop.procId, 2);
+            System.out.println("Sending state " + flagOfMyState + " from " + myRank + " to " + inputDrop.procId);
+        }
+    }
+
+    public void writeAllResultsInFirtree(Amin amin, boolean isReady) {
+
+        while (isReady) {
+
+            amin.outputData = Tools.getDropObject(amin.type).outputFunction(amin.resultForOutFunction, ring);
+            firtree.body.get(amin.parentAmin).branch.get(amin.parentDrop).outData = amin.outputData;
+            amin.aminState = 2;
+            if (amin.parentProc == myRank) {
+
+                isReady = writeResultsToAmin(firtree.body.get(amin.parentAmin).branch.get(amin.parentDrop));
+                amin = firtree.body.get(amin.parentAmin);
             } else {
-                curState = firtree.CheckState() == 1 && taskLevels[indexOfTaskLevel].isEmpty() ? 1 : 0;
-            }
-            firtree.SetState(curState);
-            if (curState != flagOfMyState && (int) inputDrop[1] != myRank) {
-                flagOfMyState = curState;
-                int[] state = {flagOfMyState, (int) inputDrop[2], (int) inputDrop[3]};
-                MPI.COMM_WORLD.send(state, 1, MPI.INT, (int) inputDrop[1], 2);
-                System.out.println("Sending state " + flagOfMyState + " from " + myRank + " to " + inputDrop[1]);
-            }
-
-            drop.sequentialCalc(ring);
-
-            // System.out.println("seq calc done " + myRank);
-            if (firtree.body.isEmpty()) {////???
-
-                Object[] res = {drop.outData, (Integer) inputDrop[2], (Integer) inputDrop[3], new Integer(-1)};
-                isCalc = false;
-                Tools.sendObjects(res, myRank, 3);
-                System.out.println("Sending result of whole task " + myRank);
-
-                return;
-
-            }
-
-            if ((int) currentDrop[1] == myRank) {// This task from me!
-
-                isReadyOutputData = writeResultsToAmin(drop, (int) currentDrop[2], (int) currentDrop[3]);
-
-                firtree.body.get((int) currentDrop[2]).branch.get((int) currentDrop[3]).state = 2;
-
-                amin = firtree.body.get((int) currentDrop[2]);
-
-                while (isReadyOutputData) {
-
-                    amin.outputData = Tools.getDropObject(amin.type).outputFunction(amin.resultForOutFunction, ring);
-                    firtree.body.get(amin.parentAmin).branch.get(amin.dropId).outData = amin.outputData;
-                    amin.aminState = 2;
-                    if (amin.parentProc == myRank) {
-
-                        isReadyOutputData = writeResultsToAmin(firtree.body.get(amin.parentAmin).branch.get(amin.dropId), amin.parentAmin, amin.dropId);
-                        amin = firtree.body.get(amin.parentAmin);
-                    } else {
-                        isReadyOutputData = false;
-                    }
-                }
-
-                if (amin.parentProc != myRank) {
-                    Object[] res = {amin.outputData, amin.parentAmin, amin.dropId, -1};
-                    Tools.sendObjects(res, amin.parentProc, 3);
-                }
-
-            } else {
-                Object[] res = {drop.outData, (int) currentDrop[2], (int) currentDrop[3], -1};
-                Tools.sendObjects(res, (int) currentDrop[1], 3);
-                System.out.println("@@@@@@@@@@Sending result from " + myRank + " to " + currentDrop[1]);
-
-              
-            }
-
-        } // ------------------- end Little -----------------------
-
-        for (int l = 1; l < sizeOfTaskLevel; l++) {
-
-            if (taskLevels[l].isEmpty()) {
-                ArrayList<DropTask>[] newMas = new ArrayList[taskLevels.length];
-                System.arraycopy(taskLevels, 0, newMas, 0, l);
-                System.arraycopy(taskLevels, l + 1, newMas, l, sizeOfTaskLevel - (l + 1));
-                taskLevels = newMas;
-                sizeOfTaskLevel--;
-                indexOfTaskLevel = sizeOfTaskLevel == 0 ? 0 : sizeOfTaskLevel - 1;
+                isReady = false;
             }
         }
+    }
 
-        if (taskLevels[indexOfTaskLevel].isEmpty() && indexOfTaskLevel != 0) {
-            taskLevels[indexOfTaskLevel] = null;
-            sizeOfTaskLevel--;
-            indexOfTaskLevel = sizeOfTaskLevel == 0 ? 0 : sizeOfTaskLevel - 1;
-        }
-
-        //если на первом уровне закончились задачи, а на других еще есть, то удаляем его
-        if (taskLevels[0].isEmpty() && sizeOfTaskLevel > 1) {
-            ArrayList<DropTask>[] newMasOfLevels = new ArrayList[taskLevels.length];
-            System.arraycopy(taskLevels, 1, newMasOfLevels, 0, sizeOfTaskLevel);
-            taskLevels = newMasOfLevels;
-            sizeOfTaskLevel--;
-            indexOfTaskLevel = sizeOfTaskLevel == 0 ? 0 : sizeOfTaskLevel - 1;
-        }
-        if (taskLevels[0].isEmpty() && myRank == 0 && firtree.body.get(0).aminState == 2) {
-            Object[] res = {amin.outputData, (Integer) amin.parentAmin, (Integer) amin.dropId, new Integer(-1)};
+    private void sendWholeTask(Amin amin) throws MPIException {
+        if (Tools.isEmptyArray(vokzal) && myRank == 0 && firtree.body.get(0).aminState == 2) {
+            Object[] res = {amin.outputData, (Integer) amin.parentAmin, (Integer) amin.parentDrop, new Integer(-1)};
             System.out.println("&&&&&&&&&&Sending result of whole task " + myRank);
             for (int i = 0; i < amin.outputData.length; i++) {
                 System.out.println("amin.outputData " + amin.outputData[i]);
@@ -321,26 +228,98 @@ public class CalcThread implements Runnable {
             amin = null;
 
         }
+    }
 
-        isNotEmptyAvailibleList = !taskLevels[indexOfTaskLevel].isEmpty();//?
-        if (isNotEmptyAvailibleList) {
+    private void getTask() {
 
-            // System.out.println("!!isNotEmptyAvailibleList");
-            int numAmin = taskLevels[indexOfTaskLevel].get(0).aminFirtree;
+        DropTask dropToTake = null;
+        for (int i = 0; i < vokzal.length; i++) {
+            if (vokzal[i] != null && !vokzal[i].isEmpty()) {
+                dropToTake = vokzal[i].get(0);
+                vokzal[i].remove(0);
+                break;
+            }
+        }
+        
+        System.out.println("DROP = " + dropToTake.aminId+ dropToTake.dropId + dropToTake.type );
+        currentDrop = dropToTake;
 
-            int numDrop = firtree.body.get(numAmin).branch.indexOf(taskLevels[indexOfTaskLevel].get(0));
+        dropToTake.numberOfDaughterProc = myRank;
 
-            Object[] tmp = {taskLevels[indexOfTaskLevel].get(0).type, myRank, numAmin, numDrop, taskLevels[indexOfTaskLevel].get(0).inData};
+    }
 
-            currentDrop = tmp;
-            inputDrop = tmp;
-            taskLevels[indexOfTaskLevel].get(0).numberOfDaughterProc = myRank;
+    private void ProcFunc() throws MPIException {
+        //System.out.println("started proc func");
 
-            taskLevels[indexOfTaskLevel].remove(0);
+        boolean flagLittle = currentDrop.isItLeaf();
+        Amin curAmin = null;
 
-            isCalc = true;
-        } else {
-            isCalc = false;
+        // --------------------- start recursive -----------------------
+        if (!flagLittle) {
+
+            int firtreeSize = firtree.body.size();
+
+            curAmin = new Amin(currentDrop.type, currentDrop.procId, currentDrop.aminId, currentDrop.dropId, firtreeSize);
+
+            System.arraycopy(currentDrop.inData, 0, curAmin.inputData, 0, curAmin.inputData.length);
+
+            //если пришла задача со всеми входними даними, записиваем неглавние компоненти в список для виходной функции
+            if (currentDrop.numberOfMainComponents != curAmin.inputData.length) {
+
+                Element[] notMainComponents = new Element[curAmin.inputData.length - currentDrop.numberOfMainComponents];
+                System.arraycopy(curAmin.inputData, currentDrop.numberOfMainComponents, notMainComponents, 0, notMainComponents.length);
+
+                for (int k = 0; k < notMainComponents.length; k++) {
+                    curAmin.resultForOutFunction[currentDrop.connectionsOfNotMain[k]] = (curAmin.inputData)[currentDrop.numberOfMainComponents + k];
+                }
+            }
+
+            firtree.body.add(curAmin);
+
+            Element[] resInputFunc = curAmin.branch.get(0).inputFunction(curAmin.inputData);
+
+            writeResultsAfterInpFunc(currentDrop, curAmin, resInputFunc);
+
+        }
+
+        Amin amin = null;
+        // --------------------- start Little -----------------------
+        if (flagLittle) {
+
+            sendState();
+
+            currentDrop.sequentialCalc(ring);
+
+            if (currentDrop.procId == myRank) {// This task from me!
+
+                boolean isReadyOutputData = writeResultsToAmin(currentDrop);
+
+                firtree.body.get(currentDrop.aminId).branch.get(currentDrop.dropId).state = 2;
+
+                amin = firtree.body.get(currentDrop.aminId);
+
+                writeAllResultsInFirtree(amin, isReadyOutputData);
+
+                if (amin.parentProc != myRank) {
+                    Object[] res = {amin.outputData, amin.parentAmin, amin.parentDrop, -1};
+                    Tools.sendObjects(res, amin.parentProc, 3);
+                }
+
+            } else {
+                Object[] res = {currentDrop.outData, currentDrop.aminId, currentDrop.dropId, -1};
+                Tools.sendObjects(res, currentDrop.procId, 3);
+                System.out.println("@@@@@@@@@@Sending result from " + myRank + " to " + currentDrop.procId);
+
+            }
+
+        } // ------------------- end Little -----------------------
+
+        sendWholeTask(amin);
+
+        System.out.println("Tools.isEmptyArray(vokzal)  --- " + Tools.isEmptyArray(vokzal));
+        isEmptyVokzal = Tools.isEmptyArray(vokzal);
+        if (!isEmptyVokzal) {
+            getTask();
         }
 
         return;

@@ -31,6 +31,19 @@ import mpi.Status;
 public class Tools {
     
     
+    public static boolean isEmptyArray(ArrayList<DropTask>[] vokzal)
+    {
+        for(int i=0;i<vokzal.length; i++)
+        {
+            if(vokzal[i]!=null && !vokzal[i].isEmpty())
+            {
+                return false;
+            }
+        
+        }
+    
+        return true;
+    }
     public static DropTask getDropObject(int type)
     {
     DropTask drop = null;

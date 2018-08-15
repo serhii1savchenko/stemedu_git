@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Amin {
     int parentProc;
     int parentAmin;
-    int dropId;
+    int parentDrop;
     int type;
     int aminIdInFirtree;
     /**
@@ -39,7 +39,7 @@ public class Amin {
         outputData = null;
         parentProc = pProc;
         parentAmin = pAmin;
-        dropId = dropNum;
+        parentDrop = dropNum;
         aminState = 0;
         recNumb = 0;
         aminIdInFirtree = index;
@@ -48,7 +48,9 @@ public class Amin {
 
     private void setIndexToDrops(int index) {
         for (int i = 0; i < branch.size(); i++) {
-            branch.get(i).aminFirtree = index;
+            branch.get(i).aminId = index;
+            branch.get(i).dropId = i;
+            
         }
     }
 
