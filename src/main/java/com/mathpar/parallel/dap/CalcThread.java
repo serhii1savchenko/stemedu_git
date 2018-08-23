@@ -9,6 +9,7 @@ package com.mathpar.parallel.dap;
 import com.mathpar.number.Element;
 import com.mathpar.number.Ring;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mpi.MPI;
@@ -25,21 +26,20 @@ public class CalcThread implements Runnable {
     volatile boolean flToExit;
     volatile boolean isEmptyVokzal;
     DropTask currentDrop;
-    DropTask inputDrop;
-    int flagOfMyState;
     int myRank;
     ArrayList<DropTask>[] vokzal;
     Ring ring;
+    Map<Integer, ArrayList<Integer>> pNodes;
 
-    public CalcThread(Pine f, Ring ring) throws MPIException {
+    public CalcThread(Pine f, Map<Integer, ArrayList<Integer>> pN, Ring ring) throws MPIException {
         thread = new Thread(this, "CalcThread");
         thread.setPriority(2);
         flToExit = false;
         isEmptyVokzal = true;
         firtree = f;
+        pNodes = pN;
         this.ring = ring;
-        flagOfMyState = 0;
-        vokzal = new ArrayList[30];
+        vokzal = new ArrayList[20];
         myRank = MPI.COMM_WORLD.getRank();
         thread.start();
     }
@@ -48,38 +48,24 @@ public class CalcThread implements Runnable {
         flToExit = true;
     }
 
-    /**
-     * The task has come. We write it to currentDrop
-     *
-     * @param dropInfo = {int type, int proc, int amin, int drop, Element[]
-     * data}
-     */
-    void putDropInVokzal(Object[] dropInfo) {
-         System.out.println("I'm in putDropInVokzal, recieved task, myrank is " + myRank);
-        DropTask newDrop = Tools.getDropObject((int) dropInfo[0]);
-        newDrop.aminId = (int) dropInfo[2];
-        newDrop.dropId = (int) dropInfo[3];
-        newDrop.procId = (int) dropInfo[1];
-        Element[] mas = (Element[]) dropInfo[4];
-        System.arraycopy(mas, 0, newDrop.inData, 0, mas.length);
-        inputDrop = newDrop;
-        
-        if (vokzal[newDrop.aminId] == null) {
-            vokzal[newDrop.aminId] = new ArrayList<DropTask>();
+    private void addToVokzal(DropTask drop) {
+        if (vokzal[drop.recNum] == null) {
+            vokzal[drop.recNum] = new ArrayList<DropTask>();
         }
+        vokzal[drop.recNum].add(drop);
 
-        vokzal[newDrop.aminId].add(newDrop);
-        newDrop.numberOfDaughterProc = -1;
+        drop.numberOfDaughterProc = -1;
+    }
+
+    public void putDropInVokzal(Object[] dropInfo) {
+        System.out.println("I'm in putDropInVokzal, recieved task, myrank is " + myRank);
+
+        DropTask drop = (DropTask) dropInfo[0];
+        addToVokzal(drop);
         isEmptyVokzal = false;
     }
 
-    /**
-     *
-     * @param drop
-     *
-     * @return true if ready outputFunctionData
-     */
-    public boolean writeResultsToAmin(DropTask drop) {
+    public boolean writeResultsToAmin(DropTask drop) throws MPIException {
 
         int aminId = drop.aminId;
         int dropId = drop.dropId;
@@ -107,11 +93,22 @@ public class CalcThread implements Runnable {
                     }
 
                     if (ready) {
-                        if (vokzal[dependantDrop.aminId] == null) {
-                            vokzal[dependantDrop.aminId] = new ArrayList<DropTask>();
+                        addToVokzal(dependantDrop);
+                    } else {
+                        ready = true;
+                    }
+                }
+
+                if (dependantDrop.numberOfDaughterProc > -1) {
+                    for (int j = dependantDrop.numberOfMainComponents; j < dependantDrop.inputDataLength; j++) {
+                        if (dependantDrop.inData[j] == null) {
+                            ready = false;
+                            break;
                         }
-                        vokzal[dependantDrop.aminId].add(dependantDrop);
-                        dependantDrop.numberOfDaughterProc = -1;
+                    }
+
+                    if (ready) {
+                        addNotMainComponents(dependantDrop, aminId, dropId);
                     }
                 }
             } else {
@@ -119,7 +116,7 @@ public class CalcThread implements Runnable {
                 Amin amin = firtree.body.get(aminId);
                 amin.resultForOutFunction[to] = drop.outData[from];
                 for (int j = 0; j < amin.resultForOutFunction.length; j++) {
-                    //   System.out.println("amin.resultForOutFunction[j] =  " + amin.resultForOutFunction[j]);
+                    //System.out.println("amin.resultForOutFunction[j] =  " + amin.resultForOutFunction[j]);
                     if (amin.resultForOutFunction[j] == null) {
                         isReadyOutputFunction = false;
                         break;
@@ -130,31 +127,36 @@ public class CalcThread implements Runnable {
 
         }
 
-        // System.out.println(" isReadyOutputFunction" + isReadyOutputFunction);
         return isReadyOutputFunction;
 
     }
 
-    @Override
-    public void run() {
+    private void addNotMainComponents(DropTask dependantDrop, int aminId, int dropId) throws MPIException {
+        
+        int length = dependantDrop.inputDataLength - dependantDrop.numberOfMainComponents;
+        Element[] additionalComponents = new Element[length];
+        System.arraycopy(dependantDrop.inData, dependantDrop.numberOfMainComponents, additionalComponents, 0, length);
 
-        while (!flToExit) {
-            if (isEmptyVokzal) {
-                continue;
-            }
-            try {
+        if (dependantDrop.numberOfDaughterProc != myRank) {
+            Object[] tmpS = {additionalComponents, aminId, dropId};
+            Tools.sendObjects(tmpS, dependantDrop.numberOfDaughterProc, 3);
+            System.out.println("Sending additional components from  " + myRank + " to " + dependantDrop.numberOfDaughterProc);
+        } else {
+            for (int j = 0; j < firtree.body.size(); j++) {
+                if (firtree.body.get(j).parentProc == dependantDrop.procId && firtree.body.get(j).parentAmin == dependantDrop.aminId
+                        && firtree.body.get(j).parentDrop == dependantDrop.dropId) {
+                    int[] mas = Tools.getDropObject(firtree.body.get(j).type).connectionsOfNotMain;
+                    for (int k = 0; k < mas.length; k++) {
+                        firtree.body.get(j).resultForOutFunction[mas[k]] = additionalComponents[k];
 
-                getTask();
-                ProcFunc();
-                // System.out.println("isCalc " + isCalc + "isNotEmptyAvailibleList " + isNotEmptyAvailibleList);
-            } catch (MPIException ex) {
-                Logger.getLogger(CalcThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
     }
 
     private void writeResultsAfterInpFunc(DropTask drop, Amin curAmin, Element[] resInputFunc) {
-         System.out.println("drop.arcs[0].length" + drop.arcs[0].length);
+
         for (int i = 0; i < drop.arcs[0].length; i += 3) {
             int numOfDependantDrop = drop.arcs[0][i];
             int from = drop.arcs[0][i + 1];
@@ -174,60 +176,42 @@ public class CalcThread implements Runnable {
             }
 
             if (ready) {
-                System.out.println("dependantDrop.aminId" + dependantDrop.aminId);
-                System.out.println("dependantDrop.dropId" + dependantDrop.dropId);
-                if (vokzal[dependantDrop.aminId] == null) {
-                    vokzal[dependantDrop.aminId] = new ArrayList<DropTask>();
-                }
-                vokzal[dependantDrop.aminId].add(dependantDrop);
-                dependantDrop.numberOfDaughterProc = -1;
+
+                addToVokzal(dependantDrop);
             }
         }
 
     }
 
-    private void sendState() throws MPIException {
-        int curState = firtree.CheckState() == 1 && Tools.isEmptyArray(vokzal) ? 1 : 0;
-
-        firtree.SetState(curState);
-        if (curState != flagOfMyState && inputDrop.procId != myRank) {
-            flagOfMyState = curState;
-            int[] state = {flagOfMyState, inputDrop.aminId, inputDrop.dropId};
-            MPI.COMM_WORLD.send(state, state.length, MPI.INT, inputDrop.procId, 2);
-            System.out.println("Sending state " + flagOfMyState + " from " + myRank + " to " + inputDrop.procId);
-        }
-    }
-
-    public void writeAllResultsInFirtree(Amin amin, boolean isReady) {
+    public Amin writeAllResultsInFirtree(Amin amin, boolean isReady) throws MPIException {
 
         while (isReady) {
 
             amin.outputData = Tools.getDropObject(amin.type).outputFunction(amin.resultForOutFunction, ring);
             firtree.body.get(amin.parentAmin).branch.get(amin.parentDrop).outData = amin.outputData;
+
             amin.aminState = 2;
             if (amin.parentProc == myRank) {
 
                 isReady = writeResultsToAmin(firtree.body.get(amin.parentAmin).branch.get(amin.parentDrop));
+
                 amin = firtree.body.get(amin.parentAmin);
+
             } else {
                 isReady = false;
             }
         }
+        return amin;
     }
 
     private void sendWholeTask(Amin amin) throws MPIException {
-        if (Tools.isEmptyArray(vokzal) && myRank == 0 && firtree.body.get(0).aminState == 2) {
-            Object[] res = {amin.outputData, (Integer) amin.parentAmin, (Integer) amin.parentDrop, new Integer(-1)};
-            System.out.println("&&&&&&&&&&Sending result of whole task " + myRank);
-            for (int i = 0; i < amin.outputData.length; i++) {
-                System.out.println("amin.outputData " + amin.outputData[i]);
 
-            }
+        Object[] res = {amin.outputData, (Integer) amin.parentAmin, (Integer) amin.parentDrop};
+        System.out.println("&&&&&&&&&&Sending result of whole task " + myRank);
 
-            Tools.sendObjects(res, myRank, 3);
-            amin = null;
+        Tools.sendObjects(res, myRank, 3);
+        amin = null;
 
-        }
     }
 
     private void getTask() {
@@ -240,16 +224,50 @@ public class CalcThread implements Runnable {
                 break;
             }
         }
-        
-        System.out.println("DROP = " + dropToTake.aminId+ dropToTake.dropId + dropToTake.type );
         currentDrop = dropToTake;
 
         dropToTake.numberOfDaughterProc = myRank;
 
     }
 
+    private void deleteParent(Integer procNum, Integer num) {
+
+        pNodes.get(procNum).remove(num);
+
+        if (pNodes.get(procNum).isEmpty()) {
+            pNodes.remove(procNum);
+        }
+    }
+
+    private void addParent(Integer procNum, Integer num) {
+        if (!pNodes.keySet().contains(procNum)) {
+            ArrayList<Integer> am = new ArrayList<Integer>();
+            am.add(num);
+            pNodes.put(procNum, am);
+        } else {
+            pNodes.get(procNum).add(num);
+        }
+    }
+
+    @Override
+    public void run() {
+
+        while (!flToExit) {
+            if (isEmptyVokzal) {
+                continue;
+            }
+            try {
+
+                getTask();
+                ProcFunc();
+
+            } catch (MPIException ex) {
+                Logger.getLogger(CalcThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     private void ProcFunc() throws MPIException {
-        //System.out.println("started proc func");
 
         boolean flagLittle = currentDrop.isItLeaf();
         Amin curAmin = null;
@@ -259,22 +277,34 @@ public class CalcThread implements Runnable {
 
             int firtreeSize = firtree.body.size();
 
-            curAmin = new Amin(currentDrop.type, currentDrop.procId, currentDrop.aminId, currentDrop.dropId, firtreeSize);
+            curAmin = new Amin(currentDrop.type, currentDrop.procId, currentDrop.aminId, currentDrop.dropId, firtreeSize, myRank, currentDrop.recNum + 1);
 
             System.arraycopy(currentDrop.inData, 0, curAmin.inputData, 0, curAmin.inputData.length);
 
-            //если пришла задача со всеми входними даними, записиваем неглавние компоненти в список для виходной функции
-            if (currentDrop.numberOfMainComponents != curAmin.inputData.length) {
+            boolean exist = true;
+            if (curAmin.inputData.length != currentDrop.numberOfMainComponents) {
+                for (int j = currentDrop.numberOfMainComponents; j < curAmin.inputData.length; j++) {
+                    if (curAmin.inputData[j] == null) {
+                        exist = false;
+                        break;
+                    }
+                }
+                //если пришла задача со всеми входними даними, записиваем неглавние компоненти в список для виходной функции
+                if (exist) {
+                    Element[] notMainComponents = new Element[curAmin.inputData.length - currentDrop.numberOfMainComponents];
+                    System.arraycopy(curAmin.inputData, currentDrop.numberOfMainComponents, notMainComponents, 0, notMainComponents.length);
 
-                Element[] notMainComponents = new Element[curAmin.inputData.length - currentDrop.numberOfMainComponents];
-                System.arraycopy(curAmin.inputData, currentDrop.numberOfMainComponents, notMainComponents, 0, notMainComponents.length);
-
-                for (int k = 0; k < notMainComponents.length; k++) {
-                    curAmin.resultForOutFunction[currentDrop.connectionsOfNotMain[k]] = (curAmin.inputData)[currentDrop.numberOfMainComponents + k];
+                    for (int k = 0; k < notMainComponents.length; k++) {
+                        curAmin.resultForOutFunction[currentDrop.connectionsOfNotMain[k]] = notMainComponents[k];
+                    }
                 }
             }
-
             firtree.body.add(curAmin);
+
+            // System.out.println("myRank = " + myRank + "curAmin.parentAmin = " + curAmin.parentAmin);
+            if (curAmin.parentProc != myRank) {
+                addParent(curAmin.parentProc, curAmin.aminIdInFirtree);
+            }
 
             Element[] resInputFunc = curAmin.branch.get(0).inputFunction(curAmin.inputData);
 
@@ -286,7 +316,11 @@ public class CalcThread implements Runnable {
         // --------------------- start Little -----------------------
         if (flagLittle) {
 
-            sendState();
+            currentDrop.state = 1;
+
+            if (currentDrop.procId != myRank) {
+                addParent(currentDrop.procId, -1);
+            }
 
             currentDrop.sequentialCalc(ring);
 
@@ -298,28 +332,34 @@ public class CalcThread implements Runnable {
 
                 amin = firtree.body.get(currentDrop.aminId);
 
-                writeAllResultsInFirtree(amin, isReadyOutputData);
+                amin = writeAllResultsInFirtree(amin, isReadyOutputData);
 
                 if (amin.parentProc != myRank) {
-                    Object[] res = {amin.outputData, amin.parentAmin, amin.parentDrop, -1};
+                    Object[] res = {amin.outputData, amin.parentAmin, amin.parentDrop};
+                    System.out.println("Sending  from " + myRank + " to " + currentDrop.procId);
                     Tools.sendObjects(res, amin.parentProc, 3);
+
+                    deleteParent(amin.parentProc, amin.aminIdInFirtree);
                 }
 
             } else {
-                Object[] res = {currentDrop.outData, currentDrop.aminId, currentDrop.dropId, -1};
-                Tools.sendObjects(res, currentDrop.procId, 3);
+                Object[] res = {currentDrop.outData, currentDrop.aminId, currentDrop.dropId};
                 System.out.println("@@@@@@@@@@Sending result from " + myRank + " to " + currentDrop.procId);
+                Tools.sendObjects(res, currentDrop.procId, 3);
 
+                deleteParent(currentDrop.procId, -1);
             }
 
         } // ------------------- end Little -----------------------
 
-        sendWholeTask(amin);
+        if (myRank == 0 && Tools.isEmptyArray(vokzal) && firtree.body.get(0).aminState == 2) {
+            sendWholeTask(amin);
+        }
 
-        System.out.println("Tools.isEmptyArray(vokzal)  --- " + Tools.isEmptyArray(vokzal));
         isEmptyVokzal = Tools.isEmptyArray(vokzal);
-        if (!isEmptyVokzal) {
-            getTask();
+
+        if (isEmptyVokzal) {
+            System.out.println("Go to WAIT  VOKZAL IS EMPTY");
         }
 
         return;
