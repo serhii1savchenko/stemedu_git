@@ -34,6 +34,7 @@ public abstract class DropTask {
     int aminId = -1;
     int dropId = -1;
     int procId = -1;
+    int recNum = 0;
     
     public abstract ArrayList<DropTask> doAmin();
     public abstract void sequentialCalc(Ring ring);
