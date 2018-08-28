@@ -26,8 +26,8 @@ public class Multtest {
                 
                 Pine f = new Pine();
               
-                MatrixS A = Tools.init(8);
-		MatrixS B = Tools.init(8);
+                MatrixS A = Tools.init(16);
+		MatrixS B = Tools.init(16);
                 Ring ring = new Ring("Zp32[]");
                   
                 if (rank==0){

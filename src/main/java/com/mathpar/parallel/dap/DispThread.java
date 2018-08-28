@@ -24,7 +24,7 @@ public class DispThread {
     Integer myRank;
     CalcThread counter;
     static int mode = 0;
-    static boolean iAmFreeAndSentToParent = false;
+    static boolean iAmFree = false;
     TreeSet<Integer> freeProcs;
     Map<Integer, int[]> dNodes;//!!!!map?
     Map<Integer, ArrayList<Integer>> pNodes;
@@ -81,8 +81,6 @@ public class DispThread {
     }
 
     private void receiveTask(int cnt, int tag) throws MPIException {
-        System.out.println("--------------------------------0");
-        System.out.println("режим ожидания задачи-- ");
 
         Object[] tmpAr = new Object[cnt];
         tmpAr = Tools.recvObjects(cnt, MPI.ANY_SOURCE, tag);
@@ -92,7 +90,6 @@ public class DispThread {
     }
 
     private void receiveFreeProcs(int cnt) throws MPIException {
-        System.out.println("--------------------------------1");
         //получено сообщение от род. узла со своб. процессами
 
         Object[] freeProcsAr = new Object[cnt];
@@ -178,7 +175,7 @@ public class DispThread {
             if (amin.parentAmin != myRank) {
                 Object[] res = {amin.outputData, (Integer) amin.parentAmin, (Integer) amin.parentDrop};
                 Tools.sendObjects(res, amin.parentProc, 3);
-                
+
                 pNodes.get(amin.parentProc).remove((Integer) amin.aminIdInFirtree);
 
                 if (pNodes.get(amin.parentProc).isEmpty()) {
@@ -216,13 +213,13 @@ public class DispThread {
 
     private void sendDropsAndFreeProcsToDaughers(Object[] procs, int tag, boolean fromFree) throws MPIException {
 
-        System.out.println("--------------------------------111111");
-
+        System.out.println("Send drops and free procs");
         int index = getIndex();
-        int number = procs.length / counter.vokzal[index].size() + 1;
+        double number = procs.length / (counter.vokzal[index].size() + 1);
 
+        System.out.println("INDEX = " + index + "counter.vokzal[index].size() = " + counter.vokzal[index].size());
         for (int i = 0; i < counter.vokzal[index].size(); i++) {
-
+            System.out.println("HEY in for " + myRank);
             DropTask curTask = counter.vokzal[index].get(i);
             int curAmin = curTask.aminId;
             int curDrop = curTask.dropId;
@@ -230,7 +227,10 @@ public class DispThread {
 
             if (number <= 1) {
 
+                System.out.println("number< =  1");
+
                 int daughter = (int) procs[i];
+                System.out.println("Sending drop " + curTask + " from  " + myRank + " to " + daughter);
                 Tools.sendObjects(tmpS, daughter, tag);
 
                 curTask.numberOfDaughterProc = daughter;
@@ -239,20 +239,26 @@ public class DispThread {
                 }
                 addDaugter(daughter, curDrop, curAmin);
             } else {
+                System.out.println("number>  1 = " + number);
 
-                int[] daughtProcs = new int[number];
-                for (int j = 0; j < number; j++) {
+                int[] daughtProcs = new int[(int) number];
+                for (int j = 0; j < daughtProcs.length; j++) {
                     daughtProcs[j] = (int) procs[j];
                     if (fromFree) {
                         freeProcs.remove(procs[j]);
+                        System.out.println("remove from free");
                     }
+                    System.out.println("daughtProcs[j]" + daughtProcs[j]);
                 }
 
+                System.out.println("HEYEYE");
+                System.out.println("Sending drop plus procs" + curTask + " from  " + myRank + " to " + daughtProcs[0]);
                 Tools.sendObjects(tmpS, daughtProcs[0], tag);
 
                 int[] daughtFreeProcs = new int[daughtProcs.length - 1];
                 System.arraycopy(daughtProcs, 1, daughtFreeProcs, 0, daughtFreeProcs.length);
 
+                System.out.println("Sending freeProc from  " + myRank + " to " + daughtProcs[0]);
                 MPI.COMM_WORLD.send(daughtFreeProcs, daughtFreeProcs.length, MPI.INT, daughtProcs[0], 1);
 
                 curTask.numberOfDaughterProc = daughtProcs[0];
@@ -265,9 +271,7 @@ public class DispThread {
     }
 
     private void sendFreeProcsToDaughersNoTask() throws MPIException {
-        System.out.println("--------------------------------2222");
-
-        freeProcs.add(myRank);
+        System.out.println("Send free procs and me to daughter");
 
         ArrayList<Integer> daughterInNeed = new ArrayList();
 
@@ -302,7 +306,7 @@ public class DispThread {
     }
 
     private void sendFreeProcsToParent() throws MPIException {
-        System.out.println("HI----------------------------3333");
+        System.out.println("Send free procs and me to parent");
 
         int parent = (int) pNodes.keySet().toArray()[0];
 
@@ -368,18 +372,20 @@ public class DispThread {
                 int tag = info.getTag();
                 int cnt = info.getCount(MPI.INT);
                 Integer daughter;
-                System.out.println("^^^^^^^^^^^tag = " + tag);
+                System.out.println("MYRANK = " + myRank);
 
                 if (tag == 5) {
                     exit();
                 }
                 if (tag == 0) {
+                    System.out.println("Get task like free");
                     //режим ожидания задачи
                     cnt = info.getCount(MPI.INT);
                     receiveTask(cnt, 0);
-                    iAmFreeAndSentToParent = false;
+                    iAmFree = false;
                 }
                 if (tag == 1) {
+                    System.out.println("Get free procs");
                     //получение свободных процессов от род. узла:
                     while (info != null) {
                         cnt = info.getCount(MPI.INT);
@@ -391,7 +397,7 @@ public class DispThread {
 
                     //состояние процесора
                     while (info != null) {
-                        System.out.println("--------------------------------2");
+                        System.out.println("Get proc state");
                         cnt = info.getCount(MPI.INT);
                         daughter = info.getSource();
 
@@ -404,7 +410,7 @@ public class DispThread {
 
                     //результат 
                     while (info != null) {
-                        System.out.println("--------------------------------3");
+                        System.out.println("Get result");
                         daughter = info.getSource();
 
                         receiveResult(daughter, cntProc, nodes, ring);
@@ -413,6 +419,7 @@ public class DispThread {
                     }
                 }
                 if (tag == 4) {
+                    System.out.println("Get task like daughter");
                     //режим ожидания задачи
                     receiveTask(cnt, 4);
                 }
@@ -440,13 +447,18 @@ public class DispThread {
 
             //Отправка свободних процесоров дочерним, если я заканачил и нет больше заданий
             if (freeProcs.size() > 0 && Tools.isEmptyArray(counter.vokzal) && dNodes.size() > 0) {
+                if (!iAmFree) {
+                    freeProcs.add(myRank);
+                    iAmFree = true;
+                }
                 sendFreeProcsToDaughersNoTask();
+
             }
 
             // Отправка родителю свободних процесоров, если нет доступних заданий и нет дочерних
-            if (!iAmFreeAndSentToParent && !pNodes.isEmpty() && isDaughterFree() && Tools.isEmptyArray(counter.vokzal)) {
+            if (!iAmFree && !pNodes.isEmpty() && isDaughterFree() && Tools.isEmptyArray(counter.vokzal)) {
                 sendFreeProcsToParent();
-                iAmFreeAndSentToParent = true;
+                iAmFree = true;
             }
 
             sendState();

@@ -199,7 +199,7 @@ public class Tools {
     }
 
     public static void sendObjects(Object[] a, int proc, int tag) throws MPIException {
-        System.out.println("!!!____!!!###Try to send " + proc + "  " + tag);
+        System.out.println("!!!____!!!###Try to send to" + proc + " with tag  " + tag);
         //      System.out.println( a[2]+"  "+(((MatrixS)a[0]).toString())+"   "+a[1]);
         ByteArrayOutputStream bos = null;
         try {
@@ -207,6 +207,7 @@ public class Tools {
             ObjectOutputStream oos = new ObjectOutputStream(bos);
 
             for (int i = 0; i < a.length; i++) {
+                 System.out.println("a[i] = " + a[i].toString());
                 oos.writeObject(a[i]);
             }
 
@@ -220,7 +221,7 @@ public class Tools {
         buf.put(temp);
 
         MPI.COMM_WORLD.iSend(buf, temp.length, MPI.BYTE, proc, tag);
-        System.out.println("IN sendObjects Send Objects to processor " + proc);
+        
     }
 
     public static Object[] recvObjects(int m, int proc, int tag) throws MPIException {
