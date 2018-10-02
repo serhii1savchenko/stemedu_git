@@ -1,1 +1,0 @@
-Mykola Nevmerzhytskyi
