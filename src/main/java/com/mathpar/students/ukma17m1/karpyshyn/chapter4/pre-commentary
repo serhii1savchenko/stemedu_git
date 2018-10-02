@@ -1,3 +1,0 @@
-Compile: find src/ -name "*.java" -print0 | xargs -0 javac -classpath "./mpi.jar:" -d build/classes/
-Run first task: mpirun --hostfile hostfile -np 4 java -cp build/classes ua.edu.ukma.karpyshyn.Task1Runner
-Run second task: mpirun --hostfile hostfile -np 4 java -cp build/classes ua.edu.ukma.karpyshyn.Task2Runner
