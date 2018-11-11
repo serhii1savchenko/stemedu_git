@@ -40,6 +40,9 @@ public class CalcThread implements Runnable {
         pNodes = pN;
         this.ring = ring;
         vokzal = new ArrayList[20];
+        for (int i = 0; i < vokzal.length; i++) {
+            vokzal[i] = new ArrayList<DropTask>();
+        }
         myRank = MPI.COMM_WORLD.getRank();
         thread.start();
     }
@@ -49,20 +52,19 @@ public class CalcThread implements Runnable {
     }
 
     private void addToVokzal(DropTask drop) {
-        if (vokzal[drop.recNum] == null) {
-            vokzal[drop.recNum] = new ArrayList<DropTask>();
-        }
         vokzal[drop.recNum].add(drop);
-
         drop.numberOfDaughterProc = -1;
+        isEmptyVokzal = false;
     }
 
     public void putDropInVokzal(Object[] dropInfo) {
         System.out.println("I'm in putDropInVokzal, recieved task, myrank is " + myRank);
 
         DropTask drop = (DropTask) dropInfo[0];
+        if (drop.recNum < DispThread.myLevel) {
+            DispThread.myLevel = drop.recNum;
+        }
         addToVokzal(drop);
-        isEmptyVokzal = false;
     }
 
     public boolean writeResultsToAmin(DropTask drop) throws MPIException {
@@ -122,9 +124,7 @@ public class CalcThread implements Runnable {
                         break;
                     }
                 }
-
             }
-
         }
 
         return isReadyOutputFunction;
@@ -132,7 +132,7 @@ public class CalcThread implements Runnable {
     }
 
     private void addNotMainComponents(DropTask dependantDrop, int aminId, int dropId) throws MPIException {
-        
+
         int length = dependantDrop.inputDataLength - dependantDrop.numberOfMainComponents;
         Element[] additionalComponents = new Element[length];
         System.arraycopy(dependantDrop.inData, dependantDrop.numberOfMainComponents, additionalComponents, 0, length);
@@ -214,19 +214,28 @@ public class CalcThread implements Runnable {
 
     }
 
-    private void getTask() {
+    public void changeLevel() {
 
-        DropTask dropToTake = null;
-        for (int i = 0; i < vokzal.length; i++) {
-            if (vokzal[i] != null && !vokzal[i].isEmpty()) {
-                dropToTake = vokzal[i].get(0);
-                vokzal[i].remove(0);
-                break;
+        if (vokzal[DispThread.myLevel].size()==0) {
+            for (int k = DispThread.myLevel; k < vokzal.length; k++) {
+                if (!vokzal[k].isEmpty()) {
+                    DispThread.myLevel = k;
+                    break;
+                }
             }
         }
-        currentDrop = dropToTake;
+    }
 
-        dropToTake.numberOfDaughterProc = myRank;
+    private void getTask() {
+
+        changeLevel();
+        
+        currentDrop = vokzal[DispThread.myLevel].get(0);
+
+        currentDrop.numberOfDaughterProc = myRank;
+
+        vokzal[DispThread.myLevel].remove(0);
+       // changeLevel();
 
     }
 
@@ -253,11 +262,11 @@ public class CalcThread implements Runnable {
     public void run() {
 
         while (!flToExit) {
+           // System.out.println("///In CalcThread cycle, myRank = " + myRank);
             if (isEmptyVokzal) {
                 continue;
             }
             try {
-
                 getTask();
                 ProcFunc();
 
@@ -335,7 +344,7 @@ public class CalcThread implements Runnable {
                 amin = writeAllResultsInFirtree(amin, isReadyOutputData);
 
                 if (amin.parentProc != myRank) {
-                    Object[] res = {amin.outputData, amin.parentAmin, amin.parentDrop};
+                    Object[] res = {amin.outputData, amin.parentAmin, amin.parentDrop, DispThread.sentLevel};
                     System.out.println("Sending  from " + myRank + " to " + currentDrop.procId);
                     Tools.sendObjects(res, amin.parentProc, 3);
 
@@ -343,7 +352,7 @@ public class CalcThread implements Runnable {
                 }
 
             } else {
-                Object[] res = {currentDrop.outData, currentDrop.aminId, currentDrop.dropId};
+                Object[] res = {currentDrop.outData, currentDrop.aminId, currentDrop.dropId, DispThread.sentLevel};
                 System.out.println("@@@@@@@@@@Sending result from " + myRank + " to " + currentDrop.procId);
                 Tools.sendObjects(res, currentDrop.procId, 3);
 
