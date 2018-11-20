@@ -8,12 +8,13 @@ package com.mathpar.parallel.dap;
 
 import com.mathpar.number.Element;
 import com.mathpar.number.Ring;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static com.mathpar.number.Ring.MatrixS;
 
 
-public abstract class DropTask {
+public abstract class DropTask implements Serializable {
 
     Element[] inData;
     Element[] outData;
