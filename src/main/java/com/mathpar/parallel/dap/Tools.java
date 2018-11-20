@@ -32,7 +32,7 @@ public class Tools {
 
     public static boolean isEmptyArray(ArrayList<DropTask>[] vokzal) {
         for (int i = 0; i < vokzal.length; i++) {
-            if (vokzal[i] != null && !vokzal[i].isEmpty()) {
+            if (!vokzal[i].isEmpty()) {
                 return false;
             }
 
@@ -207,7 +207,6 @@ public class Tools {
             ObjectOutputStream oos = new ObjectOutputStream(bos);
 
             for (int i = 0; i < a.length; i++) {
-                 System.out.println("a[i] = " + a[i].toString());
                 oos.writeObject(a[i]);
             }
 
@@ -221,6 +220,7 @@ public class Tools {
         buf.put(temp);
 
         MPI.COMM_WORLD.iSend(buf, temp.length, MPI.BYTE, proc, tag);
+        System.out.println("After send to " + proc + " with tag  " + tag);
         
     }
 
