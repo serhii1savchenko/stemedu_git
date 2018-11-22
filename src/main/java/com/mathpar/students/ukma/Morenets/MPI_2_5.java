@@ -29,21 +29,23 @@ public class MPI_2_5 {
     }
 }
 
-// Command: mpirun -np 3 java -cp out/production/MPI_2_5 MPI_2_5 5
+/*
+Command: mpirun -np 3 java -cp out/production/MPI_2_5 MPI_2_5 5
 
-// Output:
-// 0
-// 0
-// 0
-// 0
-// 0
-// 1
-// 1
-// 1
-// 1
-// 1
-// 2
-// 2
-// 2
-// 2
-// 2
+Output:
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
+2
+2
+2
+2
+2
+*/

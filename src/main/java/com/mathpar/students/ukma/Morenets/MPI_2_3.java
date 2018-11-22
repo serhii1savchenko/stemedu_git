@@ -36,9 +36,11 @@ public class MPI_2_3 {
     }
 }
 
-// Command: mpirun -np 3 java -cp out/production/MPI_2_3 MPI_2_3 5
+/*
+Command: mpirun -np 3 java -cp out/production/MPI_2_3 MPI_2_3 5
 
-// Output:
-// proc num = 0 Array sent.
-// proc num = 1 Array received.
-// proc num = 2 Array received.
+Output:
+proc num = 0 Array sent.
+proc num = 1 Array received.
+proc num = 2 Array received.
+*/
