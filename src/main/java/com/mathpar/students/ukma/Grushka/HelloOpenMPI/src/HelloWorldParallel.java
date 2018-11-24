@@ -1,6 +1,6 @@
 import mpi.*;
 
-public class ПИшет пекеждей нетHelloWorldParallel {
+public class HelloWorldParallel {
 
     public static void main(String[] args) throws MPIException {
         // Initialize a parallel part
