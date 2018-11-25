@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Amin {
     int parentProc;
     int parentAmin;
-    int dropId;
+    int parentDrop;
     int type;
     int aminIdInFirtree;
     /**
@@ -27,48 +27,32 @@ public class Amin {
     Element[] outputData;
     Element[] resultForOutFunction;
 
-    public Amin(int type, int pProc, int pAmin, int dropNum, int index) {
+    public Amin(int type, int pProc, int pAmin, int dropNum, int index, int myRank, int recNum) {
 
-        DropTask drop = null;
-        switch (type) {
-
-            case 0:
-                drop = new Multiply();
-                break;
-            case 1:
-                drop = new MultiplyAdd();
-                break;
-            case 2:
-                drop = new MultiplyMinus();
-                break;
-            //case 3: branch = new Inversion();
-            //case 4: branch = new InversionAdd();
-            case 5:
-                drop = new Cholesky();
-                break;
-            case 6:
-                drop = new MultiplyExtended();
-                break;
-        }
+        DropTask drop = Tools.getDropObject(type);
 
         this.type = type;
         branch = drop.doAmin();
-        setIndexToDrops(index);
+        setIndexToDrops(index, myRank, recNum);
         inputData = new Element[drop.inputDataLength];
         resultForOutFunction = new Element[drop.resultForOutFunctionLength];
         outputData = null;
         parentProc = pProc;
         parentAmin = pAmin;
-        dropId = dropNum;
+        parentDrop = dropNum;
         aminState = 0;
-        recNumb = 0;
+        recNumb = recNum;
         aminIdInFirtree = index;
 
     }
 
-    private void setIndexToDrops(int index) {
+    private void setIndexToDrops(int index, int myRank, int recNum) {
         for (int i = 0; i < branch.size(); i++) {
-            branch.get(i).aminFirtree = index;
+            branch.get(i).aminId = index;
+            branch.get(i).dropId = i;
+            branch.get(i).procId = myRank;
+            branch.get(i).recNum = recNum;
+            
         }
     }
 
@@ -88,7 +72,7 @@ public class Amin {
 
     public int SetState() {
         for (int i = 0; i < branch.size(); i++) {
-            if (branch.get(i).state != 1 && branch.get(i).state != 5) {
+            if (branch.get(i).state != 1 && branch.get(i).state != 2) {
                 aminState = 0;
                 return aminState;
             }

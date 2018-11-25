@@ -21,36 +21,14 @@ public class Pine {
     public Pine(){
         body = new ArrayList();
     }
-    
-    public Amin GetCurrentAmin(){
-        for(int i = body.size()-1; i<=0; i--){
-            if(body.get(i)!=null){
-                return body.get(i);    
-            }
-        }
-        return body.get(0);
-    } 
-    
-    public int GetMyAmin(DropTask dp){
-        for(int i=0; i<body.size();i++){
-            if(body.get(i).branch.contains(dp)){
-                return body.get(i).branch.indexOf(dp);
-            }
-        }
-        return 0;
-    }
-    
+   
     public int CheckState(){
-        int st;
         for(int i=0; i<body.size(); i++){
-            body.get(i).SetState();
-            if(body.get(i).aminState!=1){
-                st=0;
-              return st;
+            if(body.get(i).SetState()!=1){
+              return 0;
             }
         }
-        st=1;
-        return st;
+        return 1;
     }  
     
     public int GetState(){

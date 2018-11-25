@@ -17,7 +17,6 @@ import mpi.MPI;
 import mpi.MPIException;
 import mpi.Status;
 
-
 public class DispThread {
     Pine firtree;
     long sleepTime;
@@ -25,13 +24,34 @@ public class DispThread {
     Integer myRank;
     CalcThread counter;
     static int mode = 0;
+    static boolean flagOfMyDeparture = false;
+    TreeSet<Integer> freeProcs;
+    ArrayList<int[]>[] terminal;
+    Map<Integer, ArrayList<Integer>> pNodes;
 
-    public DispThread(int startType, Pine f, long sTime, String[] args, Element[] data, Ring ring ) throws MPIException {
+    static int myLevel = 20;
+    int childsLevel = 20;
+    int totalLevel = Math.min(myLevel, childsLevel);
+    static int sentLevel = 20;
+
+    // теги:
+    //     0: сообщение содержит задачу
+    //     1: сообщение содержит свободные узлы
+    //     2: сообщение содержит состояние процесора
+    //     3: сообщение содержит результат задачи
+    //     5: сообщение содержит команду на завершение (вся задача посчитана)
+    public DispThread(int startType, Pine f, long sTime, String[] args, Element[] data, Ring ring) throws MPIException {
         firtree = f;
         sleepTime = sTime;
         executeTime = 0;
         myRank = MPI.COMM_WORLD.getRank();
-      
+        freeProcs = new TreeSet<Integer>();
+        terminal = new ArrayList[21];
+        for (int i = 0; i < terminal.length; i++) {
+            terminal[i] = new ArrayList<int[]>();
+        }
+        pNodes = new HashMap<Integer, ArrayList<Integer>>();
+
         try {
             int all = MPI.COMM_WORLD.getSize();
             int[] nodes = new int[all];
@@ -47,43 +67,339 @@ public class DispThread {
     public long GetExecuteTime() {
         return executeTime;
     }
-/**
- * 
- * @param startType
- * @param args
- * @param data
- * @param nodes
- * @throws mpi.MPIException
- * @throws InterruptedException 
- */
+
+    private void rootWork(int[] nodes, int startType, Element[] data) {
+        System.out.println("i'm root");
+        for (int i = 1; i < nodes.length; i++) {
+            freeProcs.add(nodes[i]);
+        }
+
+        Object[] mas = new Object[] {Tools.doNewDrop(startType, 0, 0, 0, 0, data)};//!!!!-1-1-1-1
+        myLevel = 0;
+        counter.putDropInVokzal(mas);
+
+    }
+
+    private void exit() {
+        System.out.println("--------------------------------5");
+        mode = -1;
+        System.out.println("вся задача посчитана, myrank is   " + myRank);
+        counter.DoneThread();
+    }
+
+    private void receiveTask(int cnt) throws MPIException {
+
+        Object[] tmpAr = new Object[cnt];
+        tmpAr = Tools.recvObjects(cnt, MPI.ANY_SOURCE, 0);
+        System.out.println("Recieved task, myrank is   " + myRank);
+
+        counter.putDropInVokzal(tmpAr);
+        if (freeProcs.contains(myRank)) {
+            freeProcs.remove(myRank);
+        }
+    }
+
+    private void receiveFreeProcs(int cnt) throws MPIException {
+        //получено сообщение от род. узла со своб. процессами
+
+        Object[] freeProcsAr = new Object[cnt];
+        freeProcsAr = Tools.recvObjects(cnt, MPI.ANY_SOURCE, 1);
+        System.out.println("Recieved свободные узлы, myrank is   " + myRank);
+        for (int i = 0; i < cnt; i++) {
+            freeProcs.add((int) freeProcsAr[i]);
+        }
+
+        if (freeProcs.contains(myRank)) {
+            freeProcs.remove(myRank);
+        }
+    }
+
+    private void procLevel(int cnt, Integer daughter) throws MPIException {
+        int[] tmr = new int[cnt];
+        MPI.COMM_WORLD.recv(tmr, cnt, MPI.INT, daughter, 2);
+        System.out.println("Recieved состояние процесора, myrank is   " + myRank);
+        for (int i = 0; i < terminal[tmr[1]].size(); i++) {
+            if (terminal[tmr[1]].get(i)[0] == daughter) {
+                terminal[tmr[0]].add(terminal[tmr[1]].get(i));
+                terminal[tmr[1]].remove(i);
+                break;
+            }
+        }
+
+        if (tmr[0] < childsLevel) {
+            childsLevel = tmr[0];
+        }
+    }
+
+    private void endProgramme(int cntProc, Object[] tmp, int[] nodes) throws MPIException {
+        System.out.println("daughter == myRank   ");
+        for (int i = 0; i < ((Element[]) tmp[0]).length; i++) {
+            System.out.println("RESULT = " + ((Element[]) tmp[0])[i]);
+        }
+        int[] tmpAr = {24};
+        for (int j = 1; j < cntProc; j++) {
+            MPI.COMM_WORLD.send(tmpAr, 1, MPI.INT, nodes[j], 5);
+        }
+        mode = -1;
+        counter.DoneThread();
+
+    }
+
+    private void receiveResult(Integer daughter, int cntProc, int[] nodes, Ring ring) throws MPIException {
+        Object[] tmp = new Object[3];
+        tmp = Tools.recvObjects(3, daughter, 3);
+        System.out.println("Recieved результат задачи, myrank is   " + myRank);
+        boolean isReadyF = false;
+        Amin amin = null;
+        if (daughter == myRank) {
+            //задача посчитана в корневом узле - завершение работы
+            endProgramme(cntProc, tmp, nodes);
+        } else {
+
+            DropTask currentDrop = firtree.body.get((int) tmp[1]).branch.get((int) tmp[2]);
+
+            currentDrop.outData = (Element[]) tmp[0];
+            currentDrop.state = 2;
+
+            deleteDaughter(daughter, tmp);
+
+            isReadyF = counter.writeResultsToAmin(currentDrop);
+            amin = firtree.body.get((int) tmp[1]);
+
+            amin = counter.writeAllResultsInFirtree(amin, isReadyF);
+
+            //задача посчитана
+            if (myRank == nodes[0] && Tools.isEmptyArray(counter.vokzal) && firtree.body.get(0).aminState == 2) {
+                endProgramme(cntProc, tmp, nodes);
+            }
+
+            if (amin.parentAmin != myRank) {
+                Object[] res = {amin.outputData, (Integer) amin.parentAmin, (Integer) amin.parentDrop, sentLevel};
+                Tools.sendObjects(res, amin.parentProc, 3);
+
+                pNodes.get(amin.parentProc).remove((Integer) amin.aminIdInFirtree);
+
+                if (pNodes.get(amin.parentProc).isEmpty()) {
+                    pNodes.remove((Integer) amin.parentProc);
+                }
+
+                System.out.println("Sending result (disp) from  " + myRank + " to " + amin.parentProc);
+            }
+        }
+
+    }
+
+    private void addDaugter(int daughtProcs, int curDrop, int curAmin) {
+
+        boolean newDaughter = true;
+        for (int i = 0; i < terminal[20].size(); i++) {
+            if (terminal[20].get(i)[0] == daughtProcs) {
+                int[] newMas = new int[terminal[20].get(i).length + 2];
+                System.arraycopy(terminal[20].get(i), 0, newMas, 0, terminal[20].get(i).length);
+                newMas[newMas.length - 2] = curDrop;
+                newMas[newMas.length - 1] = curAmin;
+                terminal[20].remove(i);
+                terminal[20].add(newMas);
+                newDaughter = false;
+                break;
+            }
+        }
+        if (newDaughter) {
+            int[] history = new int[] {daughtProcs, curAmin, curDrop};
+            terminal[20].add(history);
+        }
+
+    }
+
+    private void deleteDaughter(Integer daughter, Object[] tmp) {
+        int level = (int) tmp[3];
+        for (int i = 0; i < terminal[level].size(); i++) {
+            if (terminal[level].get(i)[0] == daughter) {
+                if (terminal[level].get(i).length == 3) {
+                    terminal[level].remove(i);
+
+                    if (childsLevel == level && terminal[level].isEmpty()) {
+                        for (int l = childsLevel + 1; l < terminal.length; l++) {
+                            if (!terminal[level].isEmpty()) {
+                                childsLevel = l;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    int index = -1;
+                    for (int j = 1; j < terminal[level].get(i).length; j += 2) {
+                        if (terminal[level].get(i)[j] == (int) tmp[1] && terminal[level].get(i)[j + 1] == (int) tmp[2]) {
+                            index = j;
+                            break;
+                        }
+                    }
+                    int[] newMas = new int[terminal[level].get(i).length - 2];
+                    System.arraycopy(terminal[level].get(i), 0, newMas, 0, index);
+                    System.arraycopy(terminal[level].get(i), index + 2, newMas, index, terminal[level].get(i).length - (index + 2));
+                    terminal[level].remove(i);
+                    terminal[level].add(newMas);
+                }
+                break;
+            } else {
+                System.out.println("Cant find daughter " + daughter + "  for deleting from terminal!!!");
+            }
+        }
+    }
+
+    private void sendDrops(int number) throws MPIException {
+        for (int i = 0; i < counter.vokzal[myLevel].size(); i++) {
+            System.out.println("HEY in for " + myRank);
+            if(freeProcs.size()==0) break;
+            
+            DropTask curTask = counter.vokzal[myLevel].get(i);
+            int curAmin = curTask.aminId;
+            int curDrop = curTask.dropId;
+
+            Object[] tmpS = {curTask};
+
+            if (number <= 1) {
+
+                System.out.println("number< =  1");
+
+                int daughter = (int) freeProcs.toArray()[i];
+                System.out.println("Sending drop " + curTask + " from  " + myRank + " to " + daughter);
+                Tools.sendObjects(tmpS, daughter, 0);
+
+                curTask.numberOfDaughterProc = daughter;
+
+                freeProcs.remove(daughter);
+                addDaugter(daughter, curDrop, curAmin);
+            } else {
+                System.out.println("number>  1 = " + number);
+
+                int[] daughtProcs = new int[number];
+                for (int j = 0; j < daughtProcs.length; j++) {
+                    daughtProcs[j] = (int) freeProcs.toArray()[j];
+
+                    freeProcs.remove((int) freeProcs.toArray()[j]);
+                    System.out.println("remove from free");
+
+                    System.out.println("daughtProcs[j]" + daughtProcs[j]);
+                }
+
+                System.out.println("Sending drop plus procs" + curTask + " from  " + myRank + " to " + daughtProcs[0]);
+                Tools.sendObjects(tmpS, daughtProcs[0], 0);
+
+                int[] daughtFreeProcs = new int[daughtProcs.length - 1];
+                System.arraycopy(daughtProcs, 1, daughtFreeProcs, 0, daughtFreeProcs.length);
+
+                System.out.println("Sending freeProc from  " + myRank + " to " + daughtProcs[0]);
+                MPI.COMM_WORLD.send(daughtFreeProcs, daughtFreeProcs.length, MPI.INT, daughtProcs[0], 1);
+
+                curTask.numberOfDaughterProc = daughtProcs[0];
+                addDaugter(daughtProcs[0], curDrop, curAmin);
+
+            }
+            counter.vokzal[myLevel].remove(i);
+            System.out.println("vokzal[myLevel].size() after del = " + counter.vokzal[myLevel].size());
+            counter.changeLevel();
+
+        }
+    }
+
+    private void sendFreeToDaughter(int number) throws MPIException {
+
+        if (freeProcs.size() > terminal[childsLevel].size()) {
+            for (int j = 0; j < terminal[childsLevel].size(); j++) {
+                int[] procsToSend = new int[(int) number];
+
+                for (int i = 0; i < number; i++) {
+                    procsToSend[i] = (int) freeProcs.toArray()[i];
+                    freeProcs.remove(i);
+                }
+                MPI.COMM_WORLD.send(procsToSend, procsToSend.length, MPI.INT, terminal[childsLevel].get(j)[0], 1);
+                System.out.println("Sending freeProc from  " + myRank + " to " + terminal[childsLevel].get(j)[0]);
+            }
+        } else {
+            for (int i = 0; i < freeProcs.size(); i++) {
+                int[] tmpS = {(int) freeProcs.toArray()[i]};
+                MPI.COMM_WORLD.send(tmpS, tmpS.length, MPI.INT, terminal[childsLevel].get(i)[0], 1);
+                System.out.println("Sending freeProc from  " + myRank + " to " + terminal[childsLevel].get(i)[0]);
+            }
+        }
+
+    }
+
+    private void sendDropsAndFreeProcs() throws MPIException {
+
+        System.out.println("Send drops and free procs");
+        System.out.println("myLevel = " + myLevel);
+        System.out.println("childsLevel = " + childsLevel);
+
+        double number = 0;
+        System.out.println("vokzal[myLevel].size() = " + counter.vokzal[myLevel].size());
+        if (myLevel == childsLevel && childsLevel != 20) {
+            System.out.println("myLevel == childsLevel && childsLevel != 20");
+            number = freeProcs.size() / (counter.vokzal[myLevel].size() + terminal[childsLevel].size());
+            sendDrops((int) number);
+            sendFreeToDaughter((int) number);
+
+        } else if (myLevel < childsLevel && counter.vokzal[myLevel].size() != 0&& myLevel!=0) {
+            System.out.println("myLevel < childsLevel");
+            number = freeProcs.size() / counter.vokzal[myLevel].size();
+            sendDrops((int) number);
+        } else if (myLevel > childsLevel && terminal[childsLevel].size() != 0) {
+            System.out.println("myLevel > childsLevel");
+            number = freeProcs.size() / terminal[childsLevel].size();
+            sendFreeToDaughter((int) number);
+
+        } else if (myLevel == childsLevel && childsLevel == 20) {
+            System.out.println("myLevel == childsLevel && childsLevel == 20");
+            int parent = (int) pNodes.keySet().toArray()[0];
+
+            MPI.COMM_WORLD.send(freeProcs, freeProcs.size(), MPI.INT, parent, 1);
+            System.out.println("Sending freeProcs from  " + myRank + " to " + parent);
+
+        }
+
+    }
+
+    private void doMeFree() {
+        if (counter.isEmptyVokzal && !flagOfMyDeparture) {
+            freeProcs.add(myRank);
+            flagOfMyDeparture = true;
+        }
+    }
+
+    private void sendLevel() throws MPIException {
+
+        if (counter.isEmptyVokzal && childsLevel == 20) {
+            myLevel = 20;
+        }
+        if (totalLevel != sentLevel) {
+            sentLevel = totalLevel;
+
+            int[] state = {totalLevel, sentLevel};
+
+            for (Object o : pNodes.keySet()) {
+                MPI.COMM_WORLD.send(state, state.length, MPI.INT, (int) o, 2);
+                System.out.println("Sending state " + totalLevel + " from " + myRank + " to " + (int) o);
+            }
+        }
+
+    }
+
     public void execute(int startType, String[] args, Element[] data, int[] nodes, Ring ring) throws mpi.MPIException, InterruptedException, IOException, ClassNotFoundException {
 
         //System.out.println("In execute, myrank is   " + myRank);
         int cntProc = nodes.length;
 
         Thread disp = Thread.currentThread();
-        disp.setPriority(9);
+        disp.setPriority(8);
         disp.setName("disp");
 
-       
-        TreeSet<Integer> freeProcs = new TreeSet<Integer>();
-        Map<Integer, int[]> dNodes = new HashMap<Integer, int[]>();
-
-        counter = new CalcThread(firtree, ring);
+        counter = new CalcThread(firtree, pNodes, ring);
 
         int rootNumb = nodes[0];
 
         if (myRank == rootNumb) {
-            System.out.println("i'm root");
-            for (int i = 1; i < nodes.length; i++) {
-                freeProcs.add(nodes[i]);
-            }
-            System.out.println("added to freeprocs ");
-            Object[] mas = new Object[] {startType, 0, 0, 0, data};
-            System.out.println("created object mas = ");
-
-            counter.setAmin(mas);
-            System.out.println("setting amin");
+            rootWork(nodes, startType, data);
         }
         executeTime = System.currentTimeMillis();
         if (myRank == rootNumb) {
@@ -92,313 +408,72 @@ public class DispThread {
         }
 
         while (mode != -1) {
-          // System.out.println("in while!!  myrank = " +myRank);
-            // теги:
-            //     0: сообщение содержит задачу
-            //     1: сообщение содержит свободные узлы
-            //      2: сообщение содержит состояние процесора
-            //      3: сообщение содержит результат задачи
-            //     5: сообщение содержит команду на завершение (вся задача посчитана)
+            // System.out.println("**In DispThreadThread cycle, myRank = " + myRank);
 
-            Status exitInfo = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 5);
-              
-            if (exitInfo != null) {
-                System.out.println("--------------------------------5");
-                mode = -1;
-                System.out.println("вся задача посчитана, myrank is   " + myRank);
-                counter.DoneThread();
-            }
-           
+            Status info = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, MPI.ANY_TAG);
 
-            //режим ожидания задачи
-            Status taskInfo = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 0);
+            if (info != null) {
+                int tag = info.getTag();
+                int cnt = info.getCount(MPI.INT);
+                Integer daughter;
+                System.out.println("MYRANK = " + myRank);
 
-            if (taskInfo != null) {
-                System.out.println("--------------------------------0");
-                             System.out.println("режим ожидания задачи--STATUS=== " + taskInfo);
-                Object[] tmpAr = new Object[5];
-                //Parent=taskInfo.getSource();
-                tmpAr = Tools.recvObjects(5, MPI.ANY_SOURCE, 0);
-                System.out.println("Recieved task, myrank is   " + myRank);
-                if (freeProcs.contains(myRank)) {freeProcs.remove(myRank);}
-                counter.setAmin(tmpAr);
-                
-            }
-
-              
-            //получение свободных процессов от род. узла:
-            Status st = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 1);
-
-            while (st != null) {
-                 System.out.println("--------------------------------1");
-                //получено сообщение от род. узла со своб. процессами
-                int cnt = st.getCount(MPI.INT);
-                Object[] freeProcsAr = new Object[cnt];
-                freeProcsAr = Tools.recvObjects(cnt, MPI.ANY_SOURCE, 1);
-                System.out.println("Recieved свободные узлы, myrank is   " + myRank);
-                for (int i = 0; i < cnt; i++) {
-                    freeProcs.add((int)freeProcsAr[i]);
+                if (tag == 5) {
+                    exit();
                 }
-                st = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 1);
-            }
-
-             
-            Status state = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 2);
-            while (state != null) {
-                 System.out.println("--------------------------------2");
-                int cnt = state.getCount(MPI.INT);
-                Integer daughter = taskInfo.getSource();
-                int[] tmr = new int[cnt];
-                MPI.COMM_WORLD.recv(tmr, cnt, MPI.INT, daughter, 2);
-                System.out.println("Recieved состояние процесора, myrank is   " + myRank);
-                dNodes.get(daughter)[0] = tmr[0];
-
-                firtree.body.get(tmr[1]).branch.get(tmr[2]).state = tmr[0];
-
-                if (counter.taskLevels[0].isEmpty() && firtree.CheckState() == 1
-                        && !counter.GetFlag_IsItCalcState()) {
-                    firtree.SetState(1);
+                if (tag == 0) {
+                    System.out.println("Get task ");
+                    //режим ожидания задачи
+                    cnt = info.getCount(MPI.INT);
+                    receiveTask(cnt);
+                    flagOfMyDeparture = false;
                 }
-
-                state = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 2);
-            }
-
-             
-              
-              
-            Status st1 = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 3);
-            while (st1 != null) {   
-                System.out.println("--------------------------------3");
-                Integer daughter = st1.getSource(); 
-                Object[] tmp = new Object[4];  
-                tmp = Tools.recvObjects(4, daughter, 3);
-                System.out.println("Recieved результат задачи, myrank is   " + myRank);
-                boolean isReadyF = false;
-                Amin amin = null;
-                if (daughter == myRank)
-                {
-                 //задача посчитана в корневом узле - завершение работы
-                    System.out.println("daughter == myRank   ");
-                     for(int i=0; i<((Element[])tmp[0]).length;i++){
-                         System.out.println("RESULT = "+((Element[])tmp[0])[i]);
-                     }
-                    int[] tmpAr = {24};
-                    for (int j = 1; j < cntProc; j++) {
-                        MPI.COMM_WORLD.send(tmpAr, 1, MPI.INT, nodes[j], 5);
-                    }
-                    mode = -1;
-                    counter.DoneThread();
-                }
-                else{
-                if ((int) tmp[3] != -1) {
-                    
-
-                    {
-                        Avariya:
-                        for (int j = 0; j < firtree.body.size(); j++) {
-                            if (firtree.body.get(j).parentProc == (int) tmp[3] && firtree.body.get(j).parentAmin == (int) tmp[1]
-                                    && firtree.body.get(j).dropId == (int) tmp[2]) {
-                                int[] mas = counter.tryLittle(firtree.body.get(j).type).connectionsOfNotMain;
-                                for (int k = 0; k < mas.length; k++) {
-                                    firtree.body.get(j).resultForOutFunction[mas[k]] = ((Element[]) tmp[0])[k];
-
-                                }
-                                amin = firtree.body.get(j);
-                                isReadyF = true;
-                                break Avariya;
-                            }
-
-                        }
-                        System.out.println("Не нашлось в елке процесора!!!");
-                    }
-                } else {
-                     System.out.println("Integer) tmp[3] != myRank   ");
-                    DropTask currentDrop = firtree.body.get((int) tmp[1]).branch.get((int) tmp[2]);
-
-                    currentDrop.outData = (Element[]) tmp[0];
-                    currentDrop.state = 2;
-
-                    if ((int) tmp[3] == myRank) {
-                        for (int i = 0; i < currentDrop.outData.length; i++) {
-                            System.out.println("Result:   " + currentDrop.outData[i]);
-                        }
-                    }
-
-                    if (dNodes.get(daughter).length == 3) {
-                        freeProcs.add(daughter);
-                        dNodes.remove(daughter);
-                    } else {
-                        int index = -1;
-
-                        for (int j = 1; j < dNodes.get(daughter).length; j += 2) {
-                            if (dNodes.get(daughter)[j] == (int) tmp[1] && dNodes.get(daughter)[j + 1] == (int) tmp[2]) {
-                                index = j;
-                                break;
-                            }
-                        }
-                        int[] newMas = new int[dNodes.get(daughter).length - 2];
-                        System.arraycopy(dNodes.get(daughter), 0, newMas, 0, index);
-                        System.arraycopy(dNodes.get(daughter), index + 2, newMas, index, dNodes.get(daughter).length - (index + 2));
-                        dNodes.put(daughter, newMas);
-
-                    }
-
-                    isReadyF = writeResultsToAmin(currentDrop, (int) tmp[1], (int) tmp[2]);
-                    amin = firtree.body.get((int) tmp[1]);
-                }
-                while (isReadyF) {
-                    amin.outputData = counter.tryLittle(amin.type).outputFunction(amin.resultForOutFunction, ring);
-
-                    if (amin.parentProc == myRank) {
-                        isReadyF = writeResultsToAmin(firtree.body.get(amin.parentAmin).branch.get(amin.dropId), amin.parentAmin, amin.dropId);
-                        amin = firtree.body.get(amin.parentAmin);
-                    } else {
-                        isReadyF = false;
+                if (tag == 1) {
+                    System.out.println("Get free procs");
+                    //получение свободных процессов от род. узла:
+                    while (info != null) {
+                        cnt = info.getCount(MPI.INT);
+                        receiveFreeProcs(cnt);
+                        info = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 1);
                     }
                 }
+                if (tag == 2) {
 
-                //задача посчитана - перейти в режим 2
-                if (amin.parentAmin == -1) {
-                    //задача посчитана в корневом узле - завершение работы
-                    int[] tmpAr = {24};
-                    for (int j = 1; j < cntProc; j++) {
-                        MPI.COMM_WORLD.send(tmpAr, 1, MPI.INT, nodes[j], 5);
+                    //состояние процесора
+                    while (info != null) {
+                        System.out.println("Get proc state");
+                        cnt = info.getCount(MPI.INT);
+                        daughter = info.getSource();
+
+                        procLevel(cnt, daughter);
+
+                        info = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 2);
                     }
-                    mode = -1;
-                    counter.DoneThread();
-                } else {
-                    Object[] res = {amin.outputData, (Integer)amin.parentAmin, (Integer)amin.dropId};
-                    Tools.sendObjects(res, amin.parentProc, 3);
-                    System.out.println("Sending result (disp) from  " + myRank + " to " + amin.parentProc);
                 }
-            }
-                st1 = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 3);
-            }
-            
-            //надсилання дропів і вільних процесорів дочірнім, і є завдання
-            //System.out.println("~~~~~!rank = "+ myRank+"freeProcs.size() = " + freeProcs.size());
-           // System.out.println("~~~~~!rank = "+ myRank+"counter.sizeOfTaskLevel = " + counter.sizeOfTaskLevel);
-            if (freeProcs.size() > 0 && counter.taskLevels[counter.sizeOfTaskLevel-1].size() > 0) {
-                System.out.println("--------------------------------111111");
-                ArrayList<Integer> free = new ArrayList(freeProcs);
-                if (!counter.GetFlag_IsItCalcState()) {
+                if (tag == 3) {
 
-                    free.add(myRank);
-                }
-                int number = freeProcs.size() /  counter.taskLevels[0].size();
-                if (number <= 1) {
-                    for (int i = 0; i <  counter.taskLevels[0].size(); i++) {
-                        //counter.taskLevels;
-                        DropTask curTask =  counter.taskLevels[0].get(0);
-                        int curAmin = curTask.aminFirtree;
-                        int curDrop = firtree.body.get(curAmin).branch.indexOf(curTask);
-                        Object[] tmpS = {curTask.GetType(), myRank, curAmin, curDrop, curTask.inData};
-                        Tools.sendObjects(tmpS, free.get(i), 0);
-                        System.out.println("Sending task from  " + myRank + " to " + free.get(i));
-                        curTask.numberOfDaughterProc = free.get(i);
+                    //результат 
+                    while (info != null) {
+                        System.out.println("Get result");
+                        daughter = info.getSource();
 
-                        counter.taskLevels[0].remove(0);
-                        if( counter.taskLevels[0].isEmpty()){
-                        DropTask[] newMasOfLevels = new DropTask[counter.taskLevels.length-1];
-                        System.arraycopy(counter.taskLevels, 1, newMasOfLevels, 0, newMasOfLevels.length);
-                        }
-                    }
-                } else {
-                    int[] daughtProcs = new int[number];
-                    for (int j = 0; j <  counter.taskLevels[0].size(); j++) {
-                        if (freeProcs.size() != 0) {
-                            for (int i = 0; i < number; i++) {
-                                daughtProcs[i] = (int) freeProcs.toArray()[i];
-                                freeProcs.remove(i);
-                            }
+                        receiveResult(daughter, cntProc, nodes, ring);
 
-                            DropTask curTask =  counter.taskLevels[0].get(0);
-                           int curAmin = curTask.aminFirtree;
-                           int curDrop = firtree.body.get(curAmin).branch.indexOf(curTask);
-                           Object[] tmpS = {curTask.GetType(), myRank, curAmin, curDrop, curTask.inData};
-
-                            if (!dNodes.keySet().contains(daughtProcs[0])) {
-                                int[] history = new int[] {0, curAmin, curDrop};
-                                dNodes.put(daughtProcs[0], history);
-                            } else {
-                                int[] newMas = new int[dNodes.get(daughtProcs[0]).length + 2];
-                                System.arraycopy(dNodes.get(daughtProcs[0]), 0, newMas, 0, dNodes.get(daughtProcs[0]).length);
-                                newMas[newMas.length - 1] = curDrop;
-                                newMas[newMas.length - 1] = curAmin;
-                                dNodes.put(daughtProcs[0], newMas);
-                            }
-
-                            Tools.sendObjects(tmpS, daughtProcs[0], 0);
-                            System.out.println("Sending task from  " + myRank + " to " + daughtProcs[0]);
-                            MPI.COMM_WORLD.send(daughtProcs, 1, MPI.INT, daughtProcs[0], 1);
-                            System.out.println("Sending freeProcs from  " + myRank + " to " + daughtProcs[0]);
-                            curTask.numberOfDaughterProc = daughtProcs[0];
-
-                        counter.taskLevels[0].remove(0);
-                         if( counter.taskLevels[0].isEmpty()){
-                        DropTask[] newMasOfLevels = new DropTask[counter.taskLevels.length-1];
-                        System.arraycopy(counter.taskLevels, 1, newMasOfLevels, 0, newMasOfLevels.length);
-                        }
-                           
-                        }
+                        info = MPI.COMM_WORLD.iProbe(MPI.ANY_SOURCE, 3);
                     }
                 }
 
             }
-  
-            //якщо є вільні процесори розсилання вільних процесорів дочірнім якщо я закінчив, немає завдань
-            if (freeProcs.size() > 0 && counter.taskLevels[0].isEmpty()) {
-                 System.out.println("--------------------------------2222");
-                if (!counter.GetFlag_IsItCalcState() && dNodes.size() > 0) {//?
-                    freeProcs.add(myRank);
-                }
 
-                ArrayList<Integer> daughterInNeed = new ArrayList();
+            sendLevel();
 
-                for (Object o : dNodes.keySet()) {
-                    if (dNodes.get(o).equals(0)) {
-                        daughterInNeed.add((Integer) o);
-                    }
-                }
-
-                if (freeProcs.size() > daughterInNeed.size()) {
-                    int procNum = freeProcs.size() / daughterInNeed.size();
-                    int[] procsToSend = new int[procNum];
-                    for (int j = 0; j < daughterInNeed.size(); j++) {
-                        for (int i = 0; i < procNum; i++) {
-                            procsToSend[i] = (int) freeProcs.toArray()[i];
-                            freeProcs.remove(i);
-                        }
-                        MPI.COMM_WORLD.send(procsToSend, 1, MPI.INT, daughterInNeed.get(j), 1);
-                        System.out.println("Sending freeProc from  " + myRank + " to " + daughterInNeed.get(j));
-                    }
-                } else {
-                    for (int i = 0; i < freeProcs.size(); i++) {
-                        int[] tmpS = {(int) freeProcs.toArray()[i]};
-                        MPI.COMM_WORLD.send(tmpS, 1, MPI.INT, daughterInNeed.get(i), 1);
-                        System.out.println("Sending freeProc from  " + myRank + " to " + daughterInNeed.get(i));
-                    }
-                }
+            doMeFree();
+            //Отправка дропов и свободних процесоров 
+            if (freeProcs.size() != 0) {
+                sendDropsAndFreeProcs();
             }
-             
-            // немає дочірніх і я закінчив немає завдань
-            if (!counter.GetFlag_IsItCalcState() && dNodes.size() != 0 &&  counter.taskLevels[0].isEmpty()) {
-                 System.out.println("--------------------------------3333");
-                freeProcs.add(myRank);
-                int parent = 0;
-                for (int i = 0; i < firtree.body.size(); i++) {
-                    if (firtree.body.get(i) != null && firtree.body.get(i).parentProc != myRank) {
-                        parent = firtree.body.get(i).parentProc;
-                    }
-                }
-                MPI.COMM_WORLD.send(freeProcs, 1, MPI.INT, parent, 1);
-                System.out.println("Sending freeProcs from  " + myRank + " to " + parent);
 
-            }
-            
-            
-             
-        
+            //System.out.println("GO TO SLEEP myRank = " + myRank);
             //периодичность диспетчера
             disp.sleep(sleepTime);
             //System.out.println("#After sleep! myRank " + myRank);
@@ -408,82 +483,10 @@ public class DispThread {
         counter.thread.join();
         executeTime = System.currentTimeMillis() - executeTime;
         if (myRank == rootNumb) {
-            System.out.println("DDP done.");
+            System.out.println("DAP done.");
             System.out.println("executeTime = " + executeTime);
         }
-        
-        
-    }
-
-    public boolean writeResultsToAmin(DropTask drop, int aminId, int dropId) throws MPIException {
-
-        boolean isReadyOutputFunction = true;
-        for (int i = 0; i < drop.arcs[dropId + 1].length; i += 3) {
-            int number = drop.arcs[dropId + 1][i];
-
-            if (drop.arcs[number] != null) {
-                isReadyOutputFunction = false;
-                DropTask dependantDrop = firtree.body.get(aminId).branch.get(number);
-                int from = drop.arcs[number][i + 1];
-                int to = drop.arcs[number][i + 2];
-
-                dependantDrop.inData[to] = drop.outData[from];
-
-                boolean ready = true;
-                if (dependantDrop.numberOfDaughterProc == -2) {
-
-                    for (int j = 0; j < dependantDrop.numberOfMainComponents; j++) {
-                        if (dependantDrop.inData[j] == null) {
-                            ready = false;
-                            break;
-                        }
-                    }
-
-                    if (ready) {
-                         counter.taskLevels[0].add(dependantDrop);
-                        dependantDrop.numberOfDaughterProc = -1;
-                    } else {
-                        ready = true;
-                    }
-
-                }
-
-                if (dependantDrop.numberOfDaughterProc > -1) {
-                    for (int j = dependantDrop.numberOfMainComponents; j < dependantDrop.inputDataLength; j++) {
-                        if (dependantDrop.inData[j] == null) {
-                            ready = false;
-                            break;
-                        }
-                    }
-
-                    if (ready && dependantDrop.numberOfDaughterProc != myRank) {
-                        int length = dependantDrop.inputDataLength - dependantDrop.numberOfMainComponents;
-                        Element[] additionalComponents = new Element[length];
-                        System.arraycopy(dependantDrop.inData, dependantDrop.numberOfMainComponents, additionalComponents, 0, length);
-
-                        Object[] tmpS = {additionalComponents, aminId, dropId, myRank};
-                        Tools.sendObjects(tmpS, dependantDrop.numberOfDaughterProc, 3);
-                        System.out.println("Sending additional components from  " + myRank + " to " + dependantDrop.numberOfDaughterProc);
-
-                    }
-
-                }
-            } else {
-                int from = drop.arcs[number][i + 1];
-                int to = drop.arcs[number][i + 2];
-                Amin amin = firtree.body.get(aminId);
-                amin.resultForOutFunction[to] = drop.outData[from];
-
-                for (int j = 0; j < amin.resultForOutFunction.length; j++) {
-                    if (amin.resultForOutFunction[i] == null) {
-                        isReadyOutputFunction = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return isReadyOutputFunction;
 
     }
+
 }
