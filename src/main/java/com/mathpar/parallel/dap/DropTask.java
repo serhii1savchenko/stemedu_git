@@ -8,12 +8,13 @@ package com.mathpar.parallel.dap;
 
 import com.mathpar.number.Element;
 import com.mathpar.number.Ring;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static com.mathpar.number.Ring.MatrixS;
 
 
-public abstract class DropTask {
+public abstract class DropTask implements Serializable {
 
     Element[] inData;
     Element[] outData;
@@ -21,7 +22,7 @@ public abstract class DropTask {
     /**
      * 0-идет счет,
      * 1-идет листовой счет,
-     * 2-закончено,
+     * 2-закончен счет,
      */
     int state;
     int[][] arcs;
@@ -31,8 +32,10 @@ public abstract class DropTask {
     int inputDataLength;
     int numberOfDaughterProc = -2;
     int [] connectionsOfNotMain;
-    int aminFirtree = -1;
-    int level = -1;
+    int aminId = -1;
+    int dropId = -1;
+    int procId = -1;
+    int recNum = 0;
     
     public abstract ArrayList<DropTask> doAmin();
     public abstract void sequentialCalc(Ring ring);

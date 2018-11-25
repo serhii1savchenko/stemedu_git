@@ -26,8 +26,8 @@ public class Multtest {
                 
                 Pine f = new Pine();
               
-                MatrixS A = Tools.init(4);
-		MatrixS B = Tools.init(4);
+                MatrixS A = Tools.init(8);
+		MatrixS B = Tools.init(8);
                 Ring ring = new Ring("Zp32[]");
                   
                 if (rank==0){
@@ -35,7 +35,7 @@ public class Multtest {
                     System.out.println("B= "+ B);}
                 Element[] init = new MatrixS[]{A,B};
                 
-                DispThread disp = new DispThread(0, f, 1, args, init, ring);
+                DispThread disp = new DispThread(0, f, 10, args, init, ring);
                
              
                     //MatrixS result = (MatrixS)f.body.get(0).branch.get(f.body.get(0).branch.size()-1).outData[0];
