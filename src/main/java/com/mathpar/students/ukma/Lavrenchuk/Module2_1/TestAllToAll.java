@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Lavrenchuk.module2_1;
+
 import mpi.*;
 
 import java.nio.IntBuffer;

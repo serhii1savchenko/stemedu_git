@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Lavrenchuk.module2_2;
+
 import mpi.*;
 
 import java.util.Arrays;
