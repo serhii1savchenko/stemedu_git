@@ -1,3 +1,4 @@
+package com.mathpar.students.ukma.Zhovtukhin;
 import mpi.*;
 
 public class HelloWorldParallel {
