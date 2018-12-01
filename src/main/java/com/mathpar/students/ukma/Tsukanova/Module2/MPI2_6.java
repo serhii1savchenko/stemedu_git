@@ -1,14 +1,15 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI2_6 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
         int rank = WORLD.getRank();
         int size = Integer.parseInt(args[0]);
         int[] arr = new int[size];
@@ -16,9 +17,9 @@ public class MPI2_6 {
         int procNum = WORLD.getSize();
         int[] res = new int[size * procNum];
         // How many elements to receive from each proc
-        var recvCount = new int[procNum];
+        int recvCount[] = new int[procNum];
         Arrays.fill(recvCount, size);
-        var offsets = new int[]{0, 2, 5};
+        int offsets[] = new int[]{0, 2, 5};
         WORLD.gatherv(
             arr, size, MPI.INT, res, recvCount, offsets, MPI.INT, procNum - 1
         );

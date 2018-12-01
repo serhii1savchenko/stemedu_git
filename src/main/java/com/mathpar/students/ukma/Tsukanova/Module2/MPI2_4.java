@@ -1,6 +1,5 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
-import java.math.BigInteger;
 import java.util.Random;
 import mpi.*;
 
@@ -8,7 +7,7 @@ public class MPI2_4 {
 
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
         int rank = WORLD.getRank();
         int arrSize = Integer.parseInt(args[0]);
         double[] arr = new double[arrSize];

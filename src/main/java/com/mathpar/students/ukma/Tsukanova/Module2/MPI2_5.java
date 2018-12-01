@@ -1,11 +1,11 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import mpi.*;
 
 public class MPI2_5 {
    public static void main(String[] args) throws MPIException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
         int size = Integer.parseInt(args[0]);
         int[] arr = new int[size];
         int rank = WORLD.getRank();

@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import mpi.*;
 
@@ -7,7 +7,7 @@ import java.util.Random;
 public class MPI2_2 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
-        final var WORLD = MPI.COMM_WORLD;
+        final Intracomm WORLD = MPI.COMM_WORLD;
         WORLD.barrier();
         final int arraySize = Integer.parseInt(args[0]);
         double[] array = new double[arraySize];

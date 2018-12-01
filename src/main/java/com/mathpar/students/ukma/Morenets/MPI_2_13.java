@@ -3,7 +3,6 @@ package com.mathpar.students.ukma.Morenets;
 import mpi.MPI;
 import mpi.MPIException;
 
-import java.util.Arrays;
 import mpi.Intracomm;
 
 public class MPI_2_13 {
