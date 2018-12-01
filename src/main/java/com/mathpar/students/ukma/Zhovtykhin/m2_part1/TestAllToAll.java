@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Zhovtykhin.m2_part1;
+
 import mpi.*;
 
 import java.nio.IntBuffer;
