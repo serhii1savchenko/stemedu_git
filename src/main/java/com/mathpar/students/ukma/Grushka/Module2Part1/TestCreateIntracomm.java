@@ -42,6 +42,8 @@ public class TestCreateIntracomm {
 }
 
 
+//mpirun -np 2 java -cp out/production/Module2Part1 TestCreateIntracomm
+
 //   Result (2 processors & n=4):
 //a[0]= 0.8544217153091593
 //a[1]= 0.9638144099558331

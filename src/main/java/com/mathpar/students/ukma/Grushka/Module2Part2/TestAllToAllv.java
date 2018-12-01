@@ -30,6 +30,9 @@ public class TestAllToAllv {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestAllToAllv
+
 //   Result (3 processors):
 // myrank = 2: a = [2, 2, 2, 2]
 // myrank = 1: a = [1, 1, 1, 1]

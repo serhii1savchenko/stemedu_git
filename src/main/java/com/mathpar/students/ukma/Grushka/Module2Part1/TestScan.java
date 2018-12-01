@@ -34,6 +34,10 @@ public class TestScan {
     }
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestScan
+//mpirun -np 4 java -cp out/production/Module2Part1 TestScan
+
 //  Result (2 processors & n=4):
 //myrank = 0
 // 0

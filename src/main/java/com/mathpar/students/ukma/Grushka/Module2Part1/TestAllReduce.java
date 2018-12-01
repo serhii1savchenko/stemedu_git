@@ -32,6 +32,9 @@ public class TestAllReduce {
     }
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestAllReduce
+
 // Result (2 processors & n=2):
 //        myrank = 0
 //        myrank = 1

@@ -30,6 +30,9 @@ public class TestAllGather {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestAllGather
+
 // Result (3 processors & n=4):
 // myrank = 0 : a = [0, 0, 0, 0]
 // myrank = 2 : a = [2, 2, 2, 2]

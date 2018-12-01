@@ -28,6 +28,9 @@ public class TestGather {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestGather
+
 //  Result (3 processors & n=4):
 //        0
 //        0

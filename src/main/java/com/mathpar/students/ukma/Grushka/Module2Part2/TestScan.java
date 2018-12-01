@@ -28,6 +28,9 @@ public class TestScan {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestScan
+
 // Result (3 processors & n=2):
 // myrank = 1: a = [0, 1]
 // myrank = 0: a = [0, 1]

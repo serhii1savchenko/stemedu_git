@@ -34,6 +34,9 @@ public class TestAllToAll {
     }
 }
 
+
+//mpirun -np 4 java -cp out/production/Module2Part1 TestAllToAll
+
 // Result (4 processors):
 //   b[0] = 0
 //   b[1] = 1

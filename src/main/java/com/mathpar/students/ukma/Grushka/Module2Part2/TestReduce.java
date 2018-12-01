@@ -27,6 +27,9 @@ public class TestReduce {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestReduce
+
 // Result (3 processors):
 //myrank = 1: a = [0, 1, 2, 3]
 //myrank = 2: a = [0, 1, 2, 3]

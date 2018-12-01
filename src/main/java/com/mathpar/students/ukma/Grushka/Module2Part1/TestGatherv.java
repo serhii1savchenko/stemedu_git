@@ -34,6 +34,9 @@ public class TestGatherv {
 
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestGatherv
+
 //  Result (2 processors & n=4):
 //        0
 //        0

@@ -16,6 +16,8 @@ public class HelloWorldParallel {
 
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part1 HelloWorldParallel
+
 // Result (4 processors):
 //        Proc num 3 Hello World
 //        Proc num 2 Hello World
