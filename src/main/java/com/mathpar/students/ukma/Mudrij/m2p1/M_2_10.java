@@ -11,7 +11,7 @@ import mpi.*;
  *
  * @author vmudrij
  */
-// TestScatter
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestScatter
 public class M_2_10 {
     public static void main(String[] args) throws MPIException {
         // Initialization MPI

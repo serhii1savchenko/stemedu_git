@@ -12,7 +12,7 @@ import mpi.MPIException;
  *
  * @author vmudrij
  */
-// TestAllGatherv
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestAllGatherv
 public class M_2_9 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         // Initialization MPI

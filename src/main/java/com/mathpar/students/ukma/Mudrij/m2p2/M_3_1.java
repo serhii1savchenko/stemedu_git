@@ -14,7 +14,7 @@ import mpi.*;
  *
  * @author vmudrij
  */
-// TestBcast
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestBcast
 public class M_3_1 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);

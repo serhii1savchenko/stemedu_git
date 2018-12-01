@@ -12,7 +12,7 @@ import mpi.*;
  *
  * @author vmudrij
  */
-// TestAllGather
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestAllGather
 public class M_3_6 {
     public static void main(String[] args) throws Exception {
         MPI.Init(args);
