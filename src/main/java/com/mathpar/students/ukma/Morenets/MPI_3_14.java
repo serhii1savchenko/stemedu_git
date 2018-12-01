@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Morenets;
+
 import java.util.Arrays;
 import mpi.MPI;
 import mpi.MPIException;

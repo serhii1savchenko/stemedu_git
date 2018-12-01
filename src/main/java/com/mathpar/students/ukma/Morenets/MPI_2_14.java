@@ -1,3 +1,6 @@
+package com.mathpar.students.ukma.Morenets;
+
+import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -6,12 +9,12 @@ public class MPI_2_14 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
+        int rank = WORLD.getRank();
+        int size = WORLD.getSize();
 
-        var arr = new int[size];
+        int arr[] = new int[size];
 
         for (int i = 0; i < size; ++i)
         {
@@ -21,7 +24,7 @@ public class MPI_2_14 {
 
         System.out.println();
 
-        var res = new int[size];
+        int res[] = new int[size];
 
         WORLD.allReduce(arr, res, size, MPI.INT, MPI.PROD);
 

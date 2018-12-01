@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Morenets;
+
 import mpi.*;
 
 import java.util.Random;
@@ -6,7 +8,7 @@ public class MPI_2_2 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        final var WORLD = MPI.COMM_WORLD;
+        final Intracomm WORLD = MPI.COMM_WORLD;
 
         WORLD.barrier();
 
