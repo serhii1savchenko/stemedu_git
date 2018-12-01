@@ -1,3 +1,4 @@
+package com.mathpar.students.ukma.Bohachek;
 import mpi.*;
 
 public class TestAllGather {
