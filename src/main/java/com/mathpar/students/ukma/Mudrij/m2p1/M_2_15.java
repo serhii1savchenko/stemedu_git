@@ -12,7 +12,7 @@ import mpi.MPIException;
  *
  * @author vmudrij
  */
-// TestAllReduce
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestAllReduce
 public class M_2_15 {
     public static void main(String[] args) throws MPIException {
         // Initialization MPI

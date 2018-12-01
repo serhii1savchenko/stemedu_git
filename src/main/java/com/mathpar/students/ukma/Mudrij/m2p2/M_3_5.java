@@ -12,7 +12,7 @@ import mpi.*;
  *
  * @author vmudrij
  */
-// TestScatterv
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestScatterv
 public class M_3_5 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);

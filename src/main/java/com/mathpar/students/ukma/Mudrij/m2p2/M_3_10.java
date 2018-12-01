@@ -13,7 +13,7 @@ import mpi.Status;
  *
  * @author vmudrij
  */
-// TestProbe
+// com.mathpar.students.ukma.Zhyrkova.Module2Part2.ZhyrkovaTestProbe
 public class M_3_10 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);

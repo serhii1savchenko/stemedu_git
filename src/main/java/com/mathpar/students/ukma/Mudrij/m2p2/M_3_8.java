@@ -12,7 +12,7 @@ import mpi.*;
  *
  * @author vmudrij
  */
-// TestAllToAll
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestAllToAll
 public class M_3_8 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
