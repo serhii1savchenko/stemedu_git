@@ -29,3 +29,6 @@ public class ZhyrkovaTestProbe {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 4 java -cp out/production/Module2Part2 ZhyrkovaTestProbe

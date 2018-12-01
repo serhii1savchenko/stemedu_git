@@ -34,6 +34,8 @@ public class ZhyrkovaTestAllToAll {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestAllToAll
+
 // Output for amount of processors equals 2
 //        b[0] = 0
 //        b[1] = 1

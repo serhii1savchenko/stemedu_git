@@ -28,6 +28,8 @@ public class ZhyrkovaTestGatherv {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part2 ZhyrkovaTestGatherv
+
 // Output for amount of processors equals 2 and n=4
 //        myrank = 0: a = [0, 0, 0, 0]
 //        myrank = 1: a = [1, 1, 1, 1]

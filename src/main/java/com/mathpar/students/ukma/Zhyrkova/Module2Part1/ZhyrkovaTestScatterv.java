@@ -36,6 +36,8 @@ public class ZhyrkovaTestScatterv {
         }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestScatterv
+
 // Output for amount of processors equals 2 and n=4
 //        myrank = 0; 0
 //        myrank = 0; 1

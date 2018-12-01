@@ -30,6 +30,8 @@ public class ZhyrkovaTestReduce {
     }
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part1 ZhyrkovaTestReduce
+
 // Output for four processors
 // n=2
 // 0

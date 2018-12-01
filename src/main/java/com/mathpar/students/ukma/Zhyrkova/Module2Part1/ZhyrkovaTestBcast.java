@@ -40,6 +40,8 @@ public class ZhyrkovaTestBcast {
     }
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part1 ZhyrkovaTestBcast
+
 // Output for amount of processors equals 4 and n=4
 //        a[0]= 0.44425017395071087
 //        a[1]= 0.7786018081759669
