@@ -1,4 +1,5 @@
-import java.math.BigInteger;
+package com.mathpar.students.ukma.Morenets;
+
 import java.util.Random;
 import mpi.*;
 
@@ -7,7 +8,7 @@ public class MPI_2_4 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int rank = WORLD.getRank();
 

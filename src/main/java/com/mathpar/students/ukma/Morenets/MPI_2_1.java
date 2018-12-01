@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Morenets;
+
 import mpi.*;
 
 public class MPI_2_1 {
