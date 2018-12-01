@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;

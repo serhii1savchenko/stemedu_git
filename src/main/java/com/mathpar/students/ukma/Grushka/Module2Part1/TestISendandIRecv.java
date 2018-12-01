@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import java.nio.IntBuffer;
 import java.util.Random;
 import mpi.*;
