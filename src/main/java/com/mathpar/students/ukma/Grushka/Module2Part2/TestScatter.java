@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part2;
+
 import mpi.*;
 
 import java.util.Arrays;
