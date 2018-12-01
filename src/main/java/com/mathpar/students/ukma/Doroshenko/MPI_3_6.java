@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import java.util.Arrays;
 import mpi.*;
 
@@ -28,10 +30,9 @@ public class MPI_3_6 {
 }
 
 /*
-Command
-mpirun -np 4 java -cp out/production/MPI_3_6 MPI_3_6 4
+Command: mpirun -np 4 java -cp out/production/MPI_3_6 MPI_3_6 4
 
-Output
+Output:
 myrank = 0: a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 myrank = 0: q = [0, 1, 2, 3]
 myrank = 3: q = [12, 13, 14, 15]

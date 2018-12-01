@@ -1,19 +1,21 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.MPI;
 import mpi.MPIException;
 
-import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI_2_13 {
 
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
+        int rank = WORLD.getRank();
+        int size = WORLD.getSize();
 
-        var arr = new int[size];
+        int arr[] = new int[size];
 
         for (int i = 0; i < size; ++i)
         {
@@ -23,7 +25,7 @@ public class MPI_2_13 {
 
         System.out.println();
 
-        var res = new int[size];
+        int res[] = new int[size];
 
         WORLD.reduce(arr, res, size, MPI.INT, MPI.SUM, 0);
 
@@ -39,10 +41,9 @@ public class MPI_2_13 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_13 MPI_2_13
+Command: mpirun -np 3 java -cp out/production/MPI_2_13 MPI_2_13
 
-Output
+Output:
 rank = 2; arr[0] = 0
 rank = 2; arr[1] = 1
 rank = 2; arr[2] = 2
