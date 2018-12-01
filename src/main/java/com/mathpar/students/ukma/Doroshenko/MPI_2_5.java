@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.*;
 
 public class MPI_2_5 {
@@ -5,7 +7,7 @@ public class MPI_2_5 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int size = Integer.parseInt(args[0]);
         int[] arr = new int[size];
@@ -30,10 +32,9 @@ public class MPI_2_5 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_5 MPI_2_5 5
+Command: mpirun -np 3 java -cp out/production/MPI_2_5 MPI_2_5 5
 
-Output
+Output:
 0
 0
 0

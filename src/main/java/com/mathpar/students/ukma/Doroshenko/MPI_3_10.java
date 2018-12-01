@@ -1,8 +1,8 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.MPI;
 import mpi.MPIException;
 import mpi.Status;
-
-import java.util.Arrays;
 
 public class MPI_3_10 {
     public static void main(String[] args) throws MPIException {
@@ -36,10 +36,9 @@ public class MPI_3_10 {
 }
 
 /*
-Command
-mpirun -np 4 java -cp out/production/MPI_3_10 MPI_3_10 4
+Command: mpirun -np 4 java -cp out/production/MPI_3_10 MPI_3_10 4
 
-Output
+Output:
 myrank = 0, size = 4
 
 myrank = 3, size = 4

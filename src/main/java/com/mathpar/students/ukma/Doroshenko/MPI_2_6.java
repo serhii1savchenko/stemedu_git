@@ -1,14 +1,17 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI_2_6 {
 
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int rank = WORLD.getRank();
 
@@ -19,10 +22,11 @@ public class MPI_2_6 {
         int procNum = WORLD.getSize();
         int[] res = new int[size * procNum];
 
-        var recvCount = new int[procNum];
+        // How many elements to receive from each proc
+        int recvCount[] = new int[procNum];
         Arrays.fill(recvCount, size);
 
-        var offsets = new int[]{0, 2, 5};
+        int offsets[] = new int[]{0, 2, 5};
 
         WORLD.gatherv(
             arr, size, MPI.INT, res, recvCount, offsets, MPI.INT, procNum - 1
@@ -38,10 +42,9 @@ public class MPI_2_6 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_6 MPI_2_6 4
+Command: mpirun -np 3 java -cp out/production/MPI_2_6 MPI_2_6 4
 
-Output
+Output:
 0
 0
 1

@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.*;
 
 import java.util.Random;
@@ -6,7 +8,7 @@ public class MPI_2_2 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        final var WORLD = MPI.COMM_WORLD;
+        final Intracomm WORLD = MPI.COMM_WORLD;
 
         WORLD.barrier();
 
@@ -42,11 +44,12 @@ public class MPI_2_2 {
     }
 }
 
+
 /*
-Command
+Command:
 mpirun -np 3 java -cp out/production/MPI.2.2 MPI_2_2 5
 
-Output
+Output:
 a[0]= 0.0813919044010927
 a[1]= 0.1222901968323940
 a[2]= 0.4790162004208485

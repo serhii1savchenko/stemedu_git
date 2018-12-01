@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import java.util.Arrays;
 import mpi.MPI;
 import mpi.MPIException;
@@ -30,10 +32,9 @@ public class MPI_3_12 {
 }
 
 /*
-Command
-mpirun -np 4 java -cp out/production/MPI_3_12 MPI_3_12 4
+Command: mpirun -np 4 java -cp out/production/MPI_3_12 MPI_3_12 4
 
-Output
+Output:
 myrank = 2: a = [0, 1, 2, 3]
 myrank = 1: a = [0, 1, 2, 3]
 myrank = 3: a = [0, 1, 2, 3]
