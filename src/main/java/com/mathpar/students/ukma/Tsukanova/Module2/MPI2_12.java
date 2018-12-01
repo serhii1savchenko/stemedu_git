@@ -1,30 +1,31 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI2_12 {
     public static void main(String[] args) throws MPIException, InterruptedException {
        MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
-        var arr = new Integer[size];
+        Intracomm WORLD = MPI.COMM_WORLD;
+        int rank = WORLD.getRank();
+        int size = Integer.parseInt(args[0]);
+        Integer[] arr = new Integer[size];
         for (int i = 0; i < size; ++i)
         {
             arr[i] = i;
             System.out.println("rank = " + rank + "; arr[" + i + "] = " + arr[i]);
         }
         System.out.println();
-        var res = new Integer[size];
-        var sendSizes = new int[size];
-        var recvSizes = new int[size];
+        Integer[] res = new Integer[size];
+        int[] sendSizes = new int[size];
+        int[] recvSizes = new int[size];
         Arrays.fill(sendSizes, 1);
         Arrays.fill(recvSizes, 1);
-        var sendOffsets = new int[size];
-        var recvOffsets = new int[size];
+        int[] sendOffsets = new int[size];
+        int[] recvOffsets = new int[size];
         for (int i = 0; i < size; i++)
         {
             sendOffsets[i] = i;

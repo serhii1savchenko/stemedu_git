@@ -1,22 +1,24 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
+import java.nio.IntBuffer;
+import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
 
 public class MPI2_11 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
-        var buffer = MPI.newIntBuffer(size);
+        Intracomm WORLD = MPI.COMM_WORLD;
+        int rank = WORLD.getRank();
+        int size = Integer.parseInt(args[0]);
+        IntBuffer buffer = MPI.newIntBuffer(size);
         for (int i = 0; i < buffer.capacity(); ++i)
         {
             buffer.put(i);
             System.out.println("rank = " + rank + "; buffer[" + i + "] = " + buffer.get(i));
         }
         System.out.println();
-        var res = MPI.newIntBuffer(size);
+        IntBuffer res = MPI.newIntBuffer(size);
         WORLD.allToAll(buffer, 1, MPI.INT, res, 1, MPI.INT);
         Thread.sleep(size * rank);
         for (int i = 0; i < res.capacity(); i++)

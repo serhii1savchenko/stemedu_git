@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import java.util.Arrays;
 import mpi.MPI;
@@ -11,8 +11,8 @@ public class MPI3_13 {
         int myrank = MPI.COMM_WORLD.getRank();
         int n = Integer.parseInt(args[0]);
         int[] a = new int[n];
-        var size = MPI.COMM_WORLD.getSize();
-        var recvSizes = new int[size];
+        int size = MPI.COMM_WORLD.getSize();
+        int recvSizes[] = new int[size];
         Arrays.fill(recvSizes, 1);
         for (int i = 0; i < n; i++) a[i] = i;
         System.out.println("myrank = " + myrank + ": a = " + Arrays.toString(a));
