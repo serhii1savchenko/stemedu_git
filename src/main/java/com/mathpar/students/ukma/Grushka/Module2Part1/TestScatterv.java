@@ -34,6 +34,9 @@ public class TestScatterv {
         }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestScatterv
+
 //  Result (3 processors & n=4):
 //myrank = 0; 0
 //myrank = 0; 1

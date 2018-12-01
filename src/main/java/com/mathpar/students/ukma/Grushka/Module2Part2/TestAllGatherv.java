@@ -29,6 +29,9 @@ public class TestAllGatherv {
     }
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part2 TestAllGatherv
+
 // Result (2 processors & n=2):
 //        myrank = 0: a = [0, 1]
 //        myrank = 1: a = [0, 1]

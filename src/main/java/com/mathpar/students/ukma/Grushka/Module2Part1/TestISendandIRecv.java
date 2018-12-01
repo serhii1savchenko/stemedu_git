@@ -39,6 +39,9 @@ public class TestISendandIRecv {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestISendandIRecv
+
 //  Result (3 processors):
 //        proc num = 0 array was sent
 //        proc num = 1 array was received

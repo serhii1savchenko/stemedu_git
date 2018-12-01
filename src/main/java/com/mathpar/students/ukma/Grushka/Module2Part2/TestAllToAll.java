@@ -26,6 +26,9 @@ public class TestAllToAll {
     }
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part2 TestAllToAll
+
 //Result (2 processors):
 //        myrank = 0: a = [0, 0]
 //        myrank = 1: a = [1, 1]

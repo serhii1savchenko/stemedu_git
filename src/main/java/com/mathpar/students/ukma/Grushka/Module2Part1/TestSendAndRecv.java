@@ -46,6 +46,9 @@ public class TestSendAndRecv {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestSendAndRecv
+
 //  Result (3 processors & n=4):
 //
 //a[0]= 0.994833745391606

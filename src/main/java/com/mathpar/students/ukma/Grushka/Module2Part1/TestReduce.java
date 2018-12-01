@@ -30,6 +30,9 @@ public class TestReduce {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestReduce
+
 //  Result (3 processors n=4):
 // 0
 // 3

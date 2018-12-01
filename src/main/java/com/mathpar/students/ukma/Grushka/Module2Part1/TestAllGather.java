@@ -31,6 +31,9 @@ public class TestAllGather {
     }
 }
 
+
+//mpirun -np 4 java -cp out/production/Module2Part1 TestAllGather
+
 // Result (4 processors & n=4):
 //        myrank = 0 :
 // 0
