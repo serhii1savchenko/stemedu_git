@@ -31,6 +31,8 @@ public class ZhyrkovaTestScatter {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestScatter
+
 // Output for two processors
 //        a = 0
 //        a = 1

@@ -41,6 +41,7 @@ public class ZhyrkovaTestCreateIntracomm {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestCreateIntracomm
 
 // Output for two processors and n=4
 //        a[0]= 0.47572440952136663

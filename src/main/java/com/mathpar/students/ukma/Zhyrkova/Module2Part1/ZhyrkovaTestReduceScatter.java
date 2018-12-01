@@ -31,6 +31,8 @@ public class ZhyrkovaTestReduceScatter {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestReduceScatter
+
 // Output for two processors and n=4
 //         0
 //         2

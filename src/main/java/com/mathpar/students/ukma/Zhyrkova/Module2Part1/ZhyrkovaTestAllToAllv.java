@@ -31,6 +31,7 @@ public class ZhyrkovaTestAllToAllv {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestAllToAllv
 
 // Output for two processors
 //        myrank = 0; 0

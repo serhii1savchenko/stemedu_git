@@ -16,6 +16,8 @@ public class ZhyrkovaHelloWorldParallel {
 
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part1 ZhyrkovaHelloWorldParallel
+
 // Output for amount of processors equals 4
 //        Proc num 1 Hello World
 //        Proc num 2 Hello World

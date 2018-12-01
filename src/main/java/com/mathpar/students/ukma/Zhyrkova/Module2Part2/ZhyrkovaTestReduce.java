@@ -24,6 +24,8 @@ public class ZhyrkovaTestReduce {
     }
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part2 ZhyrkovaTestReduce
+
 // Output for four processors
 //        myrank = 0: a = [0, 1, 2, 3]
 //        myrank = 1: a = [0, 1, 2, 3]

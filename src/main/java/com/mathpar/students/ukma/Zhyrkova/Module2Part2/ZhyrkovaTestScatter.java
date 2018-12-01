@@ -29,6 +29,8 @@ public class ZhyrkovaTestScatter {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part2 ZhyrkovaTestScatter
+
 // Output for two processors
 //        myrank = 0: a = [0, 1, 2, 3, 4, 5, 6, 7]
 //        myrank = 0: q = [0, 1, 2, 3]

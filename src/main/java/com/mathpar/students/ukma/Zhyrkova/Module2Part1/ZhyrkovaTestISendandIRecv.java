@@ -40,6 +40,8 @@ public class ZhyrkovaTestISendandIRecv {
     }
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part1 ZhyrkovaTestISendandIRecv
+
 // Output for amount of processors equals 4
 //        proc num = 0 array was sent
 //        proc num = 1 array was received

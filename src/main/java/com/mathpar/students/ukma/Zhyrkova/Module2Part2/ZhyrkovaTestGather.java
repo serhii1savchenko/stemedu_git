@@ -28,6 +28,8 @@ public class ZhyrkovaTestGather {
     }
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part2 ZhyrkovaTestGather
+
 // Output for amount of processors equals 4 and n=4
 //        myrank = 2 : a = [2, 2, 2, 2]
 //        myrank = 1 : a = [1, 1, 1, 1]

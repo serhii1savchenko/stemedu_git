@@ -35,6 +35,8 @@ public class ZhyrkovaTestScan {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part1 ZhyrkovaTestScan
+
 // Output for two processors and n=4
 //myrank = 0
 // 0
@@ -46,6 +48,8 @@ public class ZhyrkovaTestScan {
 // 2
 // 4
 // 6
+
+//mpirun -np 4 java -cp out/production/Module2Part1 ZhyrkovaTestScan
 
 // Output for four processors and n=2
 //myrank = 0

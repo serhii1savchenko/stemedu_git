@@ -27,11 +27,15 @@ public class ZhyrkovaTestScan {
     }
 }
 
+//mpirun -np 2 java -cp out/production/Module2Part2 ZhyrkovaTestScan
+
 // Output for two processors and n=4
 //        myrank = 0: a = [0, 1, 2, 3]
 //        myrank = 1: a = [0, 1, 2, 3]
 //        myrank = 0: q = [0, 1, 2, 3]
 //        myrank = 1: q = [0, 2, 4, 6]
+
+//mpirun -np 4 java -cp out/production/Module2Part2 ZhyrkovaTestScan
 
 // Output for four processors and n=2
 //        myrank = 1: a = [0, 1]

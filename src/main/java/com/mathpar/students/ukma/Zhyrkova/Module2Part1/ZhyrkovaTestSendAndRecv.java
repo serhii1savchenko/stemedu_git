@@ -47,6 +47,8 @@ public class ZhyrkovaTestSendAndRecv {
     }
 }
 
+//mpirun -np 4 java -cp out/production/Module2Part1 ZhyrkovaTestSendAndRecv
+
 // Output for amount of processors equals 4 and n=4
 //        a[0]= 0.6204243874413592
 //        a[1]= 0.13248427586370348
