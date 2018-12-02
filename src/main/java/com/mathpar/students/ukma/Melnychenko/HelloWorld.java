@@ -14,6 +14,7 @@ public static void main(String[] args)
 }
 
 /*
+googbyeworld
 mpijavac -cp "/usr/local/lib/mpi.jar" HelloWorld.java
 mpirun java HelloWorld
 
