@@ -1,5 +1,3 @@
-package com.mathpar.students.ukma.Bohachek;
-
 import java.nio.IntBuffer;
 import mpi.MPI;
 import mpi.MPIException;

@@ -1,4 +1,3 @@
-package com.mathpar.students.ukma.Bohachek;
 import mpi.MPI;
 import mpi.MPIException;
 

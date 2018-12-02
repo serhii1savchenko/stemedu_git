@@ -1,5 +1,3 @@
-package com.mathpar.students.ukma.Bohachek;
-
 import mpi.*;
 
 public class MPI_2_2_HelloWorldParallel {
