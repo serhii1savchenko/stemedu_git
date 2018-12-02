@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
@@ -39,6 +41,8 @@ public class TestCreateIntracomm {
     }
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestCreateIntracomm
 
 //   Result (2 processors & n=4):
 //a[0]= 0.8544217153091593

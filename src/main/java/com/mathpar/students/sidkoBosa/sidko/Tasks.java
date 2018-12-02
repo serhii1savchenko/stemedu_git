@@ -22,7 +22,7 @@ import mpi.MPIException;
 
 // COMMAND
 /*
-openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/HelloWorldParallel
+openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaHelloWorldParallel
 */
 
 class HelloWorldParallel {
@@ -255,7 +255,7 @@ RANK = 1
 //COMMAND
 
 /*
-openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/TestCreateIntracomm 4
+openmpi/bin/mpirun -np 2 java -cp /home/alla/Documents/stemedu/stemedu/target/classes  com/mathpar/students/ukma17i41/sidko/com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestCreateIntracomm 4
 */
 
 

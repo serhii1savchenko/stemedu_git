@@ -1,14 +1,15 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI2_7 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
         int rank = WORLD.getRank();
         int size = Integer.parseInt(args[0]);
         int[] arr = new int[size];

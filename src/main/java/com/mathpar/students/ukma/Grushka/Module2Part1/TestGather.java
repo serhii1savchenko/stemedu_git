@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.*;
 
 public class TestGather {
@@ -25,6 +27,9 @@ public class TestGather {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestGather
 
 //  Result (3 processors & n=4):
 //        0

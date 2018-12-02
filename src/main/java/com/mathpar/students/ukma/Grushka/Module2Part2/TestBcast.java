@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part2;
+
 import java.util.Arrays;
 import java.util.Random;
 import mpi.*;
@@ -36,6 +38,9 @@ public class TestBcast {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestBcast
 
 // Result (3 processors & n=4):
 // myrank = 0 : a = [0.009396947561855273, 0.12708019486721656, 0.9817529107933417, 0.015285052110488806]

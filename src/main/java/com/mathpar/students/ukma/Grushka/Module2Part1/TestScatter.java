@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.*;
 
 public class TestScatter {
@@ -29,15 +31,18 @@ public class TestScatter {
     }
 }
 
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestScatter
+
 //  Result (2 processors):
-//        a = 0
-//        a = 1
-//        rank = 0
-//        myrank = 0 ; 0
+// a = 0
+// a = 1
+// rank = 0
+// myrank = 0 ; 0
 //
-//        myrank = 0 ; 0
+// myrank = 0 ; 0
 //
-//        myrank = 1 ; 1
+// myrank = 1 ; 1
 //
-//        myrank = 1 ; 0
+// myrank = 1 ; 0
 

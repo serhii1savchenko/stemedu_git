@@ -1,7 +1,6 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import java.util.Arrays;
-import java.math.BigInteger;
 import java.util.Random;
 import mpi.*;
 

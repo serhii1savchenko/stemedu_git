@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.*;
 
 public class HelloWorldParallel {
@@ -13,6 +15,8 @@ public class HelloWorldParallel {
     }
 
 }
+
+//mpirun -np 4 java -cp out/production/Module2Part1 HelloWorldParallel
 
 // Result (4 processors):
 //        Proc num 3 Hello World

@@ -1,19 +1,22 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI_2_15 {
 
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
+        int rank = WORLD.getRank();
+        int size = WORLD.getSize();
 
-        var arr = new int[size];
+        int arr[] = new int[size];
 
         for (int i = 0; i < size; ++i)
         {
@@ -23,16 +26,16 @@ public class MPI_2_15 {
 
         System.out.println();
 
-        var res = new int[1];
+        int res[] = new int[1];
 
-        var recvSizes = new int[size];
+        int recvSizes[] = new int[size];
         Arrays.fill(recvSizes, 1);
 
         WORLD.reduceScatter(arr, res, recvSizes, MPI.INT, MPI.SUM);
 
         Thread.sleep(res.length * rank);
 
-        System.out.println("\nProc #" + rank + " received");
+        System.out.println("\nProc #" + rank + " received:");
 
         for (int el : res)
             System.out.println(el);
@@ -42,10 +45,9 @@ public class MPI_2_15 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_15 MPI_2_15
+Command: mpirun -np 3 java -cp out/production/MPI_2_15 MPI_2_15
 
-Output
+Output:
 rank = 0; arr[0] = 0
 rank = 0; arr[1] = 1
 rank = 0; arr[2] = 2
@@ -59,12 +61,12 @@ rank = 1; arr[1] = 1
 rank = 1; arr[2] = 2
 
 
-Proc #0 received
+Proc #0 received:
 0
 
-Proc #1 received
+Proc #1 received:
 3
 
-Proc #2 received
+Proc #2 received:
 6
 */

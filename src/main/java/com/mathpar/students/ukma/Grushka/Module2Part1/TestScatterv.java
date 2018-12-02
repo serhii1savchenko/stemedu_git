@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.*;
 
 public class TestScatterv {
@@ -31,6 +33,9 @@ public class TestScatterv {
             MPI.Finalize();
         }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestScatterv
 
 //  Result (3 processors & n=4):
 //myrank = 0; 0

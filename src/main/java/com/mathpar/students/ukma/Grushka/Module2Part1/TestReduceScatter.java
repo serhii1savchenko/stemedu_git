@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -28,6 +30,9 @@ public class TestReduceScatter {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestReduceScatter
 
 //  Result (2 processors & n=4):
 //         0

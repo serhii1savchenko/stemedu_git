@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part2;
+
 import java.util.Arrays;
 import mpi.MPI;
 import mpi.MPIException;
@@ -26,6 +28,9 @@ public class TestAllGatherv {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 2 java -cp out/production/Module2Part2 TestAllGatherv
 
 // Result (2 processors & n=2):
 //        myrank = 0: a = [0, 1]

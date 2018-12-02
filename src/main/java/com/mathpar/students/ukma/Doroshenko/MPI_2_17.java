@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.*;
 
 import java.util.Random;
@@ -7,16 +9,16 @@ public class MPI_2_17 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
-        var ranks = new int[WORLD.getSize()];
+        int ranks[] = new int[WORLD.getSize()];
 
         for (int i = 0; i < ranks.length; i++)
             ranks[i] = i;
 
-        var COMM_NEW = MPI.COMM_WORLD.create(MPI.COMM_WORLD.getGroup().incl(ranks));
+        Intracomm COMM_NEW = MPI.COMM_WORLD.create(MPI.COMM_WORLD.getGroup().incl(ranks));
 
-        var rank = COMM_NEW.getRank();
+        int rank = COMM_NEW.getRank();
 
         int size = Integer.parseInt(args[0]);
         double[] arr = new double[size];
@@ -43,10 +45,10 @@ public class MPI_2_17 {
 }
 
 /*
-Command
+Command:
 mpirun -np 3 java -cp out/production/MPI_2_17 MPI_2_17 2
 
-Output
+Output:
 arr[0]= 0.10963907084053193
 arr[1]= 0.5592333649643298
 

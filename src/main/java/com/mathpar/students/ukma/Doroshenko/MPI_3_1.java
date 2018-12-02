@@ -1,5 +1,6 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import java.util.Arrays;
-import java.math.BigInteger;
 import java.util.Random;
 import mpi.*;
 

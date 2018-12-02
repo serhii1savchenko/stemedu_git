@@ -1,10 +1,8 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import mpi.MPI;
 import mpi.MPIException;
 import mpi.Status;
-
-import java.util.Arrays;
 
 public class MPI3_10 {
     public static void main(String[] args)

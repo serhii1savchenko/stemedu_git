@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import java.nio.IntBuffer;
 import java.util.Random;
@@ -7,7 +7,7 @@ import mpi.*;
 public class MPI2_3 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
         int myRank = WORLD.getRank();
         int elemNum = Integer.parseInt(args[0]);
         IntBuffer buffer = MPI.newIntBuffer(elemNum);

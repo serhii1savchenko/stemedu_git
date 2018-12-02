@@ -1,14 +1,17 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI_2_8 {
 
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int rank = WORLD.getRank();
 
@@ -20,16 +23,16 @@ public class MPI_2_8 {
         int[] res = new int[size * procNum];
 
         // How many elements to receive from each proc
-        var recvCount = new int[procNum];
+        int recvCount[] = new int[procNum];
         Arrays.fill(recvCount, size);
 
-        var offsets = new int[]{0, 2, 5};
+        int offsets[] = new int[]{0, 2, 5};
 
         WORLD.allGatherv(arr, size, MPI.INT, res, recvCount, offsets, MPI.INT);
 
         Thread.sleep(size * rank);
 
-        System.out.println("Proc " + rank + " received");
+        System.out.println("Proc " + rank + " received:");
 
         for (int el : res)
             System.out.println(el);
@@ -41,25 +44,10 @@ public class MPI_2_8 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_8 MPI_2_8 4
+Command: mpirun -np 3 java -cp out/production/MPI_2_8 MPI_2_8 4
 
-Output
-Proc 0 received
-0
-0
-1
-1
-1
-2
-2
-2
-2
-0
-0
-0
-
-Proc 1 received
+Output:
+Proc 0 received:
 0
 0
 1
@@ -73,7 +61,21 @@ Proc 1 received
 0
 0
 
-Proc 2 received
+Proc 1 received:
+0
+0
+1
+1
+1
+2
+2
+2
+2
+0
+0
+0
+
+Proc 2 received:
 0
 0
 0
