@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part2;
+
 import java.util.Arrays;
 import mpi.MPI;
 import mpi.MPIException;
@@ -24,6 +26,9 @@ public class TestAllReduce {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 4 java -cp out/production/Module2Part2 TestAllReduce
 
 // Result (4 processors & n=2):
 // myrank = 0: a = [0, 1]

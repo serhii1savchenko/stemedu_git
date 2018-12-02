@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -31,6 +33,10 @@ public class TestScan {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 2 java -cp out/production/Module2Part1 TestScan
+//mpirun -np 4 java -cp out/production/Module2Part1 TestScan
 
 //  Result (2 processors & n=4):
 //myrank = 0

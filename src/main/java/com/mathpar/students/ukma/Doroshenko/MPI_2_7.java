@@ -1,14 +1,17 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI_2_7 {
 
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int rank = WORLD.getRank();
 
@@ -23,7 +26,7 @@ public class MPI_2_7 {
 
         Thread.sleep(size * rank);
 
-        System.out.println("Proc " + rank + " received");
+        System.out.println("Proc " + rank + " received:");
 
         for (int el : res)
             System.out.println(el);
@@ -35,25 +38,10 @@ public class MPI_2_7 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_7 MPI_2_7 4
+Command: mpirun -np 3 java -cp out/production/MPI_2_7 MPI_2_7 4
 
-Output
-Proc 0 received
-0
-0
-0
-0
-1
-1
-1
-1
-2
-2
-2
-2
-
-Proc 1 received
+Output:
+Proc 0 received:
 0
 0
 0
@@ -67,7 +55,21 @@ Proc 1 received
 2
 2
 
-Proc 2 received
+Proc 1 received:
+0
+0
+0
+0
+1
+1
+1
+1
+2
+2
+2
+2
+
+Proc 2 received:
 0
 0
 0

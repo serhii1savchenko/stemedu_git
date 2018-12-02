@@ -1,3 +1,7 @@
+package com.mathpar.students.ukma.Morenets;
+
+import java.nio.IntBuffer;
+import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -6,12 +10,12 @@ public class MPI_2_11 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
+        int rank = WORLD.getRank();
+        int size = WORLD.getSize();
 
-        var buffer = MPI.newIntBuffer(size);
+        IntBuffer buffer = MPI.newIntBuffer(size);
 
         for (int i = 0; i < buffer.capacity(); ++i)
         {
@@ -21,7 +25,7 @@ public class MPI_2_11 {
 
         System.out.println();
 
-        var res = MPI.newIntBuffer(size);
+        IntBuffer res = MPI.newIntBuffer(size);
 
         WORLD.allToAll(buffer, 1, MPI.INT, res, 1, MPI.INT);
 

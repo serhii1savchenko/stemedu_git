@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part2;
+
 import java.util.Arrays;
 import mpi.*;
 
@@ -27,6 +29,9 @@ public class TestGather {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestGather
 
 // Result (3 processors & n=4):
 // myrank = 2 : a = [2, 2, 2, 2]

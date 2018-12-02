@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.*;
 
 import java.nio.IntBuffer;
@@ -31,6 +33,9 @@ public class TestAllToAll {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 4 java -cp out/production/Module2Part1 TestAllToAll
 
 // Result (4 processors):
 //   b[0] = 0

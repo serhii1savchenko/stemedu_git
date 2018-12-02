@@ -13,7 +13,7 @@ import mpi.MPIException;
  *
  * @author vmudrij
  */
-// TestScatter
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestScatter
 public class M_3_4 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);

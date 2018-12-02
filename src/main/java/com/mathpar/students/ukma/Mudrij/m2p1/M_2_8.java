@@ -11,7 +11,7 @@ import mpi.*;
  *
  * @author vmudrij
  */
-// TestAllGather
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestAllGather
 public class M_2_8 {
     public static void main(String[] args) throws Exception {
         // Initialization MPI

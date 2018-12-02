@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import java.nio.IntBuffer;
 import java.util.Random;
 import mpi.*;
@@ -36,6 +38,9 @@ public class TestISendandIRecv {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestISendandIRecv
 
 //  Result (3 processors):
 //        proc num = 0 array was sent

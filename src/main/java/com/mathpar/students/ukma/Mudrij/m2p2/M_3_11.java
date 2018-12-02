@@ -13,7 +13,7 @@ import mpi.MPIException;
  *
  * @author vmudrij
  */
-// TestReduce
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestReduce
 public class M_3_11 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);

@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
 import java.util.Arrays;
 import mpi.MPI;

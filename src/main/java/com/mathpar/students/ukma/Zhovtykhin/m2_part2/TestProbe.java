@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Zhovtykhin.m2_part2;
+
 import mpi.MPI;
 import mpi.MPIException;
 import mpi.Status;

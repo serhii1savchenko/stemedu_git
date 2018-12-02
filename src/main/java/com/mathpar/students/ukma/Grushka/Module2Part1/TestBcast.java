@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import java.util.Random;
 import mpi.*;
 
@@ -38,8 +40,11 @@ public class TestBcast {
     }
 }
 
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestBcast
+
 //  Result (3 processors & n=4):
-//
+
 //a[0]= 0.6705490722783738
 //a[1]= 0.5616758975076603
 //a[2]= 0.9248096778911326

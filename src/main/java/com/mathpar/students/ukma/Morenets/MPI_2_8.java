@@ -1,14 +1,17 @@
+package com.mathpar.students.ukma.Morenets;
+
 import mpi.MPI;
 import mpi.MPIException;
 
 import java.util.Arrays;
+import mpi.Intracomm;
 
 public class MPI_2_8 {
 
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int rank = WORLD.getRank();
 
@@ -20,10 +23,10 @@ public class MPI_2_8 {
         int[] res = new int[size * procNum];
 
         // How many elements to receive from each proc
-        var recvCount = new int[procNum];
+        int recvCount[] = new int[procNum];
         Arrays.fill(recvCount, size);
 
-        var offsets = new int[]{0, 2, 5};
+        int offsets[] = new int[]{0, 2, 5};
 
         WORLD.allGatherv(arr, size, MPI.INT, res, recvCount, offsets, MPI.INT);
 

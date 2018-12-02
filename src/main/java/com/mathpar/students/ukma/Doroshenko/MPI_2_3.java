@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import java.nio.IntBuffer;
 import java.util.Random;
 import mpi.*;
@@ -6,7 +8,7 @@ public class MPI_2_3 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int myRank = WORLD.getRank();
 
@@ -37,10 +39,9 @@ public class MPI_2_3 {
 }
 
 /*
-Command
-mpirun -np 3 java -cp out/production/MPI_2_3 MPI_2_3 5
+Command: mpirun -np 3 java -cp out/production/MPI_2_3 MPI_2_3 5
 
-Output
+Output:
 proc num = 0 Array sent.
 proc num = 1 Array received.
 proc num = 2 Array received.

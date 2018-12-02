@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import java.util.Random;
 import mpi.*;
 
@@ -43,6 +45,9 @@ public class TestSendAndRecv {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestSendAndRecv
 
 //  Result (3 processors & n=4):
 //

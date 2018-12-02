@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import mpi.*;
 
 public class MPI_2_1 {

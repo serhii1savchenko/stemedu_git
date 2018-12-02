@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -30,8 +32,10 @@ public class TestAllToAllv {
 }
 
 
+//mpirun -np 2 java -cp out/production/Module2Part1 TestAllToAllv
+
 //  Result (2 processors):
 //        myrank = 0; 0
 //        myrank = 0; 1
 //        myrank = 1; 2
-//        myrank = 1; 3
+//        myrank = 1; 3s

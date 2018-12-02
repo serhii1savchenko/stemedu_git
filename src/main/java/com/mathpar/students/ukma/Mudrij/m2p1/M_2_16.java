@@ -12,7 +12,7 @@ import mpi.MPIException;
  *
  * @author vmudrij
  */
-// TestReduceScatter
+// com.mathpar.students.ukma.Zhyrkova.Module2Part1.ZhyrkovaTestReduceScatter
 public class M_2_16 {
     public static void main(String[] args) throws MPIException {
         // Initialization MPI

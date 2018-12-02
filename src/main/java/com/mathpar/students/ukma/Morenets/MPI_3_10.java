@@ -1,8 +1,8 @@
+package com.mathpar.students.ukma.Morenets;
+
 import mpi.MPI;
 import mpi.MPIException;
 import mpi.Status;
-
-import java.util.Arrays;
 
 public class MPI_3_10 {
     public static void main(String[] args) throws MPIException {

@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Doroshenko;
+
 import java.util.Arrays;
 import mpi.MPI;
 import mpi.MPIException;
@@ -17,14 +19,14 @@ public class MPI_3_9 {
 
         int[] q = new int[size];
 
-        var sendSizes = new int[size];
-        var recvSizes = new int[size];
+        int sendSizes[] = new int[size];
+        int recvSizes[] = new int[size];
 
         Arrays.fill(sendSizes, 1);
         Arrays.fill(recvSizes, 1);
 
-        var sendOffsets = new int[size];
-        var recvOffsets = new int[size];
+        int sendOffsets[] = new int[size];
+        int recvOffsets[] = new int[size];
 
         for (int i = 0; i < size; i++)
         {
@@ -41,10 +43,9 @@ public class MPI_3_9 {
 }
 
 /*
-Command
-mpirun -np 4 java -cp out/production/MPI_3_9 MPI_3_9
+Command: mpirun -np 4 java -cp out/production/MPI_3_9 MPI_3_9
 
-Output
+Output:
 myrank = 2: a = [2, 2, 2, 2]
 myrank = 3: a = [3, 3, 3, 3]
 myrank = 0: a = [0, 0, 0, 0]

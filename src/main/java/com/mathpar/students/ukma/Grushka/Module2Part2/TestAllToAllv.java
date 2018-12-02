@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part2;
+
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -27,6 +29,9 @@ public class TestAllToAllv {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part2 TestAllToAllv
 
 //   Result (3 processors):
 // myrank = 2: a = [2, 2, 2, 2]

@@ -1,12 +1,13 @@
-package com.mathpar.students.ukma.Tsukanova;
+package com.mathpar.students.ukma.Tsukanova.Module2;
 
+import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
 
 public class MPI2_10 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
         int rank = WORLD.getRank();
         int size = Integer.parseInt(args[0]);
         int[] arr = new int[size];
@@ -18,8 +19,8 @@ public class MPI2_10 {
             System.out.println();
         }
         int[] res = new int[size];
-        var sendSizes = new int[]{3, 2, 1, 1}; // depends on proc num
-        var offsets = new int[]{0, 1, 2, 0};   // depends on proc num
+        int[] sendSizes = new int[]{3, 2, 1, 1}; // depends on proc num
+        int[] offsets = new int[]{0, 1, 2, 0};   // depends on proc num
         WORLD.scatterv(arr, sendSizes, offsets, MPI.INT, res, size, MPI.INT, 0);
         WORLD.barrier();
         System.out.println("Proc " + rank + " received:");

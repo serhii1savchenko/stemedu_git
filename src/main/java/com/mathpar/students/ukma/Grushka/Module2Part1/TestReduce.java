@@ -1,3 +1,5 @@
+package com.mathpar.students.ukma.Grushka.Module2Part1;
+
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -27,6 +29,9 @@ public class TestReduce {
         MPI.Finalize();
     }
 }
+
+
+//mpirun -np 3 java -cp out/production/Module2Part1 TestReduce
 
 //  Result (3 processors n=4):
 // 0
