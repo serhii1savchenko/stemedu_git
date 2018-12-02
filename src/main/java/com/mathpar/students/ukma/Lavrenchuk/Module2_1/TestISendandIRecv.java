@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma.Lavrenchuk.module2_1;
+package com.mathpar.students.ukma.Lavrenchuk.Module2_1;
 
 import java.nio.IntBuffer;
 import java.util.Random;

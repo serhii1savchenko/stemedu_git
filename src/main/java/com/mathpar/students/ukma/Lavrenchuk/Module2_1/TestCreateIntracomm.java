@@ -1,4 +1,4 @@
-package com.mathpar.students.ukma.Lavrenchuk.module2_1;
+package com.mathpar.students.ukma.Lavrenchuk.Module2_1;
 
 import mpi.Intracomm;
 import mpi.MPI;
