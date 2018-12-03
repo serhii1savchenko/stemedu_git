@@ -15,7 +15,7 @@ import mpi.MPIException;
  *
  * @author Igor
  */
-public class AllGather 
+public class AllGatherv 
 {
     public static void main(String[] args) throws MPIException, InterruptedException 
     {
@@ -31,28 +31,35 @@ public class AllGather
         int procNum = WORLD.getSize();
         int[] res = new int[size * procNum];
 
-        WORLD.allGather(arr, size, MPI.INT, res, size, MPI.INT);
+        // How many elements to receive from each proc
+        int recvCount[] = new int[procNum];
+        Arrays.fill(recvCount, size);
+
+        int offsets[] = new int[]{0, 2, 5};
+
+        WORLD.allGatherv(arr, size, MPI.INT, res, recvCount, offsets, MPI.INT);
 
         Thread.sleep(size * rank);
-        System.out.println("Proc " + rank + " has received:");
+
+        System.out.println("Proc #" + rank + " has received:");
 
         for (int el : res) System.out.print(el + " ");
+        System.out.println();        
         System.out.println();
 
-        System.out.println();
 
         MPI.Finalize();
     }
 }
 /*
 Command:
-mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task2/AllGather 4
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task2/AllGatherv 4
 Output:
-Proc 0 has been received:
-0 0 0 0 1 1 1 1 
+Proc #0 has been received:
+0 0 0 0 1 1 0 0 
 
-Proc 1 has been received:
-0 0 0 0 1 1 1 1 
+Proc #1 has been received:
+0 0 1 1 1 1 0 0 
 
 
 */
