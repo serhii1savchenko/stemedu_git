@@ -1,3 +1,4 @@
+package com.mathpar.students.ukma.Zadorozhnyi.M2-PART2;
 import mpi.*;
 
 import java.util.Arrays;
