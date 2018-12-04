@@ -27,6 +27,7 @@ public class TestGatherv {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestGatherv
 
 //        OUTPUT:
 //        myrank = 0: a = [0, 0, 0, 0]

@@ -30,6 +30,7 @@ public class TestAllToAllv {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestAllReduce
 
 
 //        OUTPUT:

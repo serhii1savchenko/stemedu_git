@@ -29,6 +29,7 @@ public class TestReduce {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestReduce
 
 // OUTPUT:
 // n=2

@@ -28,6 +28,7 @@ public class TestScatter {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestScatter
 
 //        OUTPUT:
 //        myrank = 0: a = [0, 1, 2, 3, 4, 5, 6, 7]

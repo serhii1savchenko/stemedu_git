@@ -36,6 +36,7 @@ public class TestBcast {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestBcast
 
 //        OUTPUT:
 //        myrank = 0 : a = [0.1320077635416097, 0.9476896586791758, 0.32296007767227797, 0.16813548383931642]

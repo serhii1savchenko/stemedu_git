@@ -30,6 +30,7 @@ public class TestReduceScatter {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestReduceScatter
 
 //         OUTPUT:
 //         0

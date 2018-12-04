@@ -35,6 +35,7 @@ public class TestAllGatherv {
         }
     }
 
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestAllGatherv
 
 // OUTPUT:
 // myrank 0 :

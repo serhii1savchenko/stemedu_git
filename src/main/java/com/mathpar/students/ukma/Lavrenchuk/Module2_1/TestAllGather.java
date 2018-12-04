@@ -30,7 +30,7 @@ public class TestAllGather {
         MPI.Finalize();
     }
 }
-
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestAllGather
 //   OUTPUT:
 //   myrank = 0 :
 //   0

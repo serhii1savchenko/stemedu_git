@@ -46,6 +46,7 @@ public class TestSendAndRecv {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestSendAndRecv
 
 //        OUTPUT:
 //        a[0]= 0.6204243874413592

@@ -22,6 +22,7 @@ public class TestAllToAll {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestAllToAll
 
 //        OUTPUT:
 //        myrank = 0: a = [0, 0]

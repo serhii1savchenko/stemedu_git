@@ -33,6 +33,7 @@ public class TestGatherv {
     }
 
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestGatherv
 
 //        OUTPUT:
 //        0
