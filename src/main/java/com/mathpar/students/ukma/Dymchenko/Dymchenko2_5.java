@@ -26,12 +26,9 @@ public class Dymchenko2_5 {
 }
 
 /*
-Command: mpirun -np 4 java -cp out/production/Dymchenko2_5 Dymchenko2_5 4
-
-Output:
-myrank = 0: a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko2_5 4
+myrank = 0: a = [0, 1, 2, 3, 4, 5, 6, 7]
 myrank = 0: q = [0, 1, 2, 3]
-myrank = 3: q = [12, 13, 14, 15]
 myrank = 1: q = [4, 5, 6, 7]
-myrank = 2: q = [8, 9, 10, 11]
+
 */

@@ -34,28 +34,18 @@ public class Dymchenko15 {
 }
 
 /*
-Command: mpirun -np 3 java -cp out/production/Dymchenko15 Dymchenko15
-
-Output:
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko15
 rank = 0; arr[0] = 0
 rank = 0; arr[1] = 1
-rank = 0; arr[2] = 2
-
-rank = 2; arr[0] = 0
-rank = 2; arr[1] = 1
-rank = 2; arr[2] = 2
 
 rank = 1; arr[0] = 0
 rank = 1; arr[1] = 1
-rank = 1; arr[2] = 2
 
 
 Proc #0 received:
 0
 
 Proc #1 received:
-3
+2
 
-Proc #2 received:
-6
 */

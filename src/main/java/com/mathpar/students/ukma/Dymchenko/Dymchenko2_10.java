@@ -28,15 +28,9 @@ public class Dymchenko2_10 {
 }
 
 /*
-Command: mpirun -np 4 java -cp out/production/Dymchenko2_10 Dymchenko2_10 4
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko2_10 4
+myrank = 0, size = 2
+myrank = 1, size = 2
 
-Output:
-myrank = 0, size = 4
-
-myrank = 3, size = 4
-
-myrank = 2, size = 4
-
-myrank = 1, size = 4
 
 */

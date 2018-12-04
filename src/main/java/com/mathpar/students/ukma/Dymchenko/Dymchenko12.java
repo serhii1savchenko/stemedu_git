@@ -43,30 +43,17 @@ public class Dymchenko12 {
 }
 
 /*
-Command: mpirun -np 3 java -cp out/production/Dymchenko12 Dymchenko12
-
-Output:
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko12
 rank = 0; arr[0] = 0
 rank = 0; arr[1] = 1
-rank = 0; arr[2] = 2
-
-rank = 2; arr[0] = 0
-rank = 2; arr[1] = 1
-rank = 2; arr[2] = 2
 
 rank = 1; arr[0] = 0
 rank = 1; arr[1] = 1
-rank = 1; arr[2] = 2
 
 rank = 0; send = 0; recv = 0
 rank = 0; send = 1; recv = 0
-rank = 0; send = 2; recv = 0
 
 rank = 1; send = 0; recv = 1
 rank = 1; send = 1; recv = 1
-rank = 1; send = 2; recv = 1
 
-rank = 2; send = 0; recv = 2
-rank = 2; send = 1; recv = 2
-rank = 2; send = 2; recv = 2
 */
