@@ -33,27 +33,14 @@ public class Dymchenko2 {
 }
 
 /*
-Command: mpirun -np 3 java -cp out/production/Dymchenko2 Dymchenko2 5
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko2 2
 
-Output:
-a[0]= 0.6627423829349823
-a[1]= 0.2352352372474558
-a[2]= 0.3724572457245724
-a[3]= 0.6346346858458458
-a[4]= 0.3452352352352352
+a[0]= 0.952403330496274
+a[1]= 0.26485262310331126
 Proc num 0 Array sent
 
-a[0]= 0.6627423829349823
-a[1]= 0.2352352372474558
-a[2]= 0.3724572457245724
-a[3]= 0.6346346858458458
-a[4]= 0.3452352352352352
-a[0]= 0.6627423829349823
-a[1]= 0.2352352372474558
-a[2]= 0.3724572457245724
-a[3]= 0.6346346858458458
-a[4]= 0.3452352352352352
+a[0]= 0.952403330496274
+a[1]= 0.26485262310331126
 Proc num 1 Array received
 
-Proc num 2 Array received
 */

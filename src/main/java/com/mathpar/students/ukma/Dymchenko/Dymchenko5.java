@@ -25,22 +25,16 @@ public class Dymchenko5 {
 }
 
 /*
-Command: mpirun -np 3 java -cp out/production/Dymchenko5 Dymchenko5 5
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko5 5
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
 
-Output:
-0
-0
-0
-0
-0
-1
-1
-1
-1
-1
-2
-2
-2
-2
-2
 */

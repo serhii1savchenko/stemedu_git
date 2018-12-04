@@ -30,21 +30,11 @@ public class Dymchenko9 {
 }
 
 /*
-Command: mpirun -np 3 java -cp out/production/Dymchenko9 Dymchenko9
-
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko9
 Proc 0 received:
-0
-0
-0
-
-Proc 1 received:
 1
 0
-0
-
-Proc 2 received:
-2
+Proc 1 received:
 0
 0
-
 */

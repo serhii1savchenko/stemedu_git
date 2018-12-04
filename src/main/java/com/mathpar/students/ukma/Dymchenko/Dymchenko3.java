@@ -32,10 +32,8 @@ public class Dymchenko3 {
 }
 
 /*
-Command: mpirun -np 3 java -cp out/production/Dymchenko3 Dymchenko3 5
-
-Output:
+mpirun -np 2 java -cp /home/oleksiy/Dymchenko/stemedu/target/classes com.mathpar.students.ukma.Dymchenko/Dymchenko3 2
 proc num = 0 Array sent.
 proc num = 1 Array received.
-proc num = 2 Array received.
+
 */
