@@ -34,6 +34,7 @@ public class TestScan {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestScan
 
 // OUTPUT:
 // myrank = 0

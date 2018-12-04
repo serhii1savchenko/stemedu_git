@@ -39,6 +39,7 @@ public class TestBcast {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestBcast
 
 //        OUTPUT:
 //        a[0]= 0.44425017395071087

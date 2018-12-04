@@ -41,6 +41,7 @@ public class TestCreateIntracomm {
     }
 }
 
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestCreateIntracomm
 
 //        OUTPUT:
 //        a[0]= 0.47572440952136663

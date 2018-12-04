@@ -31,6 +31,7 @@ public class TestProbe {
 }
 
 
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestProbe
 
 // OUTPUT:
 // myrank = 0, size = 4

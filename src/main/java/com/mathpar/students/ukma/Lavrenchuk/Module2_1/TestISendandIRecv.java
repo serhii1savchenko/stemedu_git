@@ -39,6 +39,7 @@ public class TestISendandIRecv {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestISendandIRecv
 
 //        OUTPUT:
 //        proc num = 0 array was sent

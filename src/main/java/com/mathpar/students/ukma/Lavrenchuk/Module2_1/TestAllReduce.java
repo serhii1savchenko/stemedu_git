@@ -34,6 +34,7 @@ public class TestAllReduce {
         MPI.Finalize();
     }
 }
+// mpirun -np 2 java -cp /home/teacher/NetBeansProjects/JavaApplication1/build/classes TestAllReduce
 
 // OUTPUT:
 // myrank = 1
