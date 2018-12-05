@@ -9,7 +9,7 @@ public class Task_MPI_2_3 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int myRank = WORLD.getRank();
 
