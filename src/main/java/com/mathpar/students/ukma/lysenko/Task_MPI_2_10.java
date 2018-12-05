@@ -8,7 +8,7 @@ public class Task_MPI_2_10 {
     public static void main(String[] args) throws MPIException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
         int rank = WORLD.getRank();
 
@@ -26,8 +26,8 @@ public class Task_MPI_2_10 {
 
         int[] res = new int[size];
 
-        var sendSizes = new int[]{3, 2, 1, 1};
-        var offsets = new int[]{0, 1, 2, 0};
+        int[] sendSizes = new int[]{3, 2, 1, 1};
+        int[] offsets = new int[]{0, 1, 2, 0};
 
         WORLD.scatterv(arr, sendSizes, offsets, MPI.INT, res, size, MPI.INT, 0);
         WORLD.barrier();
