@@ -1,5 +1,6 @@
 package com.mathpar.students.ukma.lysenko;
 
+import java.nio.IntBuffer;
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -8,12 +9,10 @@ public class Task_MPI_2_11 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        int rank = MPI.COMM_WORLD.getRank();
+        int size = MPI.COMM_WORLD.getSize();
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
-
-        var buffer = MPI.newIntBuffer(size);
+        IntBuffer buffer = MPI.newIntBuffer(size);
 
         for (int i = 0; i < buffer.capacity(); ++i)
         {
@@ -23,9 +22,9 @@ public class Task_MPI_2_11 {
 
         System.out.println();
 
-        var res = MPI.newIntBuffer(size);
+        IntBuffer res = MPI.newIntBuffer(size);
 
-        WORLD.allToAll(buffer, 1, MPI.INT, res, 1, MPI.INT);
+        MPI.COMM_WORLD.allToAll(buffer, 1, MPI.INT, res, 1, MPI.INT);
 
         Thread.sleep(size * rank);
 

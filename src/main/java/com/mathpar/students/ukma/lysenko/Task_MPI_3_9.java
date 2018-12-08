@@ -19,14 +19,14 @@ public class Task_MPI_3_9 {
 
         int[] q = new int[size];
 
-        var sendSizes = new int[size];
-        var recvSizes = new int[size];
+        int[] sendSizes = new int[size];
+        int[] recvSizes = new int[size];
 
         Arrays.fill(sendSizes, 1);
         Arrays.fill(recvSizes, 1);
 
-        var sendOffsets = new int[size];
-        var recvOffsets = new int[size];
+        int[] sendOffsets = new int[size];
+        int[] recvOffsets = new int[size];
 
         for (int i = 0; i < size; i++)
         {

@@ -1,7 +1,6 @@
 package com.mathpar.students.ukma.lysenko;
 
-import mpi.MPI;
-import mpi.MPIException;
+import mpi.*;
 
 import java.util.Arrays;
 
@@ -10,12 +9,12 @@ public class Task_MPI_2_12 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        Intracomm WORLD = MPI.COMM_WORLD;
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
+        int rank = WORLD.getRank();
+        int size = WORLD.getSize();
 
-        var arr = new Integer[size];
+        Integer[] arr = new Integer[size];
 
         for (int i = 0; i < size; ++i)
         {
@@ -25,16 +24,16 @@ public class Task_MPI_2_12 {
 
         System.out.println();
 
-        var res = new Integer[size];
+        Integer[] res = new Integer[size];
 
-        var sendSizes = new int[size];
-        var recvSizes = new int[size];
+        int[] sendSizes = new int[size];
+        int[] recvSizes = new int[size];
 
         Arrays.fill(sendSizes, 1);
         Arrays.fill(recvSizes, 1);
 
-        var sendOffsets = new int[size];
-        var recvOffsets = new int[size];
+        int[] sendOffsets = new int[size];
+        int[] recvOffsets = new int[size];
 
         for (int i = 0; i < size; i++)
         {

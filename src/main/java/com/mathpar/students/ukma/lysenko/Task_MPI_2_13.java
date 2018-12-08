@@ -10,12 +10,10 @@ public class Task_MPI_2_13 {
     public static void main(String[] args) throws MPIException, InterruptedException {
         MPI.Init(args);
 
-        var WORLD = MPI.COMM_WORLD;
+        int rank = MPI.COMM_WORLD.getRank();
+        int size = MPI.COMM_WORLD.getSize();
 
-        var rank = WORLD.getRank();
-        var size = WORLD.getSize();
-
-        var arr = new int[size];
+        int[] arr = new int[size];
 
         for (int i = 0; i < size; ++i)
         {
@@ -25,9 +23,9 @@ public class Task_MPI_2_13 {
 
         System.out.println();
 
-        var res = new int[size];
+        int[] res = new int[size];
 
-        WORLD.reduce(arr, res, size, MPI.INT, MPI.SUM, 0);
+        MPI.COMM_WORLD.reduce(arr, res, size, MPI.INT, MPI.SUM, 0);
 
         Thread.sleep(size * rank);
 
