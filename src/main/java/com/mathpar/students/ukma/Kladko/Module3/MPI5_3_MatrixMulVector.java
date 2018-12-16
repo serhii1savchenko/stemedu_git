@@ -12,9 +12,8 @@ import java.util.Random;
 import mpi.MPI;
 import mpi.MPIException;
 
-public class MPI5_3_MatrixMulVector {
-  
-    
+public class MPI5_3_MatrixMulVector 
+{   
     public static void main(String[] args)
     throws MPIException, IOException, ClassNotFoundException {
         Ring ring = new Ring("R64[x]");
@@ -72,18 +71,19 @@ public class MPI5_3_MatrixMulVector {
 }
 
 /*
- mpirun --hostfile /home/elizabeth/hostfile -np 2 java -cp /home/elizabeth/stemedu/target/classes com.mathpar.students.ukma.Bohachek.Module3.MPI5_3_MatrixMulVector 2
+Command:
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Kladko/Module3/MPI5_3_MatrixMulVector 2
 
+Output:
 I'm processor 1
 Matrix A = 
-[[0.97, 0.74]
- [0.4,  0.14]]
-Vector B = [0.68, 0.20]
-rank = 0 row = [0.97, 0.74]
-rank = 1 row = [0.40, 0.14]
-rank = 1 B = [0.68, 0.20]
+[[0.34, 0.23]
+ [0.73, 0.83]]
+Vector B = [0.74, 0.97]
+rank = 0 row = [0.34, 0.23]
+rank = 1 row = [0.73, 0.83]
+rank = 1 B = [0.74, 0.97]
 send result
-
-
+A * B = [null, null]
 
 */
