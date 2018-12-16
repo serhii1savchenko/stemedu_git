@@ -1,4 +1,3 @@
-package com.mathpar.students.ukma.Bohachek;
 
 import java.util.Arrays;
 import java.util.Random;

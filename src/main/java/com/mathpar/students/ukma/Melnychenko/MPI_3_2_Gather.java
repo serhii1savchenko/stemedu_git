@@ -1,5 +1,3 @@
-package com.mathpar.students.ukma.Bohachek;
-
 import java.util.Arrays;
 import mpi.*;
 
@@ -9,11 +7,12 @@ public class MPI_3_2_Gather {
         MPI.Init(args);
         int myrank = MPI.COMM_WORLD.getRank();
         int np = MPI.COMM_WORLD.getSize();
+        System.out.println(np);
         int n = Integer.parseInt(args[0]);
         int[] a = new int[n];
         for(int i = 0; i < n; i++) a[i] = myrank;
         System.out.println("myrank = " + myrank + " : a = "
-                + Arrays.toString(a));
+                + Arrays.toString(a) + " size: " + np);
         int[] q = new int[n*np];
         MPI.COMM_WORLD.gather(a, n, MPI.INT, q, n, MPI.INT,
                 np-1);
