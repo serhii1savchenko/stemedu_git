@@ -1,5 +1,3 @@
-package com.mathpar.students.ukma.Kladko;
-
 
 import mpi.*;
 
