@@ -3,21 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mathpar.students.ukma.Vakulov.Module3;
+package com.mathpar.students.ukma.Dymchenko.Module3;
 
 import java.io.IOException;
 import mpi.MPIException;
-import mpi.*;
 
 import static com.mathpar.parallel.utils.MPITransport.sendObject;
 
 public class sendArrayOfObjects {
     public static void main(Object[] a,int proc, int tag) throws MPIException,IOException {
-// îòïðàâêà îáúåêòà a[i] ïðîöåññîðó ñ íîìåðîì proc
-// ñ òåãîì tag + i
     for (int i = 0; i < a.length; i++)
         sendObject(a[i], proc, tag + i);
     }
 }
-
-//mpirun java sendArrayOfObjects
