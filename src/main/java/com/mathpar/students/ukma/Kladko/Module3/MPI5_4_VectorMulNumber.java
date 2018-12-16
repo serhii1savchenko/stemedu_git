@@ -63,12 +63,14 @@ public class MPI5_4_VectorMulNumber {
 }
 
 /*
-mpirun --hostfile /home/elizabeth/hostfile -np 2 java -cp /home/elizabeth/stemedu/target/classes com.mathpar.students.ukma.Bohachek.Module3.MPI5_4_VectorMulNumber 2 3
+Command:
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Kladko/Module3/MPI5_4_VectorMulNumber 2 3
 
+Output:
 I'm processor 1
-Vector B = [3, 23]
-rank = 1 B = [23]
+Vector B = [9, 25]
+rank = 1 B = [25]
 send result
-B * S = [9, 69]
+B * S = [27, 75]
 
 */

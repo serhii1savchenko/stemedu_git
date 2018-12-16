@@ -65,19 +65,20 @@ public class MPI5_2_MatrixMul8 {
 }
 
 /*
+Input:
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Kladko/Module3/MPI5_2_MatrixMul8 2
 
-mpirun --hostfile /home/elizabeth/hostfile -np 2 java -cp /home/elizabeth/stemedu/target/classes com.mathpar.students.ukma.Bohachek.Module3.MPI5_2_MatrixMul8 2
-
+Output:
 I'm processor 1
 A = 
-[[0.99, 0.39, 0.26, 0.18]
- [0.71, 0.6,  0.5,  0.19]
- [0.47, 0.34, 0.68, 0.47]
- [1,    0.73, 0.09, 0.56]]
+[[0.47, 0.64, 0.44, 0.42]
+ [0.8,  0.35, 0.57, 0.22]
+ [0.4,  0.57, 0.25, 0.09]
+ [0.9,  0.35, 0.84, 0.1 ]]
 B = 
-[[0.78, 0.1,  0.16, 0.36]
- [0.11, 0.13, 0.47, 0.85]
- [0.58, 0.9,  0.08, 0.62]
- [0.46, 0.56, 0.22, 0.8 ]]
+[[0.79, 0.67, 0.63, 0.82]
+ [0.7,  0.41, 0.54, 0.71]
+ [0.2,  0.56, 0.4,  0.76]
+ [0.76, 0.92, 0.01, 0.82]]
 
 */

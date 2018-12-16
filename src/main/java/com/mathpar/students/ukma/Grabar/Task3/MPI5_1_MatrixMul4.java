@@ -69,33 +69,33 @@ public class MPI5_1_MatrixMul4 {
 }
 
 /*
+Input:
+mpirun -np 4 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MPI5_1_MatrixMul4
 
-mpirun --hostfile /home/elizabeth/hostfile -np 4 java -cp /home/elizabeth/stemedu/target/classes com.mathpar.students.ukma.Bohachek/Module3/MPI5_1_MatrixMul4
-
-I'm processor 1
+Output:
 I'm processor 2
-I'm processor 3
+I'm processor 1I'm processor 3
+
 res = 
-[[0.89, 0.91]
- [1.11, 0.58]]
+[[0.83, 0.67]
+ [0.77, 1.18]]
 res = 
-[[0.54, 0.38]
- [1.06, 0.95]]
+[[0.31, 0.85]
+ [0.35, 0.71]]
+send result
+send result
 res = 
-[[0.54, 0.63]
- [1.49, 1.2 ]]
+[[0.92, 0.69]
+ [0.53, 1.02]]
 send result
 recv 1 to 0
-send result
-send result
 recv 2 to 0
 recv 3 to 0
 RES= 
-[[0.86, 0.65, 0.89, 0.91]
- [0.93, 0.92, 1.11, 0.58]
- [0.54, 0.38, 0.54, 0.63]
- [1.06, 0.95, 1.49, 1.2 ]]
-
+[[0.85, 0.72, 0.83, 0.67]
+ [1.44, 0.92, 0.77, 1.18]
+ [0.92, 0.69, 0.31, 0.85]
+ [0.53, 1.02, 0.35, 0.71]]
 
 
 */
