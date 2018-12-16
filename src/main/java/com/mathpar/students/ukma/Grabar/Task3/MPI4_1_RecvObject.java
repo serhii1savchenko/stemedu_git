@@ -52,6 +52,6 @@ public class MPI4_1_RecvObject
     }
 }
 /*
-mpirun --hostfile /home/elizabeth/hostfile -np 2 java -cp /home/elizabeth/stemedu/target/classes com.mathpar.students.ukma.Bohachek.Module3.MPI4_1_RecvObject 3 1
+mpirun --hostfile /home/igorko/hostfile -np 2 java -cp /home/igorko/stemedu/target/classes com/mathpar/students/ukma/Grabar/Task3/MPI4_1_RecvObject 3 1
 
 */
