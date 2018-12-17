@@ -11,7 +11,7 @@ import java.util.Random;
 import mpi.MPI;
 import mpi.MPIException;
 
-public class MPI5_4_VectorMulNumber {
+public class VectorMulNumber {
   
     
     public static void main(String[] args)
@@ -47,16 +47,16 @@ public class MPI5_4_VectorMulNumber {
             System.out.println("B * S = " +
                 new VectorS(result).toString(ring));
         } else {
-            System.out.println("I'm processor " + rank);
+            System.out.println("Current processor: " + rank);
             Element[] B = (Element[])
             MPITransport.recvObject(0, 100 + rank);
-            System.out.println("rank = " + rank +
-                " B = " + Array.toString(B));
+            System.out.println("Rank = " + rank +
+                "; B = " + Array.toString(B) + ";");
             Element[] result = new Element[k];
             for (int j = 0; j < B.length; j++)
                 result[j] = B[j].multiply(s, ring);
             MPITransport.sendObject(result, 0, 100 + rank);
-            System.out.println("send result");
+            System.out.println("Sending result");
         }
         MPI.Finalize();
     }
@@ -64,13 +64,13 @@ public class MPI5_4_VectorMulNumber {
 
 /*
 Command:
-mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MPI5_4_VectorMulNumber 2 3
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/VectorMulNumber 2 3
 
 Output:
-I'm processor 1
-Vector B = [9, 25]
-rank = 1 B = [25]
-send result
-B * S = [27, 75]
+Current processor: 1
+Vector B = [25, 8]
+Rank = 1; B = [8];
+Sending result
+B * S = [75, 24]
 
 */
