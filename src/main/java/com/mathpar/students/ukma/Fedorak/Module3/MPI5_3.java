@@ -89,7 +89,7 @@ send result
 send result
 rank = 1 B = [0.87, 0.13]
 send result
-A * B = [null, null]
+A * B = [0.618, 0.3548]
 
 
 
