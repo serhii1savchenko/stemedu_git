@@ -12,7 +12,7 @@ import java.util.Random;
 import mpi.MPI;
 import mpi.MPIException;
 
-public class MPI5_3_MatrixMulVector 
+public class MatrixMulVector 
 {   
     public static void main(String[] args)
     throws MPIException, IOException, ClassNotFoundException {
@@ -35,8 +35,8 @@ public class MPI5_3_MatrixMulVector
             Element[] res0 = new Element[n];
             for (int i = 0; i < n; i++) {
                 res0[i] = new VectorS(A.M[i]).multiply(B, ring);
-                System.out.println("rank = " + rank + " row = "
-                    + Array.toString(A.M[i]));
+                System.out.println("Rank = " + rank + "; Row = "
+                    + Array.toString(A.M[i])+ ";");
             }
             for (int j = 1; j < size; j++) {
                 for (int z = 0; z < k; z++)
@@ -55,16 +55,16 @@ public class MPI5_3_MatrixMulVector
             Element[][] A = new Element[k][ord];
             for (int i = 0; i < k; i++) {
                 A[i] = (Element[]) MPITransport.recvObject(0, 100 + rank);
-                System.out.println("rank = " + rank + " row = " + Array.toString(A[i]));
+                System.out.println("Rank = " + rank + "; Row = " + Array.toString(A[i]) + ";");
             }
             Element[] B = (Element[])
             MPITransport.recvObject(0, 100 + rank);
-            System.out.println("rank = " + rank + " B = " + Array.toString(B));
+            System.out.println("Rank = " + rank + "; B = " + Array.toString(B) + ";");
             Element[] result = new Element[k];
             for (int j = 0; j < A.length; j++)
                 result[j] = new VectorS(A[j]).multiply(new VectorS(B), ring);
             MPITransport.sendObject(result, 0, 100 + rank);
-            System.out.println("send result");
+            System.out.println("Sending result");
         }
         MPI.Finalize();
     }
@@ -72,18 +72,18 @@ public class MPI5_3_MatrixMulVector
 
 /*
 Command:
-mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MPI5_3_MatrixMulVector 2
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MatrixMulVector 2
 
 Output:
 I'm processor 1
 Matrix A = 
-[[0.34, 0.23]
- [0.73, 0.83]]
-Vector B = [0.74, 0.97]
-rank = 0 row = [0.34, 0.23]
-rank = 1 row = [0.73, 0.83]
-rank = 1 B = [0.74, 0.97]
-send result
+[[0.6,  0.36]
+ [0.43, 0.47]]
+Vector B = [0.14, 0.23]
+Rank = 0; Row = [0.60, 0.36];
+Rank = 1; Row = [0.43, 0.47];
+Rank = 1; B = [0.14, 0.23];
+Sending result
 A * B = [null, null]
 
 */

@@ -9,7 +9,7 @@ import java.util.Random;
 import mpi.MPI;
 import mpi.MPIException;
 
-public class MPI5_2_MatrixMul8 {
+public class MatrixMul8 {
     
     public static void main(String[] args)
     throws MPIException, IOException, ClassNotFoundException {
@@ -22,10 +22,10 @@ public class MPI5_2_MatrixMul8 {
             Random rnd = new Random();
             MatrixS A = new MatrixS(ord, ord, den,
                 new int[] {5, 3}, rnd, NumberZp32.ONE, ring);
-            System.out.println("A = " + A);
+            System.out.println("Matrix A: " + A);
             MatrixS B = new MatrixS(ord, ord, den,
                 new int[] {5, 3}, rnd, NumberZp32.ONE, ring);
-            System.out.println("B = " + B);
+            System.out.println("Matrix B: " + B);
             MatrixS D = null;
             MatrixS[] AA = A.split();
             MatrixS[] BB = B.split();
@@ -44,9 +44,9 @@ public class MPI5_2_MatrixMul8 {
             DD[2] = (MatrixS) MPITransport.recvObject(4, 3);
             DD[3] = (MatrixS) MPITransport.recvObject(6, 3);
             D = MatrixS.join(DD);
-            System.out.println("RES = " + D.toString());        
+            System.out.println("res D: " + D.toString());        
         } else {
-            System.out.println("I'm processor " + rank);
+            System.out.println("Current processor: " + rank);
             Object[] b = new Object[2];
             MPITransport.recvObjectArray(b,0,2,0, 0);
             MatrixS[] a = new MatrixS[b.length];
@@ -66,19 +66,20 @@ public class MPI5_2_MatrixMul8 {
 
 /*
 Input:
-mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MPI5_2_MatrixMul8 2
+mpirun -np 2 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MatrixMul8 2
 
 Output:
-I'm processor 1
-A = 
-[[0.47, 0.64, 0.44, 0.42]
- [0.8,  0.35, 0.57, 0.22]
- [0.4,  0.57, 0.25, 0.09]
- [0.9,  0.35, 0.84, 0.1 ]]
-B = 
-[[0.79, 0.67, 0.63, 0.82]
- [0.7,  0.41, 0.54, 0.71]
- [0.2,  0.56, 0.4,  0.76]
- [0.76, 0.92, 0.01, 0.82]]
+Current processor: 1
+Matrix A: 
+[[0.66, 0.67, 0.55, 0.25]
+ [0.66, 0.25, 0.09, 0.31]
+ [0.88, 0.43, 0.65, 0.07]
+ [0.07, 0.1,  0.88, 0.72]]
+Matrix B: 
+[[0.59, 0.3,  0.06, 0.09]
+ [0.89, 1,    0.94, 0.92]
+ [0.3,  0.67, 0.9,  0.12]
+ [0.99, 0.02, 0.11, 0.04]]
+
 
 */

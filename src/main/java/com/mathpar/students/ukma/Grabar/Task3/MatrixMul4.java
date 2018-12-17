@@ -9,7 +9,7 @@ import java.util.Random;
 import mpi.MPI;
 import mpi.MPIException;
 
-public class MPI5_1_MatrixMul4 {
+public class MatrixMul4 {
     static int tag = 0;
     static int mod = 13;
     
@@ -44,15 +44,15 @@ public class MPI5_1_MatrixMul4 {
             DD[0] = (AA[0].multiply(BB[0], ring)).
             add(AA[1].multiply(BB[2], ring), ring);
             DD[1] = (MatrixS) MPITransport.recvObject(1, 1);
-            System.out.println("recv 1 to 0");
+            System.out.println("recv 0 from 1");
             DD[2] = (MatrixS) MPITransport.recvObject(2, 2);
-            System.out.println("recv 2 to 0");
+            System.out.println("recv 0 from 2");
             DD[3] = (MatrixS) MPITransport.recvObject(3, 3);
-            System.out.println("recv 3 to 0");
+            System.out.println("recv 0 from 3");
             CC = MatrixS.join(DD);
-            System.out.println("RES= " + CC.toString());
+            System.out.println("res CC: " + CC.toString());
         } else {
-            System.out.println("I'm processor " + rank);
+            System.out.println("Current processor: " + rank);
             Object[] n = new Object[4];
             MPITransport.recvObjectArray(n,0,4, 0, rank);
             MatrixS a = (MatrixS) n[0];
@@ -60,9 +60,9 @@ public class MPI5_1_MatrixMul4 {
             MatrixS c = (MatrixS) n[2];
             MatrixS d = (MatrixS) n[3];
             MatrixS res = mmultiply(a, b, c, d, ring);
-            System.out.println("res = " + res);
+            System.out.println("res: " + res);
             MPITransport.sendObject(res, 0, rank);
-            System.out.println("send result");
+            System.out.println("Send result!");
         }
         MPI.Finalize();
     }
@@ -70,32 +70,31 @@ public class MPI5_1_MatrixMul4 {
 
 /*
 Input:
-mpirun -np 4 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MPI5_1_MatrixMul4
+mpirun -np 4 java -cp /home/igorko/homework/stemedu/target/classes  com/mathpar/students/ukma/Grabar/Task3/MatrixMul4
 
 Output:
-I'm processor 2
-I'm processor 1I'm processor 3
-
-res = 
-[[0.83, 0.67]
- [0.77, 1.18]]
-res = 
-[[0.31, 0.85]
- [0.35, 0.71]]
-send result
-send result
-res = 
-[[0.92, 0.69]
- [0.53, 1.02]]
-send result
-recv 1 to 0
-recv 2 to 0
-recv 3 to 0
-RES= 
-[[0.85, 0.72, 0.83, 0.67]
- [1.44, 0.92, 0.77, 1.18]
- [0.92, 0.69, 0.31, 0.85]
- [0.53, 1.02, 0.35, 0.71]]
-
+Current processor: 2
+Current processor: 1
+Current processor: 3
+res: 
+[[0.76, 0.57]
+ [1.88, 1.41]]
+res: 
+[[0.73, 0.46]
+ [1.86, 1.22]]
+Send result!
+Send result!
+res: 
+[[1.1,  0.64]
+ [1.16, 0.71]]
+Send result!
+recv 0 from 1
+recv 0 from 2
+recv 0 from 3
+res CC: 
+[[1.04, 0.79, 1.1,  0.64]
+ [1.25, 0.94, 1.16, 0.71]
+ [0.76, 0.57, 0.73, 0.46]
+ [1.88, 1.41, 1.86, 1.22]]
 
 */
