@@ -66,23 +66,31 @@ public class MPI5_2 {
 
 /*
 
- mpirun -np 16 --hostfile hostfile java -cp /home/bogdan/MPI/stemedu/stemedu/target/classes/ com.mathpar.students.ukma.Fedorak.Module3.MPI5_2
+mpirun -np 8 --hostfile hostfile java -cp /home/bogdan/MPI/stemedu/stemedu/target/classes/ com.mathpar.students.ukma.Fedorak.Module3.MPI5_2
 
-I'm processor 12I'm processor 10
-I'm processor 6I'm processor 2
-I'm processor 5
+I'm processor 1I'm processor 6
+I'm processor 3I'm processor 2
 
-I'm processor 1I'm processor 14
 
-I'm processor 3
-
-I'm processor 8
-I'm processor 11
 I'm processor 4
-I'm processor 13
-I'm processor 15
+I'm processor 5
+I'm processor 7
 A = 
-[[0.72, 0.48, 0.6,  0.37]
+[[0.16, 0.15, 0.68, 0.69]
+ [0.89, 0.01, 0.25, 0.24]
+ [0.29, 0.06, 0.2,  0.37]
+ [0.58, 0.96, 0.51, 0.14]]
+B = 
+[[0.24, 0.2,  0.65, 0.7 ]
+ [0.84, 0.71, 0.47, 0.55]
+ [0.72, 0.05, 0.86, 0.1 ]
+ [0.39, 0.9,  0.51, 0.79]]
+RES = 
+[[0.91, 0.79, 1.11, 0.8 ]
+ [0.5,  0.41, 0.92, 0.85]
+ [0.41, 0.45, 0.58, 0.55]
+ [1.37, 0.95, 1.34, 1.11]]
+
  [0.23, 0.31, 0.73, 0.72]
  [0.6,  0.54, 0.87, 0.47]
  [0.43, 0.21, 0.83, 0.12]]
