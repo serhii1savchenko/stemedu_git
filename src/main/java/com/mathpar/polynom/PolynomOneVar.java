@@ -213,10 +213,11 @@ public class PolynomOneVar extends Polynom {
             t++;
         }
         //домножение остатка
-        if (one && t != pw) {
-            p = p.multiplyByNumber(firstmonQ.pow(pw - t, ring), ring);
+        Polynom x= p;
+        if (one && t != pw) {  
+            x = p.multiplyByNumber(firstmonQ.pow(pw - t, ring), ring);
         }
-        return new Polynom[] {p, polynomFromNumber(firstmonQ.pow(pw, ring), ring)};
+       return new Polynom[] {x, polynomFromNumber(firstmonQ.pow(pw, ring), ring), p, polynomFromNumber(firstmonQ.pow(t, ring), ring)};
     }
 
 
