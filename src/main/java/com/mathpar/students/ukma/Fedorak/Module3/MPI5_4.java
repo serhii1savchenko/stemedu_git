@@ -63,18 +63,30 @@ public class MPI5_4 {
 }
 
 /*
-mpirun -np 4 --hostfile hostfile java -cp /home/bogdan/MPI/stemedu/stemedu/target/classes/ com.mathpar.students.ukma.Fedorak.Module3.MPI5_4 2 1
+mpirun -np 8 --hostfile hostfile java -cp /home/bogdan/MPI/stemedu/stemedu/target/classes/ com.mathpar.students.ukma.Fedorak.Module3.MPI5_4 8 4
 
-I'm processor 3
-I'm processor 1
+I'm processor 4
+I'm processor 6
+I'm processor 1I'm processor 3
+
 I'm processor 2
-Vector B = [26, 28]
-rank = 1 B = []
+Vector B = [0, 13, 31, 14, 19, 3, 21, 20]
+I'm processor 7
+I'm processor 5
+rank = 1 B = [13]
+rank = 6 B = [21]
+rank = 4 B = [19]send result
+
 send result
-rank = 3 B = []
+rank = 5 B = [3]
 send result
-rank = 2 B = []
+rank = 3 B = [14]
 send result
-B * S = [26, 28]
+rank = 7 B = [20]
+send result
+rank = 2 B = [31]
+send result
+send result
+B * S = [0, 52, 124, 56, 76, 12, 84, 80]
 
 */
