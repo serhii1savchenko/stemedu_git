@@ -6537,7 +6537,7 @@ public class Polynom extends Element implements Cloneable, java.io.Serializable 
      * @param q делитель
      *
      * @return массив полиномов: на нулевом месте стоит остаток деления this на
-     * q; на первом - домножитель
+     * q; на первом - домножитель (для степени n-m+1): остаток от деления с минимальным домножителем, минимальный домножитль
      */
     public Polynom[] remainder(Polynom q, Ring ring) {
         int vars = powers.length / coeffs.length;
@@ -6587,10 +6587,11 @@ public class Polynom extends Element implements Cloneable, java.io.Serializable 
             t++;
         }
         // Домножение остатка
-        if (oneB && t != pow) {
-            p = p.mulSS(firstmonQ.powRecS(pow - t, ring), ring);
+        Polynom x= p;
+        if (oneB && t != pow) {  
+            x = p.mulSS(firstmonQ.powRecS(pow - t, ring), ring);
         }
-        return new Polynom[] {p, firstmonQ.powRecS(pow, ring)};
+        return new Polynom[] {x, firstmonQ.powRecS(pow, ring), p, firstmonQ.powRecS(t, ring) };
     }
 
     /**
