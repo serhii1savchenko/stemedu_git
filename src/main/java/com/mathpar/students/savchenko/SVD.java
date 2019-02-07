@@ -1,28 +1,49 @@
 package com.mathpar.students.savchenko;
 
 import com.mathpar.matrix.MatrixD;
+import com.mathpar.number.Element;
 import com.mathpar.number.NumberR64;
 import com.mathpar.number.Ring;
 import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class SVD {
 
+    /*
+        1. QR разложение - givensQR()
+        2. Получить матрицу вращения Гивенса - getGivensRotationMatrix()
+        3. Получить левую и правую матрицы вращения для обнуления двух внедиагональных элементов - getTwoGivensRotationMatrices()
+     */
+
     public static void main(String[] args) {
         Ring ring = new Ring("R64[x]");
-        MatrixD A = new MatrixD(4, 4, 10, ring);               // n x n матрица случайных чисел
-
-        System.out.println("Входная матрица A = ");
-        System.out.println(A.toString() + "\n");
+        ring.FLOATPOS = 15;
+        NumberR64 zero = ring.MachineEpsilonR64;
+        System.out.println(zero.toString(ring) + "\n");
 
         try {
-//            givensQR(A, ring);
-            getTwoDiagonalMatrixByGivensRotation(A, ring);
-        } catch (WrongDimensionsException e) {
+            MatrixD A = new MatrixD(5, 5, 10, ring);               // n x n матрица случайных чисел
+            System.out.println("Входная матрица A = ");
+            System.out.println(A.toString() + "\n");
+            MatrixD[] qr = givensQR(A, ring);
+            System.out.println("Матрица Q = ");
+            System.out.println(qr[0].toString() + "\n");
+            System.out.println("Правая треугольная матрица R = ");
+            System.out.println(qr[1].toString() + "\n");
+            System.out.println("---------- Проверка: Матрица Q*R = ");
+            System.out.println(qr[0].multCU(qr[1], ring).toString());
+
+//            long [][] arr = {{1, 0}, {5, 2}};
+//            MatrixD test = new MatrixD(arr, ring);
+//            MatrixD[] lr = getTwoGivensRotationMatrices(test.getElement(0,0).doubleValue(), test.getElement(1, 0).doubleValue(),
+//                    test.getElement(1,1).doubleValue(), 2, 0, 1, ring);
+//            System.out.println("L * A * R = \n");
+//            System.out.println(lr[0].multCU(test, ring).multCU(lr[1], ring).toString());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void givensQR(MatrixD A, Ring ring) throws WrongDimensionsException {
+    public static MatrixD[] givensQR(MatrixD A, Ring ring) throws WrongDimensionsException {
         if (A.rowNum() != A.colNum())
             throw new WrongDimensionsException();
 
@@ -37,7 +58,7 @@ public class SVD {
             for (int j=n-1; j>colCounter-1; j--) {
                 if (Math.abs(R.getElement(j, i).doubleValue()) > 0) {
 //                    System.out.println("ОБНУЛЯЕМ ЭЛЕМЕНТ " + j + ", " + i + "\n");
-                    GTemp = getGivensRotationMatrix(n, j-1, j, R.getElement(j-1, i).doubleValue(), R.getElement(j, i).doubleValue(), ring);
+                    GTemp = getGivensRotationMatrix(n, j-1, j, R.getElement(j-1, i), R.getElement(j, i), ring);
 //                    System.out.println("МАТРИЦА ВРАЩЕНИЯ = " + "\n");
 //                    System.out.println(GTemp.toString()+ "\n");
                     Q = Q.multCU(GTemp, ring);
@@ -49,84 +70,70 @@ public class SVD {
             colCounter++;
         }
 
-        System.out.println("Матрица Q = ");
-        System.out.println(Q.toString() + "\n");
-
-        System.out.println("Правая треугольная матрица R = ");
-        System.out.println(R.toString() + "\n");
-
-        System.out.println("---------- Проверка: Матрица Q*R = ");
-        System.out.println(Q.multCU(R, ring).toString());
-
+        return new MatrixD[]{Q, R};
     }
 
-    public static void getTwoDiagonalMatrixByGivensRotation(MatrixD A, Ring ring) throws WrongDimensionsException {
-        if (A.rowNum() != A.colNum())
-            throw new WrongDimensionsException();
-
-        int colCounter = 1;
-        int rowCounter = 2;
-        int n = A.rowNum();
-        MatrixD U = MatrixD.ONE(n, ring);
-        MatrixD V = MatrixD.ONE(n, ring);
-        MatrixD Temp = A.copy();
-        MatrixD UTemp, VTemp;
-
-        for (int i=0; i<n-1; i++) {
-            System.out.println("ИТЕРАЦИЯ " + i  + "\n");
-            for (int j=n-1; j>colCounter-1; j--) {
-                if (Math.abs(Temp.getElement(j, i).doubleValue()) > 0) {
-                    System.out.println("ОБНУЛЯЕМ ЭЛЕМЕНТ в столбце " + j + ", " + i + "\n");
-                    UTemp = getGivensRotationMatrix(n, j-1, j, Temp.getElement(j-1, i).doubleValue(), Temp.getElement(j, i).doubleValue(), ring);
-//                    System.out.println("МАТРИЦА ВРАЩЕНИЯ = " + "\n");
-//                    System.out.println(UTemp.toString()+ "\n");
-                    U = UTemp.multCU(U, ring);
-                    Temp = UTemp.transpose(ring).multCU(Temp, ring);
-//                    System.out.println("МАТРИЦА ВРАЩЕНИЯ t * Temp = " + "\n");
-//                    System.out.println(Temp.toString() + "\n");
-                }
-            }
-            colCounter++;
-            // TODO написать метод умножения матрицы на транспонированую матрицу, чтобы избежать явного создания Temp.transpose(ring);
-            Temp = Temp.transpose(ring);
-            for (int j=n-1; j>rowCounter-1; j--) {
-                if (Math.abs(Temp.getElement(j, i).doubleValue()) > 0) {
-                    System.out.println("ОБНУЛЯЕМ ЭЛЕМЕНТ в строке " + i + ", " + j + "\n");
-                    // TODO
-                    VTemp = getGivensRotationMatrix(n, j-1, j, Temp.getElement(j-1, i).doubleValue(), Temp.getElement(j, i).doubleValue(), ring);
-//                    System.out.println("МАТРИЦА ВРАЩЕНИЯ = " + "\n");
-//                    System.out.println(VTemp.toString()+ "\n");
-                    V = V.multCU(VTemp, ring);
-                    Temp = VTemp.transpose(ring).multCU(Temp, ring);
-//                    System.out.println("МАТРИЦА ВРАЩЕНИЯ t * Temp t = " + "\n");
-//                    System.out.println(Temp.toString() + "\n");
-                }
-            }
-            // TODO
-            Temp = Temp.transpose(ring);
-            rowCounter++;
-            System.out.println("Temp = ");
-            System.out.println(Temp.toString() + "\n");
-        }
-        System.out.println("======= Результат =======" + "\n");
-        System.out.println("U = ");
-        System.out.println(U.toString()  + "\n");
-        System.out.println("V = ");
-        System.out.println(V.toString() + "\n");
-        System.out.println("Result = ");
-        System.out.println(Temp.toString());
-    }
-
-    public static MatrixD getGivensRotationMatrix(int n, int i, int j, double a, double b, Ring ring) {
+    public static MatrixD getGivensRotationMatrix(int n, int i, int j, Element a, Element b, Ring ring) {
         MatrixD G = MatrixD.ONE(n, ring);
-        double r = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
-        double c = a/r;
-        double s = (-b)/r;
-        G.M[i][i] = new NumberR64(c);
-        G.M[i][j] = new NumberR64(s);
-        G.M[j][i] = new NumberR64(-s);
-        G.M[j][j] = new NumberR64(c);
+        Element r = a.pow(2, ring).add(b.pow(2, ring), ring).sqrt(ring);     // Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        Element c = a.divide(r, ring);                                            // a/r;
+        Element s = b.negate(ring).divide(r, ring);                               // (-b)/r;
+        G.M[i][i] = c;
+        G.M[i][j] = s;
+        G.M[j][i] = s.negate(ring);
+        G.M[j][j] = c;
         return G;
+    }
+
+    public static MatrixD[] getTwoGivensRotationMatrices(double a, double b, double d, int n, int i, int j, Ring ring) {
+        MatrixD left = MatrixD.ONE(n, ring);
+        MatrixD right = MatrixD.ONE(n, ring);
+        double c = 0d;
+        double s = 0d;
+        double C = 0d;
+        double S = 0d;
+        double t = 0d;
+        double T = 0d;
+
+        if (a != 0d && d != 0d) {
+//            System.out.println("a ≠ 0, d ≠ 0 \n");
+            t = ((-1d*(b*b+d*d-a*a)) + Math.sqrt(Math.pow((b*b+d*d-a*a), 2) + 4d*a*a*b*b)) / (2d*a*b);
+            T = (-1d/d)*(a*t + b);
+        } else if (a != 0d && d == 0d) {
+//            System.out.println("a ≠ 0, d = 0 \n");
+            T = 0d;
+            t = (-b)/a;
+        } else if (a == 0d && d != 0d) {
+//            System.out.println("a = 0, d ≠ 0 \n");
+            t = 0d;
+            T = (-b)/d;
+        } else {                                    // a = 0 & d = 0
+//            System.out.println("a = 0, d = 0 \n");
+            c = 1d;
+            s = 0d;
+            C = 0d;
+            S = 1d;
+        }
+
+        if (!(a == 0d && d == 0d)) {
+            c = Math.sqrt(1d/(1d+t*t));                                 // c = Math.cos(Math.atan(t));
+            s = t*c;                                                    // s = Math.sin(Math.atan(t));
+            C = Math.sqrt(1d/(1d+T*T));                                 // C = Math.cos(Math.atan(T));
+            S = T*C;                                                    // S = Math.sin(Math.atan(T));
+        }
+
+        left.M[i][i] = new NumberR64(c);
+        left.M[i][j] = new NumberR64(-s);
+        left.M[j][i] = new NumberR64(s);
+        left.M[j][j] = new NumberR64(c);
+
+        right.M[i][i] = new NumberR64(C);
+        right.M[i][j] = new NumberR64(-S);
+        right.M[j][i] = new NumberR64(S);
+        right.M[j][j] = new NumberR64(C);
+
+        MatrixD[] result = {left, right};
+        return result;
     }
 
 }
