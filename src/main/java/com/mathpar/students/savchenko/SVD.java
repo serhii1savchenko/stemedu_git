@@ -7,56 +7,74 @@ import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class SVD {
 
-    public static void main(String[] args) {
+    private static double st, en, lastTimeSec = 0;
+    private static int n = 0;
+
+    public static void main(String[] args) throws WrongDimensionsException {
         Ring ring = new Ring("R64[x]");
 
-        ring.setMachineEpsilonR64(9);                                                          // установка машинного нуля
+        ring.setMachineEpsilonR64(5);                                                          // установка машинного нуля
         ring.FLOATPOS = 15;                                                                    // количество знаков после точки
         NumberR64 zero = ring.MachineEpsilonR64;
         System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
 
-        MatrixD A = new MatrixD(5, 5, 20, ring);                                    // n x n матрица случайных чисел
-        System.out.println("Входная матрица A = ");
-        System.out.println(A.toString() + "\n");
+        MatrixD A;
+        MatrixD[] svd;
+        MatrixD A1;
+        MatrixD difference;
 
-        try {
-            // 1. QR-разложение входной матрицы A.
-            MatrixD[] qr = givensQR(A, ring);
-            MatrixD Q = qr[0];
-            MatrixD R = qr[1];
-            System.out.println("Матрица Q = ");
-            System.out.println(Q.toString() + "\n");
-            System.out.println("Правая треугольная матрица R = ");
-            System.out.println(R.toString() + "\n");
-            System.out.println("---------- Проверка: Матрица Q*R = ");
-            System.out.println(Q.multCU(R, ring).toString() + "\n");
-
-            // 2. Приведение матрицы R к двухдиагональному виду (D2).
-            MatrixD Rt = R.transpose(ring);
-            MatrixD[] lr = leftTriangleToBidiagonal(Rt, ring);
-            MatrixD L1 = lr[0];
-            MatrixD R1 = lr[1];
-            MatrixD D2 = L1.multCU(Rt, ring);
-            D2 = D2.multCU(R1, ring);
-            System.out.println("D2 = \n" + D2.toString() + "\n");
-
-            // 3. Приведение матрицы D2 к диагональному виду (D1).
-            lr = bidiagonalToDiagonal(D2, ring);
-            MatrixD L2 = lr[0];
-            MatrixD R2 = lr[1];
-            MatrixD D1 = L2.multCU(D2, ring);
-            D1 = D1.multCU(R2, ring);
-            System.out.println("D1 = \n" + D1.toString() + "\n");
-
-            // 4. Расчет SVD разложения для входной матрицы A.
-            MatrixD U = Q.multCU(R1, ring).multCU(R2, ring);
-            MatrixD V = L2.multCU(L1, ring);
-            MatrixD A1 = U.multCU(D1, ring).multCU(V, ring);
-            System.out.println("Проверка SVD разложения. U*D1*V = \n");
-            System.out.println(A1.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (lastTimeSec < 600) {
+            n += 10;
+            A = new MatrixD(n, n, 5, ring);                                       // n x n матрица случайных чисел
+            st = System.nanoTime();
+            svd = getSVD(A, ring);
+            A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
+            difference = A.add(A1, ring);
+            en = System.nanoTime();
+            lastTimeSec = ((en-st)/1000000000);
+            System.out.println("n = " + n + ". " +
+                    "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
+                    "Time elapsed: " + lastTimeSec + " seconds.");
         }
+    }
+
+    public static MatrixD[] getSVD(MatrixD A, Ring ring) throws WrongDimensionsException {
+        // 1. QR-разложение входной матрицы A.
+        MatrixD[] qr = givensQR(A, ring);
+        MatrixD Q = qr[0];
+        MatrixD R = qr[1];
+//        System.out.println("Матрица Q = ");
+//        System.out.println(Q.toString() + "\n");
+//        System.out.println("Правая треугольная матрица R = ");
+//        System.out.println(R.toString() + "\n");
+//        System.out.println("---------- Проверка: Матрица Q*R = ");
+//        System.out.println(Q.multCU(R, ring).toString() + "\n");
+
+        // 2. Приведение матрицы R к двухдиагональному виду (D2).
+        MatrixD Rt = R.transpose(ring);
+        MatrixD[] lr = leftTriangleToBidiagonal(Rt, ring);
+        MatrixD L1 = lr[0];
+        MatrixD R1 = lr[1];
+        MatrixD D2 = L1.multCU(Rt, ring);
+        D2 = D2.multCU(R1, ring);
+//        System.out.println("D2 = \n" + D2.toString() + "\n");
+
+        // 3. Приведение матрицы D2 к диагональному виду (D1).
+        lr = bidiagonalToDiagonal(D2, ring);
+        MatrixD L2 = lr[0];
+        MatrixD R2 = lr[1];
+        MatrixD D1 = L2.multCU(D2, ring);
+        D1 = D1.multCU(R2, ring);
+//        System.out.println("D1 = \n" + D1.toString() + "\n");
+
+        // 4. Расчет SVD разложения для входной матрицы A.
+        MatrixD U = Q.multCU(R1, ring).multCU(R2, ring);
+        MatrixD V = L2.multCU(L1, ring);
+        MatrixD A1 = U.multCU(D1, ring).multCU(V, ring);
+//        System.out.println("Проверка SVD разложения. U*D1*V = \n");
+//        System.out.println(A1.toString());
+
+        return new MatrixD[] {U, D1, V, A1};
     }
 
     public static MatrixD[] givensQR(MatrixD A, Ring ring) throws WrongDimensionsException {
