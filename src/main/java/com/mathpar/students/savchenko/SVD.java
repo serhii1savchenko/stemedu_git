@@ -1,6 +1,7 @@
 package com.mathpar.students.savchenko;
 
 import com.mathpar.matrix.MatrixD;
+import com.mathpar.matrix.MatrixS;
 import com.mathpar.number.NumberR64;
 import com.mathpar.number.Ring;
 import com.mathpar.students.savchenko.exception.WrongDimensionsException;
@@ -13,7 +14,7 @@ public class SVD {
     public static void main(String[] args) throws WrongDimensionsException {
         Ring ring = new Ring("R64[x]");
 
-        ring.setMachineEpsilonR64(5);                                                          // установка машинного нуля
+        ring.setMachineEpsilonR64(6);                                                          // установка машинного нуля
         ring.FLOATPOS = 15;                                                                    // количество знаков после точки
         NumberR64 zero = ring.MachineEpsilonR64;
         System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
@@ -27,7 +28,7 @@ public class SVD {
             n += 10;
             A = new MatrixD(n, n, 5, ring);                                       // n x n матрица случайных чисел
             st = System.nanoTime();
-            svd = getSVD(A, ring);
+            svd = getSVD(A, ring, 200);
             A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
             difference = A.add(A1, ring);
             en = System.nanoTime();
@@ -38,7 +39,7 @@ public class SVD {
         }
     }
 
-    public static MatrixD[] getSVD(MatrixD A, Ring ring) throws WrongDimensionsException {
+    public static MatrixD[] getSVD(MatrixD A, Ring ring, int maxIterNumber) throws WrongDimensionsException {
         // 1. QR-разложение входной матрицы A.
         MatrixD[] qr = givensQR(A, ring);
         MatrixD Q = qr[0];
@@ -48,29 +49,30 @@ public class SVD {
 //        System.out.println("Правая треугольная матрица R = ");
 //        System.out.println(R.toString() + "\n");
 //        System.out.println("---------- Проверка: Матрица Q*R = ");
-//        System.out.println(Q.multCU(R, ring).toString() + "\n");
+//        System.out.println(Q.multiplyMatr(R, ring).toString() + "\n");
 
         // 2. Приведение матрицы R к двухдиагональному виду (D2).
         MatrixD Rt = R.transpose(ring);
         MatrixD[] lr = leftTriangleToBidiagonal(Rt, ring);
         MatrixD L1 = lr[0];
         MatrixD R1 = lr[1];
-        MatrixD D2 = L1.multCU(Rt, ring);
-        D2 = D2.multCU(R1, ring);
+        MatrixD D2 = L1.multiplyMatr(Rt, ring);
+        D2 = D2.multiplyMatr(R1, ring);
 //        System.out.println("D2 = \n" + D2.toString() + "\n");
 
         // 3. Приведение матрицы D2 к диагональному виду (D1).
-        lr = bidiagonalToDiagonal(D2, ring);
+        lr = bidiagonalToDiagonal(D2, ring, maxIterNumber);
         MatrixD L2 = lr[0];
         MatrixD R2 = lr[1];
-        MatrixD D1 = L2.multCU(D2, ring);
-        D1 = D1.multCU(R2, ring);
+        MatrixD D1 = L2.multiplyMatr(D2, ring);
+        D1 = D1.multiplyMatr(R2, ring);
+        Utils.diagonalize(D1, ring);
 //        System.out.println("D1 = \n" + D1.toString() + "\n");
 
         // 4. Расчет SVD разложения для входной матрицы A.
-        MatrixD U = Q.multCU(R1, ring).multCU(R2, ring);
-        MatrixD V = L2.multCU(L1, ring);
-        MatrixD A1 = U.multCU(D1, ring).multCU(V, ring);
+        MatrixD U = Q.multiplyMatr(R1, ring).multiplyMatr(R2, ring);
+        MatrixD V = L2.multiplyMatr(L1, ring);
+        MatrixD A1 = U.multiplyMatr(D1, ring).multiplyMatr(V, ring);
 //        System.out.println("Проверка SVD разложения. U*D1*V = \n");
 //        System.out.println(A1.toString());
 
@@ -95,8 +97,8 @@ public class SVD {
                     GTemp = Utils.getGivensRotationMatrix(n, j-1, j, R.getElement(j-1, i), R.getElement(j, i), ring);
 //                    System.out.println("МАТРИЦА ВРАЩЕНИЯ = " + "\n");
 //                    System.out.println(GTemp.toString()+ "\n");
-                    Q = Q.multCU(GTemp, ring);
-                    R = GTemp.transpose(ring).multCU(R, ring);
+                    Q = Q.multiplyMatr(GTemp, ring);
+                    R = GTemp.transpose(ring).multiplyMatr(R, ring);
 //                    System.out.println("МАТРИЦА ВРАЩЕНИЯ t * Temp = " + "\n");
 //                    System.out.println(R.toString() + "\n");
                 }
@@ -125,15 +127,15 @@ public class SVD {
             for (int row=(n-1); row>(col); row--) {
                 left = Utils.getGivensRotationMatrix(n, row-1, row, Temp.getElement(row-1, col), Temp.getElement(row, col), ring);
                 left = left.transpose(ring);
-                L = left.multCU(L, ring);
-                Temp = left.multCU(Temp, ring);
+                L = left.multiplyMatr(L, ring);
+                Temp = left.multiplyMatr(Temp, ring);
                 // System.out.println("Испортился ноль в " + (row-1) + ", " + row);
                 if (row > (col+1)) {                                                        // Убираем y-ки если это не "верхний" y
                     int i = row-1;
                     int j = row;
                     right = Utils.getGivensRotationMatrix(n, j-1, j, Temp.getElement(i, j-1), Temp.getElement(i, j), ring);
-                    R = R.multCU(right, ring);
-                    Temp = Temp.multCU(right, ring);
+                    R = R.multiplyMatr(right, ring);
+                    Temp = Temp.multiplyMatr(right, ring);
                 }
             }
 //            System.out.println("После " + (col+1) + " итерации матрица имеет вид \n");
@@ -144,7 +146,7 @@ public class SVD {
     }
 
     // Возвращает матрицы L, R. Матрица D1 = L*A*R имеет диагональный вид.
-    public static MatrixD[] bidiagonalToDiagonal(MatrixD A, Ring ring) throws WrongDimensionsException {
+    public static MatrixD[] bidiagonalToDiagonal(MatrixD A, Ring ring, int maxIterNumber) throws WrongDimensionsException {
         if (A.rowNum() != A.colNum())
             throw new WrongDimensionsException();
 
@@ -160,22 +162,22 @@ public class SVD {
         boolean side = true;
         int iterations = 0;
 
-        while (!Utils.checkSecondDiagonalValues(Temp, n, ring)) {
+        while (!Utils.checkSecondDiagonalValues(Temp, n, ring) && iterations < maxIterNumber) {
             iterations++;
             if (side) {                                                  // right
                 for (int i=0; i<(n-1); i++) {
                     int j = i+1;
                     right = Utils.getGivensRotationMatrix(n, j-1, j, Temp.getElement(i, j-1), Temp.getElement(i, j), ring);
-                    R = R.multCU(right, ring);
-                    Temp = Temp.multCU(right, ring);
+                    R = R.multiplyMatr(right, ring);
+                    Temp = Temp.multiplyMatr(right, ring);
                 }
             } else {                                                     // left
                 for (int j=0; j<(n-1); j++) {
                     int i = j+1;
                     left = Utils.getGivensRotationMatrix(n, i-1, i, Temp.getElement(i-1, j), Temp.getElement(i, j), ring);
                     left = left.transpose(ring);
-                    L = left.multCU(L, ring);
-                    Temp = left.multCU(Temp, ring);
+                    L = left.multiplyMatr(L, ring);
+                    Temp = left.multiplyMatr(Temp, ring);
                 }
             }
             side = !side;
@@ -183,7 +185,7 @@ public class SVD {
 //            System.out.println(Temp.toString() + "\n");
         }
 
-        System.out.println("Количество итераций для получения диагональной матрицы = " + iterations + ". \n");
+//        System.out.println("Количество итераций для получения диагональной матрицы = " + iterations + ". \n");
         return new MatrixD[]{L, R};
     }
 

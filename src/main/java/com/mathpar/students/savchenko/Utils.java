@@ -90,7 +90,16 @@ public class Utils {
 //            MatrixD[] lr = getTwoGivensRotationMatrices(test.getElement(0,0).doubleValue(), test.getElement(1, 0).doubleValue(),
 //                    test.getElement(1,1).doubleValue(), 2, 0, 1, ring);
 //            System.out.println("L * A * R = \n");
-//            System.out.println(lr[0].multCU(test, ring).multCU(lr[1], ring).toString());
+//            System.out.println(lr[0].multiplyMatr(test, ring).multiplyMatr(lr[1], ring).toString());
     }
 
+    public static void diagonalize(MatrixD d, Ring ring) {
+        for (int i = 0; i < d.M.length; i++) {
+            for (int j = 0; j < d.M[0].length; j++) {
+                if (i != j) {
+                    d.M[i][j] = ring.numberZERO;
+                }
+            }
+        }
+    }
 }
