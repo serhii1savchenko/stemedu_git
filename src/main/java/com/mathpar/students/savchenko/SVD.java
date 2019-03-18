@@ -1,34 +1,39 @@
 package com.mathpar.students.savchenko;
 
 import com.mathpar.matrix.MatrixD;
-import com.mathpar.matrix.MatrixS;
-import com.mathpar.number.NumberR64;
+import com.mathpar.number.NumberR;
 import com.mathpar.number.Ring;
 import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class SVD {
 
     private static double st, en, lastTimeSec = 0;
-    private static int n = 0;
+    private static int n = 30;
 
     public static void main(String[] args) throws WrongDimensionsException {
-        Ring ring = new Ring("R64[x]");
+        Ring ring = new Ring("R[x]");
+        ring.setFLOATPOS(100);                                              // количество выводимых знаков после точки
 
-        ring.setMachineEpsilonR64(6);                                                          // установка машинного нуля
-        ring.FLOATPOS = 15;                                                                    // количество знаков после точки
-        NumberR64 zero = ring.MachineEpsilonR64;
-        System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
-
-        MatrixD A;
+        MatrixD A = TestData.getTestMatrix(n, ring);
         MatrixD[] svd;
         MatrixD A1;
         MatrixD difference;
 
-        while (lastTimeSec < 600) {
-            n += 10;
-            A = new MatrixD(n, n, 5, ring);                                       // n x n матрица случайных чисел
+        int[] accuracy = {100, 80, 60, 40, 20};
+
+        for (int i = 0; i < accuracy.length; i++) {
+            System.out.println("Эксперимент №" + (i+1));
+            System.out.println("Accuracy = " + accuracy[i]);
+            System.out.println("Machine epsilon = " + (accuracy[i] - 10));
+
+            ring.setAccuracy(accuracy[i]);                                  // количество знаков после точки
+            ring.setMachineEpsilonR(accuracy[i] - 10);                      // машинный ноль
+
+            NumberR zero = ring.MachineEpsilonR;
+            System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
+
             st = System.nanoTime();
-            svd = getSVD(A, ring, 200);
+            svd = getSVD(A, ring);
             A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
             difference = A.add(A1, ring);
             en = System.nanoTime();
@@ -36,10 +41,13 @@ public class SVD {
             System.out.println("n = " + n + ". " +
                     "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
                     "Time elapsed: " + lastTimeSec + " seconds.");
+
+            System.out.println("------------------------------------------------------------------------------------");
         }
+
     }
 
-    public static MatrixD[] getSVD(MatrixD A, Ring ring, int maxIterNumber) throws WrongDimensionsException {
+    public static MatrixD[] getSVD(MatrixD A, Ring ring) throws WrongDimensionsException {
         // 1. QR-разложение входной матрицы A.
         MatrixD[] qr = givensQR(A, ring);
         MatrixD Q = qr[0];
@@ -61,7 +69,7 @@ public class SVD {
 //        System.out.println("D2 = \n" + D2.toString() + "\n");
 
         // 3. Приведение матрицы D2 к диагональному виду (D1).
-        lr = bidiagonalToDiagonal(D2, ring, maxIterNumber);
+        lr = bidiagonalToDiagonal(D2, ring);
         MatrixD L2 = lr[0];
         MatrixD R2 = lr[1];
         MatrixD D1 = L2.multiplyMatr(D2, ring);
@@ -146,7 +154,7 @@ public class SVD {
     }
 
     // Возвращает матрицы L, R. Матрица D1 = L*A*R имеет диагональный вид.
-    public static MatrixD[] bidiagonalToDiagonal(MatrixD A, Ring ring, int maxIterNumber) throws WrongDimensionsException {
+    public static MatrixD[] bidiagonalToDiagonal(MatrixD A, Ring ring) throws WrongDimensionsException {
         if (A.rowNum() != A.colNum())
             throw new WrongDimensionsException();
 
@@ -162,7 +170,7 @@ public class SVD {
         boolean side = true;
         int iterations = 0;
 
-        while (!Utils.checkSecondDiagonalValues(Temp, n, ring) && iterations < maxIterNumber) {
+        while (!Utils.checkSecondDiagonalValues(Temp, n, ring)) {
             iterations++;
             if (side) {                                                  // right
                 for (int i=0; i<(n-1); i++) {
@@ -185,7 +193,7 @@ public class SVD {
 //            System.out.println(Temp.toString() + "\n");
         }
 
-//        System.out.println("Количество итераций для получения диагональной матрицы = " + iterations + ". \n");
+        System.out.println("Количество итераций для получения диагональной матрицы = " + iterations + ".");
         return new MatrixD[]{L, R};
     }
 
