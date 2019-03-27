@@ -7,46 +7,6 @@ import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class SVD {
 
-    private static double st, en, lastTimeSec = 0;
-    private static int n = 30;
-
-    public static void main(String[] args) throws WrongDimensionsException {
-        Ring ring = new Ring("R[x]");
-        ring.setFLOATPOS(100);                                              // количество выводимых знаков после точки
-
-        MatrixD A = TestData.getTestMatrix(n, ring);
-        MatrixD[] svd;
-        MatrixD A1;
-        MatrixD difference;
-
-        int[] accuracy = {100, 80, 60, 40, 20};
-
-        for (int i = 0; i < accuracy.length; i++) {
-            System.out.println("Эксперимент №" + (i+1));
-            System.out.println("Accuracy = " + accuracy[i]);
-            System.out.println("Machine epsilon = " + (accuracy[i] - 10));
-
-            ring.setAccuracy(accuracy[i]);                                  // количество знаков после точки
-            ring.setMachineEpsilonR(accuracy[i] - 10);                      // машинный ноль
-
-            NumberR zero = ring.MachineEpsilonR;
-            System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
-
-            st = System.nanoTime();
-            svd = getSVD(A, ring);
-            A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
-            difference = A.add(A1, ring);
-            en = System.nanoTime();
-            lastTimeSec = ((en-st)/1000000000);
-            System.out.println("n = " + n + ". " +
-                    "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
-                    "Time elapsed: " + lastTimeSec + " seconds.");
-
-            System.out.println("------------------------------------------------------------------------------------");
-        }
-
-    }
-
     public static MatrixD[] getSVD(MatrixD A, Ring ring) throws WrongDimensionsException {
         // 1. QR-разложение входной матрицы A.
         MatrixD[] qr = givensQR(A, ring);
