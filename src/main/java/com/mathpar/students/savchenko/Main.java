@@ -10,42 +10,44 @@ public class Main {
 
     public static void main(String[] args) throws WrongDimensionsException {
         //runExperiment1();
-        runExperiment2();
+        runExperiment2_1();
     }
 
-    public static void runExperiment2() throws WrongDimensionsException {
-        Ring ring = new Ring("R[x]");
+    public static void runExperiment2_1() throws WrongDimensionsException {
+        Ring ring = new Ring("R64[x]");
         ring.setFLOATPOS(100);                                              // количество выводимых знаков после точки
 
-        ring.setAccuracy(18);                                               // количество знаков после точки
-        ring.setMachineEpsilonR(10);                                        // машинный ноль
-
-        NumberR zero = ring.MachineEpsilonR;
-        System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
-
-        double st, en, lastTimeSec = 0;
-        int[] dimensions = {20, 30, 40, 50, 60, 70, 80};
+        double st, en, lastTimeSec;
+        int[] dimensions = {20, 30, 40, 60, 70};
+        int[] machineEpsilon = {20, 40};
 
         MatrixD A;
         MatrixD[] svd;
         MatrixD A1;
         MatrixD difference;
 
-        for (int i = 0; i < dimensions.length; i++) {
-            A = TestData.getTestMatrix(dimensions[i], ring);
-            st = System.nanoTime();
-            svd = SVD.getSVD(A, ring);
-            A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
-            difference = A.add(A1, ring);
-            en = System.nanoTime();
-            lastTimeSec = ((en-st)/1000000000);
-            System.out.println("n = " + dimensions[i] + ". " +
-                    "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
-                    "Time elapsed: " + lastTimeSec + " seconds.");
+        for (int j : machineEpsilon) {
+            ring.setMachineEpsilonR64(j);                                      // машинный ноль
+            NumberR64 zero = ring.MachineEpsilonR64;
+            System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
 
-            System.out.println("------------------------------------------------------------------------------------");
+            for (int i : dimensions) {
+                A = new MatrixD(i, i, 10, ring);
+                st = System.nanoTime();
+                svd = SVD.getSVD(A, ring);
+                A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
+                difference = A.add(A1, ring);
+                en = System.nanoTime();
+                lastTimeSec = ((en - st) / 1000000000);
+                System.out.println("n = " + i + ". " +
+                        "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
+                        "Time elapsed: " + lastTimeSec + " seconds.");
+
+                System.out.println("------------------------------------------------------------------------------------");
+            }
+
+            System.out.println("******************************************************************");
         }
-
     }
 
     public static void runExperiment1() throws WrongDimensionsException {
