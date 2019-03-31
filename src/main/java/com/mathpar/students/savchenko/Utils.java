@@ -93,7 +93,7 @@ public class Utils {
 //            System.out.println(lr[0].multiplyMatr(test, ring).multiplyMatr(lr[1], ring).toString());
     }
 
-    public static void diagonalize(MatrixD d, Ring ring) {
+    public static void removeNonDiagonalValues(MatrixD d, Ring ring) {
         for (int i = 0; i < d.M.length; i++) {
             for (int j = 0; j < d.M[0].length; j++) {
                 if (i != j) {
@@ -101,5 +101,24 @@ public class Utils {
                 }
             }
         }
+    }
+
+    public static boolean isPowerOfTwo(int number) {
+        return number > 0 && ((number & (number - 1)) == 0);
+    }
+
+    public static MatrixD getSubMatrix(MatrixD matrix, int start_i,int end_i, int start_j, int end_j) {
+        matrix = matrix.copy();
+        int rowNum = end_i - start_i + 1;
+        int colNum = end_j - start_j + 1;
+
+        Element[][] e = new Element[rowNum][colNum];
+        for (int i = start_i; i <= end_i; i++) {
+            for (int j = start_j; j <= end_j; j++) {
+                e[i-start_i][j-start_j] = matrix.getElement(i, j);
+            }
+        }
+
+        return new MatrixD(e, 0);
     }
 }

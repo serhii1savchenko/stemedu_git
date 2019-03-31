@@ -29,12 +29,16 @@ public class SVD {
 //        System.out.println("D2 = \n" + D2.toString() + "\n");
 
         // 3. Приведение матрицы D2 к диагональному виду (D1).
+        double st = System.nanoTime();
         lr = bidiagonalToDiagonal(D2, ring);
         MatrixD L2 = lr[0];
         MatrixD R2 = lr[1];
         MatrixD D1 = L2.multiplyMatr(D2, ring);
         D1 = D1.multiplyMatr(R2, ring);
-        Utils.diagonalize(D1, ring);
+//        Utils.removeNonDiagonalValues(D1, ring);
+        double en = System.nanoTime();
+        double lastTimeSec = ((en - st) / 1000000000);
+        System.out.println("Time D2 ---> D1: " + lastTimeSec + " seconds.");
 //        System.out.println("D1 = \n" + D1.toString() + "\n");
 
         // 4. Расчет SVD разложения для входной матрицы A.
