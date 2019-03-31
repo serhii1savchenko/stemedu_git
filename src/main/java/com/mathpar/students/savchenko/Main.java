@@ -17,14 +17,9 @@ public class Main {
         Ring ring = new Ring("R64[x]");
         ring.setFLOATPOS(100);                                              // количество выводимых знаков после точки
 
-        double st, en, lastTimeSec;
-        int[] dimensions = {20, 30, 40, 60, 70};
+        int[] dimensions = {10, 20, 30, 40, 50, 60};
         int[] machineEpsilon = {20, 40};
-
-        MatrixD A;
-        MatrixD[] svd;
-        MatrixD A1;
-        MatrixD difference;
+        MatrixD mainMatrix = TestData.getTestMatrix(60, ring);
 
         for (int j : machineEpsilon) {
             ring.setMachineEpsilonR64(j);                                      // машинный ноль
@@ -32,13 +27,13 @@ public class Main {
             System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
 
             for (int i : dimensions) {
-                A = new MatrixD(i, i, 10, ring);
-                st = System.nanoTime();
-                svd = SVD.getSVD(A, ring);
-                A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
-                difference = A.add(A1, ring);
-                en = System.nanoTime();
-                lastTimeSec = ((en - st) / 1000000000);
+                MatrixD A = Utils.getSubMatrix(mainMatrix, 0, i-1, 0, i-1);
+                double st = System.nanoTime();
+                MatrixD[] svd = SVD.getSVD(A, ring);
+                MatrixD A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
+                MatrixD difference = A.add(A1, ring);
+                double en = System.nanoTime();
+                double lastTimeSec = ((en - st) / 1000000000);
                 System.out.println("n = " + i + ". " +
                         "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
                         "Time elapsed: " + lastTimeSec + " seconds.");
