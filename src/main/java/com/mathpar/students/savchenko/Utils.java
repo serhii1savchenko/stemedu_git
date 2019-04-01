@@ -21,7 +21,7 @@ public class Utils {
 
     public static boolean checkSecondDiagonalValues(MatrixD temp, int n, Ring ring) {
         for (int i = 0; i < (n-1); i++) {
-            if (!temp.getElement(i, i+1).abs(ring).isZero(ring) || !temp.getElement(i+1, i).abs(ring).isZero(ring))
+            if (!temp.getElement(i, i+1).isZero(ring) || !temp.getElement(i+1, i).isZero(ring))
                 return false;
         }
         return true;

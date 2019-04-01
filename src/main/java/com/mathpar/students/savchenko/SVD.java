@@ -135,21 +135,26 @@ public class SVD {
         int iterations = 0;
 
         while (!Utils.checkSecondDiagonalValues(Temp, n, ring)) {
-            iterations++;
             if (side) {                                                  // right
                 for (int i=0; i<(n-1); i++) {
                     int j = i+1;
-                    right = Utils.getGivensRotationMatrix(n, j-1, j, Temp.getElement(i, j-1), Temp.getElement(i, j), ring);
-                    R = R.multiplyMatr(right, ring);
-                    Temp = Temp.multiplyMatr(right, ring);
+                    if (!Temp.getElement(i, j).isZero(ring)) {
+                        right = Utils.getGivensRotationMatrix(n, j - 1, j, Temp.getElement(i, j - 1), Temp.getElement(i, j), ring);
+                        R = R.multiplyMatr(right, ring);
+                        Temp = Temp.multiplyMatr(right, ring);
+                        iterations++;
+                    }
                 }
             } else {                                                     // left
                 for (int j=0; j<(n-1); j++) {
                     int i = j+1;
-                    left = Utils.getGivensRotationMatrix(n, i-1, i, Temp.getElement(i-1, j), Temp.getElement(i, j), ring);
-                    left = left.transpose(ring);
-                    L = left.multiplyMatr(L, ring);
-                    Temp = left.multiplyMatr(Temp, ring);
+                    if (!Temp.getElement(i, j).isZero(ring)) {
+                        left = Utils.getGivensRotationMatrix(n, i - 1, i, Temp.getElement(i - 1, j), Temp.getElement(i, j), ring);
+                        left = left.transpose(ring);
+                        L = left.multiplyMatr(L, ring);
+                        Temp = left.multiplyMatr(Temp, ring);
+                        iterations++;
+                    }
                 }
             }
             side = !side;
