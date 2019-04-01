@@ -15,16 +15,16 @@ public class Main {
 
     public static void runExperiment2_1() throws WrongDimensionsException {
         Ring ring = new Ring("R64[x]");
-        ring.setFLOATPOS(100);                                              // количество выводимых знаков после точки
+        ring.setFLOATPOS(100);                                                  // количество выводимых знаков после точки
 
-        int[] dimensions = {10, 20, 30, 40, 50, 60};
+        int[] dimensions = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
         int[] machineEpsilon = {20, 40};
-        MatrixD mainMatrix = TestData.getTestMatrix(60, ring);
+        MatrixD mainMatrix = TestData.getTestMatrix(dimensions[dimensions.length-1], ring);
 
         for (int j : machineEpsilon) {
-            ring.setMachineEpsilonR64(j);                                      // машинный ноль
+            ring.setMachineEpsilonR64(j);                                       // машинный ноль
             NumberR64 zero = ring.MachineEpsilonR64;
-            System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
+            System.out.println("MachineEpsilonR64 = " + j /*zero.toString(ring)*/ + "\n");
 
             for (int i : dimensions) {
                 MatrixD A = Utils.getSubMatrix(mainMatrix, 0, i-1, 0, i-1);
