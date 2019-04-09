@@ -9,6 +9,7 @@ public class SVD {
 
     public static MatrixD[] getSVD(MatrixD A, Ring ring) throws WrongDimensionsException {
         // 1. QR-разложение входной матрицы A.
+        double st = System.nanoTime();
         MatrixD[] qr = givensQR(A, ring);
         MatrixD Q = qr[0];
         MatrixD R = qr[1];
@@ -26,18 +27,21 @@ public class SVD {
         MatrixD R1 = lr[1];
         MatrixD D2 = L1.multiplyMatr(Rt, ring);
         D2 = D2.multiplyMatr(R1, ring);
+        double en = System.nanoTime();
+        double lastTimeSec = ((en - st) / 1000000000);
+        System.out.println("Time for D2: " + lastTimeSec + " seconds.");
 //        System.out.println("D2 = \n" + D2.toString() + "\n");
 
         // 3. Приведение матрицы D2 к диагональному виду (D1).
-        double st = System.nanoTime();
+        st = System.nanoTime();
         lr = bidiagonalToDiagonal(D2, ring);
         MatrixD L2 = lr[0];
         MatrixD R2 = lr[1];
         MatrixD D1 = L2.multiplyMatr(D2, ring);
         D1 = D1.multiplyMatr(R2, ring);
 //        Utils.removeNonDiagonalValues(D1, ring);
-        double en = System.nanoTime();
-        double lastTimeSec = ((en - st) / 1000000000);
+        en = System.nanoTime();
+        lastTimeSec = ((en - st) / 1000000000);
         System.out.println("Time D2 ---> D1: " + lastTimeSec + " seconds.");
 //        System.out.println("D1 = \n" + D1.toString() + "\n");
 
@@ -51,10 +55,10 @@ public class SVD {
         return new MatrixD[] {U, D1, V, A1};
     }
 
+    /**
+     * Returns matrices Q, R such that Q*R = A
+     */
     public static MatrixD[] givensQR(MatrixD A, Ring ring) throws WrongDimensionsException {
-        if (A.rowNum() != A.colNum())
-            throw new WrongDimensionsException();
-
         int colCounter = 1;
         int n = A.rowNum();
         MatrixD Q = MatrixD.ONE(n, ring);

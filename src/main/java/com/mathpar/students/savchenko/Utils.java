@@ -121,4 +121,39 @@ public class Utils {
 
         return new MatrixD(e, 0);
     }
+
+    public static MatrixD insertMatrixToMatrix(MatrixD matrix, MatrixD block, int i_start, int j_start){
+        block = block.copy();
+        MatrixD result = matrix.copy();
+
+        for (int i = 0; i < block.rowNum(); i++) {
+            for (int j = 0; j < block.colNum(); j++) {
+                result.M[i+i_start][j+j_start] = block.getElement(i, j);
+            }
+        }
+
+        return result;
+    }
+
+    public static void readBlock(MatrixD matrix, int iOffset, int jOffset, Element[][] elements, int h) {
+        for (int i = iOffset; i < (h+iOffset); i++) {
+            for (int j = jOffset; j < (h+jOffset); j++) {
+                elements[i-iOffset][j-jOffset] = matrix.getElement(i, j);
+            }
+        }
+    }
+
+    public static MatrixD getParallelogram(MatrixD temp, Ring ring) {
+        temp = temp.copy();
+        int h = temp.rowNum()/2;
+        Element[][] elements = new Element[h][h];
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < h; j++) {
+                elements[i][j] = temp.getElement(i+j, j);
+            }
+        }
+
+        return new MatrixD(elements, 0);
+    }
 }
