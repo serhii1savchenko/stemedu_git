@@ -4,6 +4,7 @@ import com.mathpar.matrix.MatrixD;
 import com.mathpar.number.Element;
 import com.mathpar.number.NumberR64;
 import com.mathpar.number.Ring;
+import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class Utils {
 
@@ -107,7 +108,7 @@ public class Utils {
         return number > 0 && ((number & (number - 1)) == 0);
     }
 
-    public static MatrixD getSubMatrix(MatrixD matrix, int start_i,int end_i, int start_j, int end_j) {
+    public static MatrixD getSubMatrix(MatrixD matrix, int start_i, int end_i, int start_j, int end_j) {
         matrix = matrix.copy();
         int rowNum = end_i - start_i + 1;
         int colNum = end_j - start_j + 1;
@@ -143,17 +144,55 @@ public class Utils {
         }
     }
 
-    public static MatrixD getParallelogram(MatrixD temp, Ring ring) {
-        temp = temp.copy();
-        int h = temp.rowNum()/2;
-        Element[][] elements = new Element[h][h];
+    public static MatrixD getBlock(MatrixD input, int block) {
+        int rowNum = input.rowNum();
+        int colNum = input.colNum();
 
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < h; j++) {
-                elements[i][j] = temp.getElement(i+j, j);
-            }
+        int i_start = 0, i_end = 0, j_start = 0, j_end = 0;
+
+        if (block == 1) {
+            i_start = rowNum / 4;
+            i_end = rowNum - (rowNum / 4) - 1;
+            j_start = 0;
+            j_end = (colNum / 2) - 1;
+        } else if (block == 2) {
+            i_start = 0;
+            i_end = (rowNum / 2) - 1;
+            j_start = 0;
+            j_end = (colNum / 2) - 1;
+        } else if (block == 3) {
+            i_start = rowNum / 2;
+            i_end = rowNum - 1;
+            j_start = colNum / 2;
+            j_end = colNum - 1;
+        } else if (block == 4) {
+            i_start = rowNum / 4;
+            i_end = rowNum - (rowNum / 4) - 1;
+            j_start = colNum / 2;
+            j_end = colNum - 1;
         }
 
-        return new MatrixD(elements, 0);
+        return Utils.getSubMatrix(input, i_start, i_end, j_start, j_end);
+    }
+
+    public static MatrixD block4(MatrixD input, char b) throws WrongDimensionsException {
+        if ((input.rowNum() != input.colNum()) || !Utils.isPowerOfTwo(input.rowNum()))
+            throw new WrongDimensionsException();
+
+        MatrixD matrix = input.copy();
+        int n = matrix.rowNum();
+        int h = n/2;
+
+        if (n == 1) {
+            return matrix;
+        } else {
+            switch (b) {
+                case 'A': return Utils.getSubMatrix(matrix, 0, h-1, 0, h-1);
+                case 'B': return Utils.getSubMatrix(matrix, 0, h-1, h, n-1);
+                case 'C': return Utils.getSubMatrix(matrix, h, n-1, 0, h-1);
+                case 'D': return Utils.getSubMatrix(matrix, h, n-1, h, n-1);
+                default: return matrix;
+            }
+        }
     }
 }
