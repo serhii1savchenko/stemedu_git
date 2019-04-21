@@ -10,10 +10,51 @@ public class Main {
 
     public static void main(String[] args) throws WrongDimensionsException {
         //runExperiment1();
-        runExperiment2_1();
+        //runExperiment2();
+        runExperiment3();
     }
 
-    public static void runExperiment2_1() throws WrongDimensionsException {
+    /**
+     * Сравнение ошибки и времени работы обычного и блочного алгоритмов для QR разложения в зависимости от размера матрицы
+     */
+    public static void runExperiment3() throws WrongDimensionsException {
+        Ring ring = new Ring("R64[x]");
+        ring.setFLOATPOS(100);                                                  // количество выводимых знаков после точки
+        ring.setMachineEpsilonR64(30);
+
+        int[] dimensions = {4, 8, 16, 32, 64, 128, 256, 512, 1024};
+        double st, en;
+        MatrixD check, difference, testMatrix;
+
+        for (int n : dimensions) {
+            System.out.println("Dimension = " + n + " Simple GinensQR");
+            testMatrix = TestData.getTestMatrix(n, ring);
+            st = System.nanoTime();
+            MatrixD[] gQR = SVD.givensQR(testMatrix, ring);
+            en = System.nanoTime();
+            System.out.println("       time: " + ((en - st) / 1000000000) + " seconds");
+            check = gQR[0].multiplyMatr(gQR[1], ring).multiplyByScalar(ring.numberMINUS_ONE, ring);
+            difference = testMatrix.add(check, ring);
+            System.out.println("       diff: " + difference.max(ring).abs(ring).toString(ring));
+
+            System.out.println("Dimension = " + n + " BLOCK QR");
+            testMatrix = TestData.getTestMatrix(n, ring);
+            st = System.nanoTime();
+            MatrixD[] bQR = BlockQR.blockQR(testMatrix, ring);
+            en = System.nanoTime();
+            System.out.println("       time: " + ((en - st) / 1000000000) + " seconds");
+            check = bQR[0].multiplyMatr(bQR[1], ring).multiplyByScalar(ring.numberMINUS_ONE, ring);
+            difference = testMatrix.add(check, ring);
+            System.out.println("       diff: " + difference.max(ring).abs(ring).toString(ring));
+
+            System.out.println("************************************************");
+        }
+    }
+
+    /**
+     * Сравнение ошибки и времени в зависимости от точности и размера матрицы для NumberR64 (Double)
+     */
+    public static void runExperiment2() throws WrongDimensionsException {
         Ring ring = new Ring("R64[x]");
         ring.setFLOATPOS(100);                                                  // количество выводимых знаков после точки
 
@@ -45,6 +86,9 @@ public class Main {
         }
     }
 
+    /**
+     * Сравнение времени и ошибки в зависимости от от точности и машю нуля в NumberR.
+     */
     public static void runExperiment1() throws WrongDimensionsException {
         Ring ring = new Ring("R[x]");
         ring.setFLOATPOS(100);                                              // количество выводимых знаков после точки
@@ -81,7 +125,6 @@ public class Main {
 
             System.out.println("------------------------------------------------------------------------------------");
         }
-
     }
 
 }

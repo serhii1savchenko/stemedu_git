@@ -4,7 +4,11 @@ import com.mathpar.matrix.MatrixD;
 import com.mathpar.number.Ring;
 import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class BlockQR {
+
+    private static AtomicInteger counter = new AtomicInteger(1);
 
     public static void main(String[] args) throws WrongDimensionsException {
         Ring ring = new Ring("R64[x]");
@@ -19,22 +23,26 @@ public class BlockQR {
         //System.out.println("Q = \n" + Q.toString() + "\n");
         //System.out.println("R = \n" + R.toString() + "\n");
         System.out.println("check = \n" + check.toString() + "\n");
+
+        System.out.println("Threads created: " + counter.get());
     }
 
     public static MatrixD[] blockQR(MatrixD A, Ring ring) throws WrongDimensionsException {
         int rowNum = A.rowNum();
         int colNum = A.colNum();
-        if ((rowNum != colNum) || !Utils.isPowerOfTwo(rowNum))
+        if ((rowNum != colNum) || !Utils.isPowerOfTwo(rowNum) || rowNum == 0)
             throw new WrongDimensionsException();
+
+        if (rowNum == 2)
+            return SVD.givensQR(A, ring);
 
         MatrixD M = A.copy();
         MatrixD ones = MatrixD.ONE(M.rowNum(), ring);
 
-        // TODO переписать QR-разложения блоков C и D в виде рекурсивных вызовов данной QR-процедуры
         /** 1. QR Разложение блока C */
         MatrixD C = Utils.block4(M, 'C');
         MatrixD D = Utils.block4(M, 'D');
-        MatrixD[] Q1R1 = SVD.givensQR(C, ring);
+        MatrixD[] Q1R1 = blockQR(C, ring);
         MatrixD Q1 = Q1R1[0];
         MatrixD R1 = Q1R1[1];
         MatrixD D1 = Q1.transpose(ring).multiplyMatr(D, ring);
@@ -56,7 +64,7 @@ public class BlockQR {
 
         /** 3. QR разложение блока D */
         D = Utils.block4(M, 'D');
-        MatrixD[] Q3R3 = SVD.givensQR(D, ring);
+        MatrixD[] Q3R3 = blockQR(D, ring);
         MatrixD Q3 = Q3R3[0];
         MatrixD R3 = Q3R3[1];
         M = Utils.insertMatrixToMatrix(M, R3, M.rowNum() / 2, M.colNum() / 2);
@@ -73,7 +81,7 @@ public class BlockQR {
      * Рекурсивная процедура для обнуления внутреннего параллелограмма
      * Matrix A (2n * n)
      */
-    private static MatrixD[] blockQrForParallelogram(MatrixD A, Ring ring) throws WrongDimensionsException {
+    protected static MatrixD[] blockQrForParallelogram(MatrixD A, Ring ring) throws WrongDimensionsException {
         int rowNum = A.rowNum();
         int colNum = A.colNum();
         if (!(rowNum == 2*colNum))
@@ -96,20 +104,33 @@ public class BlockQR {
             input = Utils.insertMatrixToMatrix(input, aff_b1, input.rowNum() / 4, input.colNum()/2);
             //System.out.println(input.toString() + "\n");
 
-            // Block 2
+            // Block 2 & Block 3
             MatrixD block_2 = Utils.getBlock(input, 2);
-            MatrixD[] Q2R2 = blockQrForParallelogram(block_2, ring);
+            MatrixD block_3 = Utils.getBlock(input, 3);
+            MatrixD[] Q2R2 = new MatrixD[2];
+            MatrixD[] Q3R3 = new MatrixD[2];
+            Thread[] threads = new Thread[2];
+            Thread blockExecuter_2 = new BlockExecuter(block_2, Q2R2, ring);
+            threads[0] = blockExecuter_2;
+            Thread blockExecuter_3 = new BlockExecuter(block_3, Q3R3, ring);
+            threads[1] = blockExecuter_3;
+            for (Thread t : threads) {
+                t.start();
+            }
+            for (Thread t : threads) {
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            counter.addAndGet(2);
             MatrixD Q2 = Q2R2[0];
             MatrixD R2 = Q2R2[1];
             MatrixD aff_b2 = Utils.getSubMatrix(input, 0, (input.rowNum() / 2) - 1, input.colNum() / 2, input.colNum() - 1);
             aff_b2 = Q2.transpose(ring).multiplyMatr(aff_b2, ring);
             input = Utils.insertMatrixToMatrix(input, R2, 0, 0);
             input = Utils.insertMatrixToMatrix(input, aff_b2, 0, input.colNum() / 2);
-            //System.out.println(input.toString() + "\n");
-
-            // Block 3
-            MatrixD block_3 = Utils.getBlock(input, 3);
-            MatrixD[] Q3R3 = blockQrForParallelogram(block_3, ring);
             MatrixD Q3 = Q3R3[0];
             MatrixD R3 = Q3R3[1];
             input = Utils.insertMatrixToMatrix(input, R3, input.rowNum() / 2, input.colNum() / 2);
@@ -158,12 +179,13 @@ public class BlockQR {
         M2 = Q_ld.transpose(ring).multiplyMatr(M2, ring);
         //System.out.println("M2 = \n" + M2.toString() + "\n");
 
-        // 2. Q_lu & 3. Q_rd
+        // 2. Q_lu
         MatrixD Q_lu = Utils.getGivensRotationMatrix(rowNum, 0, 1, M2.getElement(0, 0), M2.getElement(1, 0), ring);
         //System.out.println("Q_lu = \n" + Q_lu.toString() + "\n");
         M2 = Q_lu.transpose(ring).multiplyMatr(M2, ring);
         //System.out.println("M2 = \n" + M2.toString() + "\n");
 
+        // 3. Q_rd
         MatrixD Q_rd = Utils.getGivensRotationMatrix(rowNum, 2, 3, M2.getElement(2, 1), M2.getElement(3, 1), ring);
         //System.out.println("Q_rd = \n" + Q_rd.toString() + "\n");
         M2 = Q_rd.transpose(ring).multiplyMatr(M2, ring);
@@ -182,4 +204,27 @@ public class BlockQR {
         return new MatrixD[] {Q, M2};
     }
 
+}
+
+class BlockExecuter extends Thread {
+    MatrixD input;
+    MatrixD[] output;
+    Ring ring;
+
+    public BlockExecuter(MatrixD input, MatrixD[] output, Ring ring) {
+        this.input = input;
+        this.output = output;
+        this.ring = ring;
+    }
+
+    @Override
+    public void run() {
+        try {
+            MatrixD[] qr = BlockQR.blockQrForParallelogram(input, ring);
+            output[0] = qr[0];
+            output[1] = qr[1];
+        } catch (WrongDimensionsException e) {
+            e.printStackTrace();
+        }
+    }
 }
