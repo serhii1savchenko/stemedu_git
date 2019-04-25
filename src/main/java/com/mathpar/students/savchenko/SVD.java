@@ -7,10 +7,15 @@ import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class SVD {
 
-    public static MatrixD[] getSVD(MatrixD A, Ring ring) throws WrongDimensionsException {
+    public static MatrixD[] getSVD(MatrixD A, Ring ring, boolean blockQR) throws WrongDimensionsException {
         // 1. QR-разложение входной матрицы A.
         double st = System.nanoTime();
-        MatrixD[] qr = givensQR(A, ring);
+        MatrixD[] qr;
+        if (blockQR) {
+            qr = BlockQR.blockQR(A, ring);
+        } else {
+            qr = givensQR(A, ring);
+        }
         MatrixD Q = qr[0];
         MatrixD R = qr[1];
 //        System.out.println("Матрица Q = ");
