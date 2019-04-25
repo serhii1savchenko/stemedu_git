@@ -11,7 +11,47 @@ public class Main {
     public static void main(String[] args) throws WrongDimensionsException {
         //runExperiment1();
         //runExperiment2();
-        runExperiment3();
+        //runExperiment3();
+        runExperiment4();
+    }
+
+    /**
+     * Сравнение SVD алгоритмов с обычным и блочным QR разложением
+     */
+    public static void runExperiment4() throws WrongDimensionsException {
+        Ring ring = new Ring("R64[x]");
+        ring.setFLOATPOS(100);                                                  // количество выводимых знаков после точки
+
+        int[] dimensions = {8, 16, 32, 64, 128};
+        MatrixD mainMatrix = TestData.getTestMatrix(dimensions[dimensions.length-1], ring);
+
+        for (int i : dimensions) {
+            MatrixD A = Utils.getSubMatrix(mainMatrix, 0, i-1, 0, i-1);
+            double st = System.nanoTime();
+            MatrixD[] svd = SVD.getSVD(A, ring, false);
+            MatrixD A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
+            MatrixD difference = A.add(A1, ring);
+            double en = System.nanoTime();
+            double lastTimeSec = ((en - st) / 1000000000);
+            System.out.println("Simple QR n = " + i + ". " +
+                    "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
+                    "Time elapsed: " + lastTimeSec + " seconds.");
+
+            System.out.println("-------------------------------------------------------");
+
+            A = Utils.getSubMatrix(mainMatrix, 0, i-1, 0, i-1);
+            st = System.nanoTime();
+            svd = SVD.getSVD(A, ring, true);
+            A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
+            difference = A.add(A1, ring);
+            en = System.nanoTime();
+            lastTimeSec = ((en - st) / 1000000000);
+            System.out.println("BlockQR n = " + i + ". " +
+                    "diff = " + difference.max(ring).abs(ring).toString(ring) + ". " +
+                    "Time elapsed: " + lastTimeSec + " seconds.");
+
+            System.out.println("***************************************************************************************************************");
+        }
     }
 
     /**
@@ -70,7 +110,7 @@ public class Main {
             for (int i : dimensions) {
                 MatrixD A = Utils.getSubMatrix(mainMatrix, 0, i-1, 0, i-1);
                 double st = System.nanoTime();
-                MatrixD[] svd = SVD.getSVD(A, ring);
+                MatrixD[] svd = SVD.getSVD(A, ring, false);
                 MatrixD A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
                 MatrixD difference = A.add(A1, ring);
                 double en = System.nanoTime();
@@ -114,7 +154,7 @@ public class Main {
             System.out.println("Машинный ноль = " + zero.toString(ring) + "\n");
 
             st = System.nanoTime();
-            svd = SVD.getSVD(A, ring);
+            svd = SVD.getSVD(A, ring, false);
             A1 = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
             difference = A.add(A1, ring);
             en = System.nanoTime();
