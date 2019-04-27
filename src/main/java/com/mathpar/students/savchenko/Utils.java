@@ -4,6 +4,7 @@ import com.mathpar.matrix.MatrixD;
 import com.mathpar.number.Element;
 import com.mathpar.number.NumberR64;
 import com.mathpar.number.Ring;
+import com.mathpar.number.VectorS;
 import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class Utils {
@@ -34,7 +35,7 @@ public class Utils {
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
                 if (!(j<=i))
-                    L.M[i][j] = new NumberR64(0d);
+                    L.M[i][j] = ring.numberZERO;
         return L;
     }
 
@@ -194,5 +195,80 @@ public class Utils {
                 default: return matrix;
             }
         }
+    }
+
+    // В результате у матрицы B поменяется только ряд x и ряд y
+    public static MatrixD leftMultiplyGivensToMatrix(MatrixD A, MatrixD B, int x, int y, Ring ring) {
+        MatrixD result = B.copy();
+        Element zero = ring.numberZERO;
+        Element res;
+
+        int k = B.colNum();
+        int n = B.rowNum();
+
+        VectorS newXrow = new VectorS(k);
+        VectorS newYrow = new VectorS(k);
+        VectorS xRowFromA = A.takeRow(x+1);
+        VectorS yRowFromA = A.takeRow(y+1);
+
+        for (int i = 0; i < k; i++) {
+            VectorS iColFromB = B.takeColumn(i+1);
+            // замена рядка x
+            res = zero;
+            for (int j = 0; j < n; j++) {
+                res = res.add((xRowFromA.V[j]).multiply(iColFromB.V[j], ring), ring);
+            }
+            newXrow.V[i] = res;
+            // замена рядка y
+            res = zero;
+            for (int j = 0; j < n; j++) {
+                res = res.add((yRowFromA.V[j]).multiply(iColFromB.V[j], ring), ring);
+            }
+            newYrow.V[i] = res;
+        }
+
+        for (int h = 0; h < k; h++) {
+            result.M[x][h] = newXrow.V[h];
+            result.M[y][h] = newYrow.V[h];
+        }
+
+        return result;
+    }
+
+    // В результате у матрицы A поменяется только столбец x и столбец y
+    public static MatrixD rightMultiplyMatrixToGivens(MatrixD A, MatrixD B, int x, int y, Ring ring) {
+        MatrixD result = A.copy();
+        Element zero = ring.numberZERO;
+        Element res;
+
+        int n = A.rowNum();
+
+        VectorS newXcol = new VectorS(n);
+        VectorS newYcol = new VectorS(n);
+        VectorS xColFromB = B.takeColumn(x+1);
+        VectorS yColFromB = B.takeColumn(y+1);
+
+        for (int i = 0; i < n; i++) {
+            VectorS iRowFromA = A.takeRow(i+1);
+            // замена столбца x
+            res = zero;
+            for (int j = 0; j < n; j++) {
+                res = res.add(iRowFromA.V[j].multiply(xColFromB.V[j], ring), ring);
+            }
+            newXcol.V[i] = res;
+            // замена столбца y
+            res = zero;
+            for (int j = 0; j < n; j++) {
+                res = res.add(iRowFromA.V[j].multiply(yColFromB.V[j], ring), ring);
+            }
+            newYcol.V[i] = res;
+        }
+
+        for (int h = 0; h < n; h++) {
+            result.M[h][x] = newXcol.V[h];
+            result.M[h][y] = newYcol.V[h];
+        }
+
+        return result;
     }
 }
