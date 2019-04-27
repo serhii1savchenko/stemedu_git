@@ -1,7 +1,6 @@
 package com.mathpar.students.savchenko;
 
 import com.mathpar.matrix.MatrixD;
-import com.mathpar.number.NumberR;
 import com.mathpar.number.Ring;
 import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
@@ -78,8 +77,8 @@ public class SVD {
                     GTemp = Utils.getGivensRotationMatrix(n, j-1, j, R.getElement(j-1, i), R.getElement(j, i), ring);
 //                    System.out.println("МАТРИЦА ВРАЩЕНИЯ = " + "\n");
 //                    System.out.println(GTemp.toString()+ "\n");
-                    Q = Q.multiplyMatr(GTemp, ring);
-                    R = GTemp.transpose(ring).multiplyMatr(R, ring);
+                    Q = Utils.rightMultiplyMatrixToGivens(Q, GTemp, j-1, j, ring);
+                    R = Utils.leftMultiplyGivensToMatrix(GTemp.transpose(ring), R, j-1, j, ring);
 //                    System.out.println("МАТРИЦА ВРАЩЕНИЯ t * Temp = " + "\n");
 //                    System.out.println(R.toString() + "\n");
                 }
@@ -108,15 +107,15 @@ public class SVD {
             for (int row=(n-1); row>(col); row--) {
                 left = Utils.getGivensRotationMatrix(n, row-1, row, Temp.getElement(row-1, col), Temp.getElement(row, col), ring);
                 left = left.transpose(ring);
-                L = left.multiplyMatr(L, ring);
-                Temp = left.multiplyMatr(Temp, ring);
+                L = Utils.leftMultiplyGivensToMatrix(left, L, row-1, row, ring);
+                Temp = Utils.leftMultiplyGivensToMatrix(left, Temp, row-1, row, ring);
                 // System.out.println("Испортился ноль в " + (row-1) + ", " + row);
                 if (row > (col+1)) {                                                        // Убираем y-ки если это не "верхний" y
                     int i = row-1;
                     int j = row;
                     right = Utils.getGivensRotationMatrix(n, j-1, j, Temp.getElement(i, j-1), Temp.getElement(i, j), ring);
-                    R = R.multiplyMatr(right, ring);
-                    Temp = Temp.multiplyMatr(right, ring);
+                    R = Utils.rightMultiplyMatrixToGivens(R, right, j-1, j, ring);
+                    Temp = Utils.rightMultiplyMatrixToGivens(Temp, right, j-1, j, ring);
                 }
             }
 //            System.out.println("После " + (col+1) + " итерации матрица имеет вид \n");
@@ -149,8 +148,8 @@ public class SVD {
                     int j = i+1;
                     if (!Temp.getElement(i, j).isZero(ring)) {
                         right = Utils.getGivensRotationMatrix(n, j - 1, j, Temp.getElement(i, j - 1), Temp.getElement(i, j), ring);
-                        R = R.multiplyMatr(right, ring);
-                        Temp = Temp.multiplyMatr(right, ring);
+                        R = Utils.rightMultiplyMatrixToGivens(R, right, j-1, j, ring);
+                        Temp = Utils.rightMultiplyMatrixToGivens(Temp, right, j-1, j, ring);
                         iterations++;
                     }
                 }
@@ -160,8 +159,8 @@ public class SVD {
                     if (!Temp.getElement(i, j).isZero(ring)) {
                         left = Utils.getGivensRotationMatrix(n, i - 1, i, Temp.getElement(i - 1, j), Temp.getElement(i, j), ring);
                         left = left.transpose(ring);
-                        L = left.multiplyMatr(L, ring);
-                        Temp = left.multiplyMatr(Temp, ring);
+                        L = Utils.leftMultiplyGivensToMatrix(left, L, i-1, i, ring);
+                        Temp = Utils.leftMultiplyGivensToMatrix(left, Temp, i-1, i, ring);
                         iterations++;
                     }
                 }
