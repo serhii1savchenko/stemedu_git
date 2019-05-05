@@ -7,14 +7,19 @@ import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 public class SVD {
 
     public static MatrixD[] getSVD(MatrixD A, Ring ring, boolean blockQR) throws WrongDimensionsException {
+        double globalStart = System.nanoTime();
+
         // 1. QR-разложение входной матрицы A.
-        double st = System.nanoTime();
         MatrixD[] qr;
+        double st = System.nanoTime();
         if (blockQR) {
             qr = BlockQR.blockQR(A, ring);
         } else {
             qr = givensQR(A, ring);
         }
+        double en = System.nanoTime();
+        double lastTimeSec = ((en - st) / 1000000000);
+        System.out.println("Time for QR: " + lastTimeSec + " seconds.");
         MatrixD Q = qr[0];
         MatrixD R = qr[1];
 //        System.out.println("Матрица Q = ");
@@ -26,27 +31,28 @@ public class SVD {
 
         // 2. Приведение матрицы R к двухдиагональному виду (D2).
         MatrixD Rt = R.transpose(ring);
+        st = System.nanoTime();
         MatrixD[] lr = leftTriangleToBidiagonal(Rt, ring);
+        en = System.nanoTime();
+        lastTimeSec = ((en - st) / 1000000000);
+        System.out.println("Time for D2: " + lastTimeSec + " seconds.");
         MatrixD L1 = lr[0];
         MatrixD R1 = lr[1];
         MatrixD D2 = L1.multiplyMatr(Rt, ring);
         D2 = D2.multiplyMatr(R1, ring);
-        double en = System.nanoTime();
-        double lastTimeSec = ((en - st) / 1000000000);
-        System.out.println("Time for D2: " + lastTimeSec + " seconds.");
 //        System.out.println("D2 = \n" + D2.toString() + "\n");
 
         // 3. Приведение матрицы D2 к диагональному виду (D1).
         st = System.nanoTime();
         lr = bidiagonalToDiagonal(D2, ring);
+        en = System.nanoTime();
+        lastTimeSec = ((en - st) / 1000000000);
+        System.out.println("Time for D2 ---> D1: " + lastTimeSec + " seconds.");
         MatrixD L2 = lr[0];
         MatrixD R2 = lr[1];
         MatrixD D1 = L2.multiplyMatr(D2, ring);
         D1 = D1.multiplyMatr(R2, ring);
 //        Utils.removeNonDiagonalValues(D1, ring);
-        en = System.nanoTime();
-        lastTimeSec = ((en - st) / 1000000000);
-        System.out.println("Time D2 ---> D1: " + lastTimeSec + " seconds.");
 //        System.out.println("D1 = \n" + D1.toString() + "\n");
 
         // 4. Расчет SVD разложения для входной матрицы A.
@@ -56,6 +62,9 @@ public class SVD {
 //        System.out.println("Проверка SVD разложения. U*D1*V = \n");
 //        System.out.println(A1.toString());
 
+        double globalEnd = System.nanoTime();
+        double globalTime = ((globalEnd - globalStart) / 1000000000);
+        System.out.println("Time all: " + globalTime + " seconds.");
         return new MatrixD[] {U, D1, V, A1};
     }
 
@@ -125,7 +134,7 @@ public class SVD {
         return new MatrixD[]{L, R};
     }
 
-    // Возвращает матрицы L, R. Матрица D1 = L*A*R имеет диагональный вид.
+    // Возвращает матрицы L, R, D1. Матрица D1 = L*A*R имеет диагональный вид.
     public static MatrixD[] bidiagonalToDiagonal(MatrixD A, Ring ring) throws WrongDimensionsException {
         if (A.rowNum() != A.colNum())
             throw new WrongDimensionsException();
@@ -170,8 +179,8 @@ public class SVD {
 //            System.out.println(Temp.toString() + "\n");
         }
 
-        System.out.println("Количество итераций для получения диагональной матрицы = " + iterations + ".");
-        return new MatrixD[]{L, R};
+        //System.out.println("        Количество итераций для получения диагональной матрицы = " + iterations + ".");
+        return new MatrixD[]{L, R, Temp};
     }
 
 }
