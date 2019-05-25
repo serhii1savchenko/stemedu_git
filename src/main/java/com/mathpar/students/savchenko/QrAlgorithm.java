@@ -6,6 +6,18 @@ import com.mathpar.students.savchenko.exception.WrongDimensionsException;
 
 public class QrAlgorithm {
 
+    public static void main(String[] args) throws WrongDimensionsException {
+        Ring ring = new Ring("R64[x]");
+        ring.setFLOATPOS(100);
+        ring.setMachineEpsilonR64(30);                                              // машинный эпсилон
+        System.out.println("0 = " + ring.MachineEpsilonR64.toString(ring));
+        MatrixD A = TestData.getTestMatrix(64, ring);
+
+        MatrixD[] qra = getSVD(A, ring, true);
+        MatrixD Eig = qra[0];
+        MatrixD U = qra[1];
+    }
+
     public static MatrixD[] getSVD(MatrixD A, Ring ring, boolean blockQr) throws WrongDimensionsException {
         int rowNum = A.rowNum();
         int colNum = A.colNum();
@@ -59,8 +71,6 @@ public class QrAlgorithm {
         double lastValue;
         int c = 0;
 
-//        while (!isMatrixUpperTriangular(Ak, ring)) {
-//        for (int i = 0; i < 50; i++) {
         do {
             MatrixD diagVals = getDiagVals(Ak, ring);
             MatrixD[] qr;
@@ -72,16 +82,17 @@ public class QrAlgorithm {
             MatrixD Q = qr[0];
             MatrixD R = qr[1];
             MatrixD tmp = R.multiplyMatr(Q, ring);
-            if (tmp.getElement(0, 0).isNaN() || Q.getElement(0, 0).isNaN())
-                break;
+//            if (tmp.getElement(0, 0).isNaN() || Q.getElement(0, 0).isNaN())
+//                break;
             Ak = tmp;
             Qu = Qu.multiplyMatr(Q, ring);
             MatrixD diagAfter = getDiagVals(Ak, ring).negate(ring);
             diagAfter = diagVals.add(diagAfter, ring);
             lastValue = ((MatrixD) (diagAfter.abs(ring))).max(ring).doubleValue();
             c++;
-            //System.out.println("Temp A " + (c++) + " = \n" + Ak.toString() + "\n");
-        } while (lastValue > epsilon);
+            //System.out.println("Temp A " + c + " = \n" + Ak.toString() + "\n");
+            //System.out.println(lastValue);
+        } while (notTriang(Ak, ring) && (lastValue > epsilon));
 
         //System.out.println("        Количество итераций в QR алгоритме =  " + c);
 
@@ -107,4 +118,15 @@ public class QrAlgorithm {
         return true;
     }
 
+    private static boolean notTriang(MatrixD ak, Ring ring) {
+        for (int i=1; i<ak.rowNum(); i++) {
+            for (int j=0; j<i; j++) {
+                if (!ak.M[i][j].isZero(ring)){
+                    //System.out.println("i = " + i + " j = " + j);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
