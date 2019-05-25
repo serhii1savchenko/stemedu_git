@@ -25,14 +25,17 @@ public class Main {
 
         int[] dimensions = {8, 16, 32, 64, 128};
 
+        MatrixD A, check, difference;
+        MatrixD[] svd;
+
         for (int i : dimensions) {
             System.out.println("Dimension = " + i);
 
             System.out.println("1. Standard SVD algorithm with simple QR");
-            MatrixD A = TestData.getTestMatrix(i, ring);
-            MatrixD[] svd = SVD.getSVD(A, ring, false);
-            MatrixD check = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
-            MatrixD difference = A.add(check, ring);
+            A = TestData.getTestMatrix(i, ring);
+            svd = SVD.getSVD(A, ring, false);
+            check = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);
+            difference = A.add(check, ring);
             System.out.println("diff = " + difference.max(ring).abs(ring).toString(ring) + ". \n");
 
             System.out.println("2. Standard SVD algorithm with Block QR");
@@ -42,7 +45,7 @@ public class Main {
             difference = A.add(check, ring);
             System.out.println("diff = " + difference.max(ring).abs(ring).toString(ring) + ". \n");
 
-            System.out.println("3. New SVD algorithm with Block QR");
+            System.out.println("3. New SVD by QR-algorithm with Block QR");
             A = TestData.getTestMatrix(i, ring);
             svd = QrAlgorithm.getSVD(A, ring, true);
             check = svd[3].multiplyByScalar(ring.numberMINUS_ONE, ring);

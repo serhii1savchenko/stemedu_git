@@ -20,10 +20,17 @@ public class Utils {
             Element r = a.pow(2, ring).add(b.pow(2, ring), ring).sqrt(ring);     // Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
             Element c = a.divide(r, ring);                                            // a/r;
             Element s = b.negate(ring).divide(r, ring);                               // (-b)/r;
-            G.M[i][i] = c;
-            G.M[i][j] = s;
-            G.M[j][i] = s.negate(ring);
-            G.M[j][j] = c;
+            if (c.isInfinite() || s.isInfinite()) {
+                G.M[i][i] = ring.numberONE;
+                G.M[i][j] = ring.numberZERO;
+                G.M[j][i] = ring.numberZERO;
+                G.M[j][j] = ring.numberONE;
+            } else {
+                G.M[i][i] = c;
+                G.M[i][j] = s;
+                G.M[j][i] = s.negate(ring);
+                G.M[j][j] = c;
+            }
         }
         return G;
     }
