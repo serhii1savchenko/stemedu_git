@@ -22,7 +22,7 @@
     -->
     <spring.version>4.1.4.RELEASE</spring.version>
     <freemarker.version>2.3.21</freemarker.version>
-    <h2.version>1.4.183</h2.version>
+    <h2.version>2.0.206</h2.version>
     <liquibase.version>3.3.0</liquibase.version>
     <javamail.version>1.5.2</javamail.version>
 
