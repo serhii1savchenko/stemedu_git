@@ -20,7 +20,7 @@
     <!--Corresponds to Spring Boot version. See:
     http://docs.spring.io/spring-boot/docs/current/reference/html/appendix-dependency-versions.html
     -->
-    <spring.version>4.1.4.RELEASE</spring.version>
+    <spring.version>5.3.19</spring.version>
     <freemarker.version>2.3.21</freemarker.version>
     <h2.version>1.4.183</h2.version>
     <liquibase.version>3.3.0</liquibase.version>
